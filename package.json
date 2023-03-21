@@ -1,0 +1,15 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "app",
+  "main": "main.js",
+  "author": "ER Wang",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^23.1.4"
+  },
+  "scripts": {
+    "test": "test",
+	"start": "electron ."
+  }
+}
