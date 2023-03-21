@@ -6,14 +6,14 @@ const createWindow = () => {
     width: 800,
     height: 600,
     webPreferences: {
-       preload: path.join(__dirname, 'src', 'preload.js') 
+       preload: path.join(__dirname, 'src', 'js', 'preload.js') 
     }
   });
 
   win.loadFile('index.html');
 
   win.webContents.openDevTools();
-  
+
 }
 app.whenReady().then(() => {
   createWindow()
