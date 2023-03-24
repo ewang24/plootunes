@@ -2,3 +2,7 @@
 node_modules/
 physicOctoRotaryPhone.iml
 .vscode/launch.json
+.editorconfig
+.angular/
+.vscode/
+dist/
