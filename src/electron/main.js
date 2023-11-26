@@ -1,6 +1,6 @@
 const path = require('path')
-
-const { app, BrowserWindow } = require('electron')
+const fs = require('fs');
+const { app, BrowserWindow, ipcMain } = require('electron')
 
 require('electron-reload')(path.join(__dirname, '../', '../'), {
   electron: path.join(__dirname, '../', '../', 'node_modules', '.bin', 'electron')
@@ -8,14 +8,16 @@ require('electron-reload')(path.join(__dirname, '../', '../'), {
 
 const createWindow = () => {
   const win = new BrowserWindow({
+    title: "Hello",
     width: 800,
     height: 600,
     webPreferences: {
-       preload: path.join(__dirname, 'preload.js') 
+       preload: path.join(__dirname, 'preload.js'),
+       enableRemoteModule: true
     }
   });
 
-  win.loadFile('../app/app.component.html');
+  win.loadURL('http://localhost:3000');
 
   win.webContents.openDevTools();
 
@@ -27,3 +29,19 @@ app.whenReady().then(() => {
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit()
 })
+
+
+function getAllFiles(path) {
+      try {
+        const files = fs.readdirSync(path);
+        return files;
+      } catch (error) {
+        console.error('Error reading directory:', error);
+        return [];
+      }
+    }
+
+
+    ipcMain.handle('getFiles', (event, path) => {
+      return getAllFiles(path);
+    });
