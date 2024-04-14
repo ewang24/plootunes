@@ -16,6 +16,9 @@ window.addEventListener('DOMContentLoaded', () => {
   })
 
 
+  console.log('preload');
+
+  window.ipcRenderer = require('electron').ipcRenderer;
   contextBridge.exposeInMainWorld('electron', {
     ipcRenderer: ipcRenderer,
   });

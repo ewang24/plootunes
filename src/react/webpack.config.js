@@ -2,7 +2,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-    entry: './src/ui/index.js',
+    entry: './index.js',
     mode: 'development',
     devServer: {
         static: {
@@ -17,12 +17,6 @@ module.exports = {
         filename: 'bundle.js'
     },
     resolve: {
-        fallback: {
-            "path": require.resolve("path-browserify"),
-            "util": require.resolve("util/"),
-            "stream": require.resolve("stream-browserify"),
-            "os": require.resolve("os-browserify"),
-        },
         extensions: ['.js', '.jsx', '.json', '.tsx', '.ts']
     },
     externals: {
@@ -47,7 +41,7 @@ module.exports = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: './src/ui/index.html',
+            template: './index.html',
             fileName: 'index.html'
         })
     ]
