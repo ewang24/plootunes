@@ -1,6 +1,7 @@
 const path = require('path')
 const fs = require('fs');
 const { app, BrowserWindow, ipcMain } = require('electron')
+import { DbUtils } from './lib/db';
 
 require('electron-reload')(path.join(__dirname, '../', '../'), {
   electron: path.join(__dirname, '../', '../', 'node_modules', '.bin', 'electron')
@@ -43,4 +44,8 @@ function getAllFiles(path) {
 
     ipcMain.handle('getFiles', (event, path) => {
       return getAllFiles(path);
+    });
+
+    ipcMain.handle('test', (event) => {
+        DbUtils.init();
     });

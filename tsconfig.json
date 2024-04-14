@@ -1,12 +1,15 @@
 {
-    "compilerOptions": {
-      "baseUrl": "./src",
-      "paths": {
-        "*": ["*", "src/*"]
-      }
-    },
-    "include": [
-      "./lib/**/*.ts"
-    ]
-  }
-  
+  "compilerOptions": {
+    "module": "ESNext",
+    "baseUrl": "./src",
+    "paths": {
+      "*": [
+        "*",
+        "src/*"
+      ]
+    }
+  },
+  "include": [
+    "./src/lib/**/*.ts"
+  ]
+}

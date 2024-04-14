@@ -23,20 +23,26 @@ module.exports = {
             "stream": require.resolve("stream-browserify"),
             "os": require.resolve("os-browserify"),
         },
-        extensions: ['.js', '.jsx', '.json']
+        extensions: ['.js', '.jsx', '.json', '.tsx', '.ts']
     },
     externals: {
-        "electron": 'commonjs electron'
+        "electron": 'commonjs electron',
+        "fs": 'commonjs fs'
     },
     module: {
         rules: [
             {
-                test: /\.(js|jsx)$/,
+                test: /\.(js|jsx|tsx)$/,
                 exclude: /(node_modules|electron)/,
                 use: {
                     loader: 'babel-loader'
                 }
-            }
+            },
+            {
+                test: /\.tsx?$/,
+                use: 'ts-loader',
+                exclude: /node_modules/,
+              },
         ]
     },
     plugins: [
