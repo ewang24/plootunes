@@ -2,7 +2,7 @@
   "name": "physic-octo-rotary-phone",
   "version": "0.0.0",
   "scripts": {
-    "start": "react-scripts start --prefix ./src/plootunes",
+    "start": "react-scripts start",
     "electron": "electron ./src/electron/main.js"
   },
   "directories": {
