@@ -12,14 +12,13 @@ const createWindow = () => {
     width: 800,
     height: 600,
     webPreferences: {
-       preload: path.join(__dirname, 'preload.js'),
-       enableRemoteModule: true
+       preload: path.join(__dirname, 'preload.js')
     }
   });
 
   win.loadURL('http://localhost:3000');
 
-  win.webContents.openDevTools();
+  // win.webContents.openDevTools();
 
 }
 app.whenReady().then(() => {
