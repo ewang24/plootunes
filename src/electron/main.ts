@@ -1,5 +1,5 @@
 import * as path from "path";
-import { BrowserWindow, ipcMain, ipcRenderer } from "electron";
+import { BrowserWindow, ipcMain } from "electron";
 
 export default class Main {
     static mainWindow: Electron.BrowserWindow | null;
@@ -17,6 +17,12 @@ export default class Main {
     }
 
     private static onReady() {
+
+        ipcMain.handle('test', (event, arg) => {
+            const data = 'data from main process';
+            return data;
+        });
+
         Main.mainWindow = new BrowserWindow(
             {
                 width: 800, height: 600,
@@ -41,8 +47,3 @@ export default class Main {
         Main.application.on('ready', Main.onReady);
     }
 }
-
-ipcMain.on('test', (event, arg) => {
-    const data = 'data from main process';
-    event.sender.send('test', data);
-});

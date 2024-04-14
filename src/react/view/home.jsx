@@ -4,9 +4,9 @@ const Home = () => {
 
   const [data, setData] = useState(null);
   function test(){
-    window.electron.ipcRenderer.send('test');
-    window.electron.ipcRenderer.on('test', (event, data) =>{
-        setData(data);
+    window.electron.ipcRenderer.invoke('test')
+    .then((data) => {
+      setData(data);
     });
   }
 
