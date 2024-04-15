@@ -1,13 +1,14 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 
 const Home = () => {
 
   const [data, setData] = useState(null);
-  function test(){
+  function test() {
     window.electron.ipcRenderer.invoke('test')
-    .then((data) => {
-      setData(data);
-    });
+      .then((dataPromise) => {
+      
+          setData(dataPromise);
+      });
   }
 
   return (

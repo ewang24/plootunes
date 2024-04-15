@@ -1,6 +1,34 @@
-import { Database, OPEN_CREATE, OPEN_READWRITE, RunResult } from "sqlite3";
+import { Database, OPEN_CREATE, OPEN_READONLY, OPEN_READWRITE, RunResult, Statement } from "sqlite3";
 
 export class DbUtils {
+
+  static async fetchSongs(): Promise<string>{
+    const db = new Database('P:/Documents/GitHub/psychic-octo-rotary-phone/plootunes.sqlite', OPEN_READONLY, (err: Error | null) => {
+      if (err) {
+        return console.error(err.message);
+      }
+      console.log('Connected to the in-memory SQlite database.');
+    });
+
+    const query = `
+      SELECT * FROM song 
+    `
+
+    return this.fetch(db, query);
+  }
+
+  private static fetch(db: Database, query: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      db.all(query, function (this: Statement, err: Error | null, rows: []) {
+        if (err) {
+          reject(err);
+        }
+
+        resolve(JSON.stringify(rows));
+      });
+    })
+  }
+
   static async init(): Promise<void> {
     // open database in memory
     const db = new Database('plootunes.sqlite', OPEN_CREATE | OPEN_READWRITE, (err: Error | null) => {
@@ -118,5 +146,4 @@ export class DbUtils {
       });
     })
   }
-
 }

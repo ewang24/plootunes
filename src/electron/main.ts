@@ -1,5 +1,6 @@
 import * as path from "path";
 import { BrowserWindow, ipcMain } from "electron";
+import { DbUtils } from "./services/db";
 
 export default class Main {
     static mainWindow: Electron.BrowserWindow | null;
@@ -19,8 +20,7 @@ export default class Main {
     private static onReady() {
 
         ipcMain.handle('test', (event, arg) => {
-            const data = 'data from main process';
-            return data;
+            return DbUtils.fetchSongs();
         });
 
         Main.mainWindow = new BrowserWindow(
