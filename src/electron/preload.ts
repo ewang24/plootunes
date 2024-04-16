@@ -11,14 +11,14 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   
     for (const dependency of ['chrome', 'node', 'electron']) {
-      replaceText(`${dependency}-version`, process.versions[dependency])
+      replaceText(`${dependency}-version`, process.versions[dependency]);
     }
   })
 
 
   console.log('preload');
 
-  window.ipcRenderer = require('electron').ipcRenderer;
+  window['ipcRenderer'] = require('electron').ipcRenderer;
   contextBridge.exposeInMainWorld('electron', {
     ipcRenderer: ipcRenderer,
   });
