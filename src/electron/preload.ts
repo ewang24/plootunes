@@ -1,3 +1,5 @@
+import { inject } from "./services/sff/song/injectors/songServiceInjector";
+
 const { contextBridge, ipcRenderer } = require('electron');
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -16,9 +18,10 @@ window.addEventListener('DOMContentLoaded', () => {
   })
 
 
-  console.log('preload');
+  // console.log('preload');
 
-  window['ipcRenderer'] = require('electron').ipcRenderer;
-  contextBridge.exposeInMainWorld('electron', {
-    ipcRenderer: ipcRenderer,
-  });
+  // contextBridge.exposeInMainWorld('testtesttest', {
+  //   ipcRenderer: ipcRenderer,
+  // });
+
+  inject();

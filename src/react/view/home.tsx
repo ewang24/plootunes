@@ -4,11 +4,7 @@ const Home = () => {
 
   const [data, setData] = useState(null);
   function test() {
-    window.electron.ipcRenderer.invoke('test')
-      .then((dataPromise) => {
-      
-          setData(dataPromise);
-      });
+    
   }
 
   return (
