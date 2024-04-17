@@ -1,8 +1,10 @@
 import { Database, OPEN_READONLY, Statement } from "sqlite3";
+import { handler } from "../decorators/handlerDecorator";
 
 export class SongService{
 
-    async fetchSongs(): Promise<string>{
+    @handler
+    async fetchSongs(): Promise<string>{ 
         const db = new Database('P:/Documents/GitHub/psychic-octo-rotary-phone/plootunes.sqlite', OPEN_READONLY, (err: Error | null) => {
           if (err) {
             return console.error(err.message);

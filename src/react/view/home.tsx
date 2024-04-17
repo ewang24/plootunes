@@ -4,7 +4,11 @@ const Home = () => {
 
   const [data, setData] = useState(null);
   function test() {
+    (window as any).electron.ipcRenderer.invoke('fetchSongs')
+      .then((dataPromise) => {
     
+        setData(dataPromise);
+    });
   }
 
   return (
