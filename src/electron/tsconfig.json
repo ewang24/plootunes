@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "experimentalDecorators": true,
+    "target": "ES5",
     "outDir": "dist",
     "moduleResolution": "node",
     "module": "commonJS",

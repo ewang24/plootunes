@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "react": "cd ./src/react && react-scripts start",
+    "react": "cd ./src/react && webpack-dev-server",
     "electron": "tsc --project ./src/electron/tsconfig.json && electron ./src/electron/dist/app.js",
     "install:all": "cd ./src/electron && npm install && cd ../react && npm install"
   },

@@ -1,7 +1,7 @@
 import * as path from "path";
 import { BrowserWindow, ipcMain } from "electron";
 import { DbUtils } from "./services/db";
-import { injectAllHandlers } from "./services/handlers/decorators/handler-util";
+// import { injectAllHandlers } from "./services/handlers/decorators/handler-util";
 
 export default class Main {
     static mainWindow: Electron.BrowserWindow | null;
@@ -20,7 +20,7 @@ export default class Main {
 
     private static onReady() {
 
-        injectAllHandlers();
+        // injectAllHandlers();
 
         Main.mainWindow = new BrowserWindow(
             {

@@ -1,6 +1,6 @@
 const gulp = require('gulp'); // Import gulp module
 const sourcemaps = require('gulp-sourcemaps');
-gulp.task('electron:transpile:ts', () => {
+gulp.task('build', () => {
     var ts = require('gulp-typescript');
     var project = ts.createProject('./tsconfig.json');
     var tsResult = project.src()
