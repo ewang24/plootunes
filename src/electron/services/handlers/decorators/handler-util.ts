@@ -1,22 +1,28 @@
-// import { ipcMain } from "electron";
-// import { handlerMethods } from "./handlerDecorator";
+import { ipcMain } from "electron";
+import { HandlerWrapper, handlerMethods } from "./handlerDecorator";
+import { SongService } from "../song/songService";
 
-// export function injectAllHandlers() {
-//     const results = {};
 
-//     //serviceClassName will be the name of one of the services that house @handler decorated methods (eg SongService)
-//     Object.keys(handlerMethods).forEach((serviceClassName) => {
-//         const ServiceClassReference = eval(serviceClassName);
-//         if (!(typeof ServiceClassReference === 'function')) {
-//             throw new Error(`No class found with name ${ServiceClassReference}, cannot instantiate`);
-//         }
+/**
+ * Inject handlers for all service methods annoted with @handler into the ipcMain context.
+ */
+export function injectAllHandlers() {
+    const results = {};
+
+    //Unfortunately do to tree shaking, we need to declare an instance of each service here or the imports for the service will be removed during transpiling
+    // and then they will not be decorated.
+    const ss = new SongService();
+
+
+    Object.keys(handlerMethods).forEach((serviceClassName) => {
+        const handlerWrapper: HandlerWrapper = handlerMethods[serviceClassName];
         
-//         const service = new ServiceClassReference();
-//         handlerMethods[serviceClassName].forEach((handler) => {
-//             ipcMain.handle(handler as string, (event, arg) => {
-//                 const handlerFunction = ServiceClassReference[handler];
-//                 return handlerFunction.call();
-//             });
-//         });
-//     });
-// }
+        const service = new handlerWrapper.constructor();
+        handlerMethods[serviceClassName].functions.forEach((handler) => {
+            ipcMain.handle(handler as string, (event, arg) => {
+                const handlerFunction = service[handler];
+                return handlerFunction.call();
+            });
+        });
+    });
+}

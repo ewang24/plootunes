@@ -1,7 +1,6 @@
 import * as path from "path";
-import { BrowserWindow, ipcMain } from "electron";
-import { DbUtils } from "./services/db";
-// import { injectAllHandlers } from "./services/handlers/decorators/handler-util";
+import { BrowserWindow } from "electron";
+import { injectAllHandlers } from "./services/handlers/decorators/handler-util";
 
 export default class Main {
     static mainWindow: Electron.BrowserWindow | null;
@@ -20,12 +19,13 @@ export default class Main {
 
     private static onReady() {
 
-        // injectAllHandlers();
+        injectAllHandlers();
 
         Main.mainWindow = new BrowserWindow(
             {
                 width: 800, height: 600,
                 webPreferences: {
+                    //This file will point to preload.ts, which when transpiled becomes preload.js in the dist folder
                     preload: path.join(__dirname, './preload.js')
                 }
             }
@@ -35,11 +35,7 @@ export default class Main {
         Main.mainWindow!.on('closed', Main.onClose);
     }
 
-    static main(app: Electron.App, browserWindow: typeof BrowserWindow) {
-        // we pass the Electron.App object and the  
-        // Electron.BrowserWindow into this function 
-        // so this class has no dependencies. This 
-        // makes the code easier to write tests for 
+    static main(app: Electron.App, browserWindow: typeof BrowserWindow) { 
         Main.BrowserWindow = browserWindow;
         Main.application = app;
         Main.application.on('window-all-closed', Main.onWindowAllClosed);
