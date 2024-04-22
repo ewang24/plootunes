@@ -1,8 +1,10 @@
 {
   "compilerOptions": {
+    "jsx": "react",
     "module": "ESNext",
     "removeComments": false,
     "noImplicitAny": false,
+    "allowSyntheticDefaultImports": true,
     "baseUrl": "./src",
     "paths": {
       "*": [
@@ -12,6 +14,6 @@
     }
   },
   "include": [
-    "./src/lib/**/*.ts"
+    "./view/**/*.tsx"
   ]
 }

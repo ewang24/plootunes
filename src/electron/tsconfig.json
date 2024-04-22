@@ -1,9 +1,12 @@
 {
   "compilerOptions": {
+    "experimentalDecorators": true,
+    "target": "ES5",
     "outDir": "dist",
     "moduleResolution": "node",
     "module": "commonJS",
-    "removeComments": false,
+    "sourceMap": true,
+    "removeComments": true,
     "noImplicitAny": false,
     "baseUrl": "./src",
     "paths": {
@@ -15,5 +18,8 @@
   },
   "include": [
     "./**/*.ts"
+  ],
+  "exclude": [
+    "./dist"
   ]
 }
