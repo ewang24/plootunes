@@ -1,3 +1,5 @@
+This is my little dumb music player app
+
 to run:
 npm run start
     This will load up the react server
