@@ -2,6 +2,8 @@ import React, { ReactElement, useEffect, useState } from 'react';
 import { Album } from '../../../../global/dbEntities/album';
 import ViewContainer from '../global/viewContainer';
 import '../../styles/albums/albumsList.scss'
+import '../../assets/test.jpg'
+import '../../assets/up.jpg'
 
 const AlbumList = () => {
 
@@ -18,6 +20,18 @@ const AlbumList = () => {
     return <div className='albums-wrap-container'>
       {albums.map((album: Album, index) => {
         return <div key={index} className='child'>
+          <div className='child-image'>
+            {index % 2 === 0 &&
+              <img
+                src='../../assets/test.jpg'
+              />
+            }
+            {index % 2 !== 0 &&
+              <img
+                src='../../assets/up.jpg'
+              />
+            }
+          </div>
           {album.name}
         </div>
       })}

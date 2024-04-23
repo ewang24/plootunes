@@ -8,3 +8,4 @@ physicOctoRotaryPhone.iml
 dist/
 plootunes.db
 plootunes.sqlite
+*.code-workspace

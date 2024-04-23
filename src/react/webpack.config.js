@@ -44,6 +44,13 @@ module.exports = {
                     'css-loader',
                     'sass-loader'
                 ]
+            },
+            {
+                test: /\.(png|jpe?g|gif)$/i,
+                type: 'asset/resource',
+                generator: {
+                    filename: 'assets/[name][ext]'
+                }
             }
         ]
     },
