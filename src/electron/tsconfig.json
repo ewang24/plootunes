@@ -12,12 +12,14 @@
     "paths": {
       "*": [
         "*",
-        "./services"
+        "./services",
+        "../../global/*"
       ]
     }
   },
   "include": [
-    "./**/*.ts"
+    "./**/*.ts",
+     "../../global/**/*.ts",
   ],
   "exclude": [
     "./dist"

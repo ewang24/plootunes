@@ -9,11 +9,13 @@
     "paths": {
       "*": [
         "*",
-        "src/*"
+        "src/*",
+        "../../global/*"
       ]
     }
   },
   "include": [
-    "./view/**/*.tsx"
+    "./view/**/*.tsx",
+    "../../global/**/*.ts"
   ]
 }

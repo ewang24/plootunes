@@ -30,6 +30,7 @@ export class BaseHandlerService{
     }
 
     private shouldBind(methodName: string): boolean {
+        //Functions will need their 'this' context bound if they are not the constructor and they are annoted with @handler
         return methodName !== 'constructor' && (handlerMethods[this.className]?.functions.includes(methodName));
     }
 }

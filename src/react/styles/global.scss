@@ -1,0 +1,52 @@
+html, body{
+   height:100%;
+   width: 100%;
+   margin: 0;
+   overflow: hidden;
+}
+
+#root{
+   height:100%;
+   width: 100%;
+}
+
+.p-main-container{
+    display: flex;
+    justify-content: stretch;
+    align-items: stretch;
+    flex-direction: column;
+    background-color: #f0f0f0;
+    overflow-y: auto;
+    height: 100%;
+    width: 100%;
+    padding: 5px;
+}
+
+div.p-row{
+   display: flex;
+   justify-content: center;
+   align-items: center;
+}
+
+div.p-row-flex-start{
+   justify-content: flex-start;
+}
+
+div.p-row-flex-end{
+   justify-content: flex-end;
+}
+
+div.p-row-align-top{
+   align-items: flex-start;
+}
+
+div.p-row-align-end{
+   align-items: flex-end;
+}
+
+div.p-col{
+   display: flex;
+   flex-direction: column;
+   justify-content: flex-start;
+   align-items: center;
+}

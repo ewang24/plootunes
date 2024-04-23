@@ -1,0 +1,20 @@
+    div.albums-wrap-container {
+        display: flex;
+        flex-wrap: wrap;
+
+        div.child {
+            flex: 0 0 auto;
+            height: 100px;
+            width: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            border: 1px solid #000000;
+            border-radius: 5px;
+            margin: 5px;
+
+            &:hover{
+                background-color: aqua;
+            }
+        }
+    }

@@ -87,15 +87,15 @@ export class DbUtils {
     });
 
 
-    let insertedId: number = await this.insertArtist(db, 'test artist 1');
-    console.log(`awaited and inserted test artist: ${insertedId}`);
-    const albumId = await this.insertAlbum(db, 'test album 1', insertedId);
-    console.log(`awaited and inserted test test album: ${insertedId}`);
+    // let insertedId: number = await this.insertArtist(db, 'test artist 1');
+    // console.log(`awaited and inserted test artist: ${insertedId}`);
+    // const albumId = await this.insertAlbum(db, 'test album 1', insertedId);
+    // console.log(`awaited and inserted test test album: ${insertedId}`);
 
-    for (let i = 1; i <= 10; i++) {
-      const songId = await this.insertSong(db, `test song ${i}`, albumId);
-      console.log(`awaited and inserted test song ${i}: ${songId}`);
-    }
+    // for (let i = 1; i <= 10; i++) {
+    //   const songId = await this.insertSong(db, `test song ${i}`, albumId);
+    //   console.log(`awaited and inserted test song ${i}: ${songId}`);
+    // }
 
 
 
@@ -121,10 +121,17 @@ export class DbUtils {
     })
   }
 
-  private static insertAlbum(db: Database, name: string, artistId: number): Promise<number> {
+  static insertAlbum(): Promise<number> {
+    const db = new Database('P:/Documents/GitHub/psychic-octo-rotary-phone/plootunes.sqlite', OPEN_READWRITE, (err: Error | null) => {
+      if (err) {
+        return console.error(err.message);
+      }
+      console.log('Connected to the in-memory SQlite database.');
+    });
+
     return new Promise((resolve, reject) => {
       const insertArtist = `INSERT INTO album (name, artistId) values (?, ?)`;
-      db.run(insertArtist, [name, artistId], function (this: RunResult, err: Error | null) {
+      db.run(insertArtist, ['444', "2"], function (this: RunResult, err: Error | null) {
         if (err) {
           reject(err);
         }

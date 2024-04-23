@@ -7,5 +7,11 @@
     "electron": "tsc --project ./src/electron/tsconfig.json && electron ./src/electron/dist/app.js",
     "install:all": "cd ./src/electron && npm install && cd ../react && npm install"
   },
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "css-loader": "^7.1.1",
+    "sass": "^1.75.0",
+    "sass-loader": "^14.2.1",
+    "style-loader": "^4.0.0"
+  }
 }
