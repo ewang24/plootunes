@@ -1,5 +1,7 @@
 export interface Album{
     id: number,
-    albumId: number,
-    name: string
+    artistId: number,
+    name: string,
+    artistName?: string,
+    songCount?: string
 }

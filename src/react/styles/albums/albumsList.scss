@@ -1,3 +1,7 @@
+h1.album-list-title{
+    color: #494949
+}
+
 div.albums-wrap-container {
         display: flex;
         flex-wrap: wrap;
@@ -9,17 +13,27 @@ div.albums-wrap-container {
             justify-content: flex-start;
             margin: 5px;
             max-width: 100px;
+
+            &:hover{
+                div.child-image{
+                    box-shadow: 1px 1px 5px 1px #979797;
+                }
+                
+                cursor: pointer;
+
+                span.album-name {
+                    color: #71c294c4;
+                }
+                span.artist-name {
+                    color: #7fdaa6c4;
+                }
+            }
         }
 
         div.child-image{
             border: 1px solid #c9c9c9;
             border-radius: 5px;
-            overflow: hidden;
-
-            &:hover{
-                box-shadow: 1px 1px 5px 1px #979797;
-                cursor: pointer;
-            }
+            overflow: hidden;    
         }
 
         img {
@@ -27,5 +41,17 @@ div.albums-wrap-container {
             width: 100px;
             background-size: 'cover';
             background-position: 'center';
+        }
+
+        span.album-name{
+            color: #494949;
+            font-weight: 600;
+            font-size: 16px
+        }
+
+        span.artist-name{
+            color: #6b6b6b;
+            font-weight: 600;
+            font-size: 14px
         }
     }

@@ -1,13 +1,15 @@
 div.p-left-nav-container {
     border-right: 1px solid #c9c9c9;
+    border-radius: 3px;
     padding: 10px;
     box-shadow: 1px 1px 4px 1px #979797;
     margin-right: 10px;
+    margin-top: 3px;
 
     div.link-container {
         a {
             color: #494949;
-            font-weight: 600;
+            font-weight: 500;
             text-decoration: none;
             font-size: 25px;
     

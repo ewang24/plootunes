@@ -2,6 +2,7 @@ import { Database, OPEN_READONLY, Statement } from "sqlite3";
 import { BaseHandlerService } from "../baseHandlerService";
 import { handler } from "../decorators/handlerDecorator";
 import { Album } from "../../../../../global/dbEntities/album";
+import { Artist } from "../../../../../global/dbEntities/artist";
 
 export class AlbumService extends BaseHandlerService {
   constructor() {
@@ -17,18 +18,34 @@ export class AlbumService extends BaseHandlerService {
       console.log('Connected to the on-disk SQlite database.');
     });
 
-    const query = `
+    const albumQuery = `
           SELECT * FROM album 
         `
 
-    return this.fetch(db, query);
+    const artistQuery = `
+        SELECT * FROM artist 
+    `
+
+    const [albums, artists]: [Album[], Artist[]] = await Promise.all([this.fetch<Album>(db, albumQuery), this.fetch<Artist>(db, artistQuery)]);
+
+    const artistMap: {[key: number]: string} = {};
+    for (const album of albums) {
+        if(!artistMap[album.artistId]) {
+          const artist = artists.find((value) => value.id === album.artistId);
+          artistMap[album.artistId] = artist? artist.name: 'unknown';
+        }
+
+        album.artistName = artistMap[album.artistId];
+    }
+
+    return albums;
   }
 
-  private fetch(db: Database, query: string): Promise<Album[]> {
+  private fetch<T>(db: Database, query: string): Promise<T[]> {
     return new Promise((resolve, reject) => {
       db.all(
         query,
-        function (this: Statement, err: Error | null, rows: Album[]) {
+        function (this: Statement, err: Error | null, rows: T[]) {
           if (err) {
             reject(err);
           }

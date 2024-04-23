@@ -32,7 +32,8 @@ const AlbumList = () => {
               />
             }
           </div>
-          {album.name}
+          <span className='album-name'>{album.name}</span>
+          <span className='artist-name'>{`${album.artistName}`}</span>
         </div>
       })}
     </div>
@@ -40,7 +41,7 @@ const AlbumList = () => {
 
   return (
     <ViewContainer>
-      <h1>Your Albums</h1>
+      <h1 className = 'album-list-title'>Your Albums</h1>
       {albums && albums.length > 0 &&
         renderAlbumList()
       }
