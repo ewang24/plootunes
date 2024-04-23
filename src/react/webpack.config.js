@@ -49,7 +49,14 @@ module.exports = {
                 test: /\.(png|jpe?g|gif)$/i,
                 type: 'asset/resource',
                 generator: {
-                    filename: 'assets/[name][ext]'
+                    filename: 'assets/img/[name][ext]'
+                }
+            },
+            {
+                test:/\.(woff|woff2|eot|ttf|otf)$/i,
+                type: 'asset/resource',
+                generator: {
+                    filename: 'assets/font/[name][ext]'
                 }
             }
         ]

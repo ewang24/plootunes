@@ -1,8 +1,14 @@
+@font-face {
+   font-family: 'Roboto';
+   src: url('../assets/font/roboto/Roboto-Regular.ttf') format('truetype');
+ }
+
 html, body{
    height:100%;
    width: 100%;
    margin: 0;
    overflow: hidden;
+   font-family: 'Roboto'
 }
 
 #root{
@@ -22,9 +28,27 @@ html, body{
     padding: 10px;
 }
 
+.p-main-container-row{
+   display: flex;
+   justify-content: stretch;
+   align-items: stretch;
+   background-color: #f0f0f0;
+   overflow-y: auto;
+   height: 100%;
+   width: 100%;
+   padding: 10px;
+}
+
 div.p-row{
    display: flex;
    justify-content: center;
+   align-items: center;
+}
+
+div.p-col{
+   display: flex;
+   flex-direction: column;
+   justify-content: flex-start;
    align-items: center;
 }
 
@@ -44,9 +68,7 @@ div.p-row-align-end{
    align-items: flex-end;
 }
 
-div.p-col{
-   display: flex;
-   flex-direction: column;
-   justify-content: flex-start;
-   align-items: center;
+div.p-row-align-stretch{
+   align-items: stretch;
 }
+

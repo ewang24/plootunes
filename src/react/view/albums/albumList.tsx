@@ -2,8 +2,8 @@ import React, { ReactElement, useEffect, useState } from 'react';
 import { Album } from '../../../../global/dbEntities/album';
 import ViewContainer from '../global/viewContainer';
 import '../../styles/albums/albumsList.scss'
-import '../../assets/test.jpg'
-import '../../assets/up.jpg'
+import '../../assets/img/test.jpg'
+import '../../assets/img/up.jpg'
 
 const AlbumList = () => {
 
@@ -23,12 +23,12 @@ const AlbumList = () => {
           <div className='child-image'>
             {index % 2 === 0 &&
               <img
-                src='../../assets/test.jpg'
+                src='../../assets/img/test.jpg'
               />
             }
             {index % 2 !== 0 &&
               <img
-                src='../../assets/up.jpg'
+                src='../../assets/img/up.jpg'
               />
             }
           </div>

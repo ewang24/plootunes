@@ -6,11 +6,7 @@ import ViewContainer from './global/viewContainer';
 import AppRouter from './navigation/router';
 
 const Home = () => {
-  return (
-    <ViewContainer>
-      <AppRouter/>
-    </ViewContainer>
-  );
+  return <AppRouter/>;
 };
 
 export default Home;
