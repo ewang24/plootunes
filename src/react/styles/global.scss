@@ -28,16 +28,7 @@ html, body{
     padding: 10px;
 }
 
-.p-main-container-row{
-   display: flex;
-   justify-content: stretch;
-   align-items: stretch;
-   background-color: #f0f0f0;
-   overflow-y: auto;
-   height: 100%;
-   width: 100%;
-   padding: 10px;
-}
+
 
 div.p-row{
    display: flex;
@@ -58,6 +49,10 @@ div.p-row-flex-start{
 
 div.p-row-flex-end{
    justify-content: flex-end;
+}
+
+div.p-row-space-between{
+   justify-content: space-between;
 }
 
 div.p-row-align-top{

@@ -40,7 +40,7 @@ const AlbumList = () => {
 
   return (
     <ViewContainer>
-      <h1>Album List</h1>
+      <h1>Your Albums</h1>
       {albums && albums.length > 0 &&
         renderAlbumList()
       }

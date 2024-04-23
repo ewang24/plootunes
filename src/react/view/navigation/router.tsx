@@ -4,6 +4,7 @@ import AlbumList from '../albums/albumList';
 import SongsList from '../songs/songs';
 import LeftNav from './leftNav';
 import Landing from '../landing/landing';
+import '../../styles/navigation/router.scss'
 
 interface AppRoutes {
     path: string,
@@ -24,7 +25,7 @@ const AppRouter = () => {
     ];
 
     return <MemoryRouter>
-        <div className='p-main-container-row'>
+        <div className='p-router-row'>
             <div className='p-row p-row-align-stretch'>
                 <LeftNav items = {routes}/>
                 <Routes>
