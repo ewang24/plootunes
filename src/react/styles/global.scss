@@ -29,7 +29,19 @@ html, body{
     padding: 10px;
 }
 
-
+.p-overlay-view{
+   position: relative;
+   display: flex;
+   justify-content: stretch;
+   align-items: stretch;
+   flex-direction: column;
+   background-color: #f0f0f0;
+   overflow-y: auto;
+   height: 100%;
+   width: 100%;
+   padding: 10px;
+   z-index: 1;
+}
 
 div.p-row{
    display: flex;

@@ -22,9 +22,9 @@ export function injectAllHandlers() {
         const service = new handlerWrapper.constructor();
         handlerMethods[serviceClassName].functions.forEach((handler) => {
             console.log(`creating handler for: ${handler}`)
-            ipcMain.handle(handler as string, (event, arg) => {
+            ipcMain.handle(handler as string, (event, ...args) => {
                 const handlerFunction = service[handler];
-                return handlerFunction.call();
+                return handlerFunction.call(service, ...args);
             });
         });
     });
