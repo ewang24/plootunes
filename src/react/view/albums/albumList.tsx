@@ -53,13 +53,12 @@ const AlbumList = () => {
         {albums && albums.length > 0 &&
           renderAlbumList()
         }
-
       </ViewContainer>
-      <OverlayView>
-        {
-          selectedAlbum && <SongsForAlbum album={selectedAlbum} closeSongsForAlbumView={closeSongsForAlbumView} />
-        }
-      </OverlayView>
+      {
+        selectedAlbum && <OverlayView>
+          <SongsForAlbum album={selectedAlbum} closeSongsForAlbumView={closeSongsForAlbumView} />
+        </OverlayView>
+      }
     </>
   );
 };

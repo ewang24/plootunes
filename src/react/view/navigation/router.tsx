@@ -27,13 +27,15 @@ const AppRouter = () => {
     return <MemoryRouter>
         <div className='p-router-row'>
             <div className='p-row p-row-align-stretch'>
-                <LeftNav items = {routes}/>
-                <Routes>
-                    <Route path="/" element={<Landing />} />
-                    {routes.map(({ path, element }) => (
-                        <Route key={path} path={path} element={element} />
-                    ))}
-                </Routes>
+                <LeftNav items={routes} />
+                <div className='p-router-routes-container'>
+                    <Routes>
+                        <Route path="/" element={<Landing />} />
+                        {routes.map(({ path, element }) => (
+                            <Route key={path} path={path} element={element} />
+                        ))}
+                    </Routes>
+                </div>
             </div>
         </div>
     </MemoryRouter>

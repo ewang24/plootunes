@@ -1,5 +1,5 @@
 .p-router-row{
-    position: aboslute;
+    position: relative;
     display: flex;
     justify-content: stretch;
     align-items: stretch;
@@ -8,4 +8,9 @@
     height: 100%;
     width: 100%;
     padding: 0px;
+ }
+
+ .p-router-routes-container{
+    display: flex;
+    position: relative;
  }
