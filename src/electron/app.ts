@@ -3,8 +3,10 @@ import { app, BrowserWindow } from 'electron';
 import Main from './main';
 
 async function init(){
-    const propertiesFile = await fs.readFile('../../properties.json', 'utf8');
+    const propertiesFile = fs.readFileSync('../../properties.json');
     const properties = JSON.parse(propertiesFile);
     process.env.DB_PATH = `${properties["DB_PATH"]}/plootunes.sqlite`;
     Main.main(app, BrowserWindow);
 }
+
+init();
