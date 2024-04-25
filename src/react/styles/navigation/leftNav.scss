@@ -1,20 +1,22 @@
+@import '../constants';
+
 div.p-left-nav-container {
-    border-right: 1px solid #c9c9c9;
+    border-right: $border-style;
     border-radius: 3px;
     padding: 10px;
-    box-shadow: 1px 1px 4px 1px #979797;
+    box-shadow: 1px 1px 4px 1px $box-shadow-color;
     margin-right: 10px;
     margin-top: 3px;
 
     div.link-container {
         a {
-            color: #494949;
+            color: $text-primary;
             font-weight: 500;
             text-decoration: none;
             font-size: 25px;
     
             &:hover{
-                color: #71c294c4;
+                color: $accent-green;
             }
         }  
     }
@@ -24,7 +26,7 @@ div.p-left-nav-container {
             height: 50px;
             width: 50px;
             border-radius: 25px;
-            border: 1px solid #71c294c4;
+            border: 1px solid $accent-green;
             overflow: hidden;
 
             img{
