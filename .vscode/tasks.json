@@ -1,0 +1,14 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "build:sm",
+        "type": "shell",
+        "command": "cmd",
+        "args": [
+          "/c",
+          "cd ./src/electron && npx gulp build"
+        ]
+      }
+    ]
+  }

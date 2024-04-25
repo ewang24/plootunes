@@ -1,10 +1,8 @@
 .idea/
 node_modules/
 physicOctoRotaryPhone.iml
-.vscode/launch.json
 .editorconfig
 .angular/
-.vscode/
 dist/
 plootunes.db
 plootunes.sqlite
