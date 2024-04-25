@@ -11,7 +11,7 @@ export class AlbumService extends BaseHandlerService {
 
   @handler
   async fetchAlbums(): Promise<Album[]> {
-    const db = new Database('P:/Documents/GitHub/psychic-octo-rotary-phone/plootunes.sqlite', OPEN_READONLY, (err: Error | null) => {
+    const db = new Database(process.env.DB_PATH, OPEN_READONLY, (err: Error | null) => {
       if (err) {
         return console.error(err.message);
       }

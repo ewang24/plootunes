@@ -7,3 +7,5 @@ dist/
 plootunes.db
 plootunes.sqlite
 *.code-workspace
+properties.json
+.vscode/extensions.json

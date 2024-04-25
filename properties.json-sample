@@ -1,0 +1,3 @@
+{
+    "DB_PATH": "C:/fake/path" //Path to the directory where the DB lives, not to the DB file itself
+}
