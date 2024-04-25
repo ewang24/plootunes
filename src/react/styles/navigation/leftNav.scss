@@ -10,6 +10,8 @@ div.p-left-nav-container {
 
     div.link-container {
         a {
+            padding-right: 10px;
+            padding-left: 10px;
             color: $text-primary;
             font-weight: 500;
             text-decoration: none;
@@ -17,6 +19,9 @@ div.p-left-nav-container {
     
             &:hover{
                 color: $accent-green;
+                border: $border-style;
+                background-color: $highlight-grey;
+                border-radius: 15px;
             }
         }  
     }
