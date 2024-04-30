@@ -24,7 +24,8 @@ export class TableUtil {
 
                     db.run(schema, (err: Error | null) => {
                         if (err) {
-                          return console.error(err.message);
+                          console.error(err.message);
+                          return;
                         }
                         console.log(`Processed schema at ${filePath} table.`);
                       });
