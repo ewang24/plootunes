@@ -48,6 +48,7 @@ const AlbumList = () => {
 
   return (
     <>
+      {/* This is the album list */}
       <ViewContainer>
         <h1 className='album-list-title'>Your Albums</h1>
         {albums && albums.length > 0 &&

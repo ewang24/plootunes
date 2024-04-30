@@ -64,7 +64,10 @@ module.exports = {
     plugins: [
         new HtmlWebpackPlugin({
             template: './index.html',
-            fileName: 'index.html'
+            fileName: 'index.html',
+            minify: {
+                removeComments: false
+            }
         })
     ]
 };
