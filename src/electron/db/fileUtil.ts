@@ -50,6 +50,9 @@ export class FileUtil {
     }
 }
 
+/*
+    This semaphore is needed otherwise we will read too many files for node to handle.
+*/
 class Semaphore {
     private concurrency: number;
     private tasks: (() => void)[];
