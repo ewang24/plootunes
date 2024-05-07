@@ -6,7 +6,8 @@ import { DbUtil } from "./dbUtil";
 export class TableUtil {
 
     static async createAllTables(db: Database) {
-        const schemaDirectory = "./db/schemas";
+        const schemaDirectory = "./db/schemas/tables";
+
         fs.readdir(schemaDirectory, (err, files) => {
             if (err) {
                 console.error(`error reading schema for files at ${schemaDirectory}: ${err}`);
