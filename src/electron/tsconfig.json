@@ -14,11 +14,15 @@
         "*",
         "./services",
         "../../global/*"
-      ]
+      ],
+      "typeRoots": [
+        "./node_modules/@types"
+    ]
     }
   },
   "include": [
     "./**/*.ts",
+    "./**/*.js",
      "../../global/**/*.ts",
   ],
   "exclude": [
