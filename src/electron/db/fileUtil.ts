@@ -21,11 +21,12 @@ export class FileUtil {
           });
         
         await this.processLibrary(libraryPath, output, db);
-        console.log(output, output.length);
+        console.log('processed, preparing to insert');
+        console.log('inserting');
+        await DbUtil.execute(db, `BEGIN TRANSACTION; ${output.join("\n")} COMMIT;`);
     }
 
     private static async processLibrary(directoryPath: string, output: string[], db: Database): Promise<void> {
-        output.push(directoryPath);
         let files = await fs.promises.readdir(directoryPath);
         const directories = [];
 
@@ -48,17 +49,16 @@ export class FileUtil {
 
     private static async proccessAudioFile(filePath: string, output: string[], db: Database): Promise<void> {
         if(path.extname(filePath) === '.mp3'){
+            console.log('parsing md');
             let metadata = await mm.parseFile(filePath, { duration: true });
             const insertStatement = `
                 INSERT INTO jobData (albumName, artistName, songName, songPosition) values (
                     '${this.processString(metadata.common.album)}', '${this.processString(metadata.common.artist)}', '${this.processString(metadata.common.title)}', '${metadata.common.track}'
-                )
+                );
                 `
-
-            console.log(insertStatement)
             metadata = null;
-            await DbUtil.insert(db, insertStatement);
-            output.push(filePath);    
+            // await DbUtil.insert(db, insertStatement);
+            output.push(insertStatement);    
         }
     }
 
