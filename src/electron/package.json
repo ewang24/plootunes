@@ -8,7 +8,8 @@
     "build": "",
     "electron": "tsc --project ./src/electron/tsconfig.json && electron ./src/electron/dist/app.js",
     "createTables": "ts-node ./utilityRunners/tableUtilRunner.ts",
-    "scanFiles": "ts-node ./utilityRunners/scanFilesRunner.ts"
+    "scanFiles": "ts-node ./utilityRunners/scanFilesRunner.ts",
+    "clearTables": "ts-node ./utilityRunners/clearTablesRunner.ts"
   },
   "directories": {
     "buildResources": "dist",

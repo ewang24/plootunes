@@ -49,11 +49,16 @@ export class FileUtil {
 
     private static async proccessAudioFile(filePath: string, output: string[], db: Database): Promise<void> {
         if(path.extname(filePath) === '.mp3'){
-            console.log('parsing md');
             let metadata = await mm.parseFile(filePath, { duration: true });
+
+            const albumName = this.processString(metadata.common.album);
+            const artistName = this.processString(metadata.common.artist); 
+            const songName = this.processString(metadata.common.title);
+            const songPosition = metadata.common.track.no;
+            
             const insertStatement = `
                 INSERT INTO jobData (albumName, artistName, songName, songPosition) values (
-                    '${this.processString(metadata.common.album)}', '${this.processString(metadata.common.artist)}', '${this.processString(metadata.common.title)}', '${metadata.common.track}'
+                    '${albumName}', '${artistName}', '${songName}', '${songPosition}'
                 );
                 `
             metadata = null;
