@@ -14,7 +14,7 @@ export class FileUtil {
         //TODO: replace with the path from the config table
         const libraryPath = 'P:/Music/music/rotation';
         const output: string[] = [];
-        const db = new Database('P:/Documents/GitHub/psychic-octo-rotary-phone/plootunes.sqlite', OPEN_CREATE | OPEN_READWRITE, (err: Error | null) => {
+        const db = new Database(`${process.env.DB_PATH}/plootunes.sqlite`, OPEN_CREATE | OPEN_READWRITE, (err: Error | null) => {
             if (err) {
               return console.error(err.message);
             }
