@@ -1,32 +1,53 @@
 const fs = require('fs');
 const path = require('path');
 const mm = require('music-metadata');
-import { Data } from "electron";
 import { Database, OPEN_CREATE, OPEN_READWRITE } from "sqlite3";
 import { DbUtil } from "./dbUtil";
 
-export class FileUtil {
-    static createJob(){
 
+const SupportedFileTypesList = ['mp3', 'm4a', 'wav', 'flac']
+export type SupportedFileTypes = typeof SupportedFileTypesList[number];
+export const fileReadingTempTable = 'temp_read_table';
+
+export class FileUtil {
+    static isSupportedFileType(fileType: unknown): fileType is SupportedFileTypes {
+        return SupportedFileTypesList.indexOf(fileType as SupportedFileTypes) >= 0;
     }
+
 
     static async scanFiles(): Promise<void> {
         //TODO: replace with the path from the config table
         const libraryPath = 'P:/Music/music/rotation';
-        const output: string[] = [];
         const db = new Database(`${process.env.DB_PATH}/plootunes.sqlite`, OPEN_CREATE | OPEN_READWRITE, (err: Error | null) => {
             if (err) {
               return console.error(err.message);
             }
           });
         
-        await this.processLibrary(libraryPath, output, db);
+        const insertStatements: string[] = [];
+        console.log('starting library processing');
+        await this.processLibrary(libraryPath, insertStatements);
         console.log('processed, preparing to insert');
-        console.log('inserting');
-        await DbUtil.execute(db, `BEGIN TRANSACTION; ${output.join("\n")} COMMIT;`);
+
+        const transaction = `
+            CREATE TEMPORARY TABLE ${fileReadingTempTable} (
+                id INTEGER PRIMARY KEY,
+                albumName TEXT,
+                albumYear INTEGER,
+                artistName TEXT,
+                genre TEXT,
+                songName TEXT,
+                songLength INTEGER,
+                songPosition INTEGER
+            );
+
+            BEGIN TRANSACTION; ${insertStatements.join("\n")} COMMIT;
+        `
+
+        await DbUtil.execute(db, transaction);
     }
 
-    private static async processLibrary(directoryPath: string, output: string[], db: Database): Promise<void> {
+    private static async processLibrary(directoryPath: string, insertStatements: string[]): Promise<void> {
         let files = await fs.promises.readdir(directoryPath);
         const directories = [];
 
@@ -37,33 +58,32 @@ export class FileUtil {
                 directories.push(filePath);
             }
             else{
-                await this.proccessAudioFile(filePath, output, db)
+                await this.proccessAudioFile(filePath, insertStatements)
             }
         }
         files = null;
 
         for(let dir of directories){
-            await this.processLibrary(dir, output, db);
+            await this.processLibrary(dir, insertStatements);
         }
     }
 
-    private static async proccessAudioFile(filePath: string, output: string[], db: Database): Promise<void> {
-        if(path.extname(filePath) === '.mp3'){
+    private static async proccessAudioFile(filePath: string, insertStatements: string[]): Promise<void> {
+        if(this.isSupportedFileType(path.extname(filePath))){
             let metadata = await mm.parseFile(filePath, { duration: true });
 
             const albumName = this.processString(metadata.common.album);
             const artistName = this.processString(metadata.common.artist); 
             const songName = this.processString(metadata.common.title);
             const songPosition = metadata.common.track.no;
-            
+
             const insertStatement = `
-                INSERT INTO jobData (albumName, artistName, songName, songPosition) values (
+                INSERT INTO ${fileReadingTempTable} (albumName, artistName, songName, songPosition) values (
                     '${albumName}', '${artistName}', '${songName}', '${songPosition}'
                 );
-                `
+            `
             metadata = null;
-            // await DbUtil.insert(db, insertStatement);
-            output.push(insertStatement);    
+            insertStatements.push(insertStatement);    
         }
     }
 
@@ -71,10 +91,12 @@ export class FileUtil {
         if(!str){
             return null;
         }
+
+        //Escape single quotes so we don't break the insert
         const quoteEscaped = str.replace(/['"]/g, match => {
-            // Use a conditional (ternary) operator to escape the matched character
             return match === "'" ? "''" : '\\"';
         })
         return quoteEscaped;
     }
+
 }
