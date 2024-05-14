@@ -21,17 +21,17 @@ export class FileUtil {
         const libraryPath = 'P:/Music/music/rotation';
         const db = new Database(`${process.env.DB_PATH}`, OPEN_CREATE | OPEN_READWRITE, (err: Error | null) => {
             if (err) {
-              return console.error(err.message);
+                return console.error(err.message);
             }
-          });
-        
+        });
+
         const insertStatements: string[] = [];
         console.log('starting library processing');
         await this.processLibrary(libraryPath, insertStatements);
         console.log('processed, preparing to insert');
 
         const transaction = `
-            CREATE TEMPORARY TABLE ${fileReadingTempTable} (
+            CREATE TABLE ${fileReadingTempTable} (
                 id INTEGER PRIMARY KEY,
                 albumName TEXT,
                 albumYear INTEGER,
@@ -46,68 +46,86 @@ export class FileUtil {
         `
 
         console.log(transaction);
-        await DbUtil.execute(db, transaction);   
-        await this.processGenres(db);
+        await DbUtil.execute(db, transaction);
+        await this.insertDistinctIntoTable('genre', 'genre', 'name', db);
+        await this.insertDistinctIntoTable('artist', 'artistName', 'name', db);
     }
 
-    private static async processGenres(db: Database): Promise<void>{
-        const genreTransaction = `
-            INSERT INTO genre (id, name)
-            SELECT NULL, temp.genre
+    private static async insertDistinctIntoTable(
+        targetTableName: string,
+        originColumnName: string,
+        targetColumnName: string,
+        db: Database): Promise<void> {
+
+        //Insert into the given target table.
+        //Uses the temp table and a left join to find insert any records where the origin column in the temp table does not match the target column in the target table
+        const insertTransaction = `
+            INSERT INTO ${targetTableName} (id, ${targetColumnName})
+            SELECT NULL, temp.${originColumnName}
             FROM (
-                SELECT DISTINCT genre
+                SELECT DISTINCT ${originColumnName}
                 from ${fileReadingTempTable}
             ) AS temp
-            LEFT JOIN genre AS g ON temp.genre = g.name
-            WHERE g.id IS NULL and temp.genre IS NOT NULL
+            LEFT JOIN ${targetTableName} AS targetTable ON temp.${originColumnName} = targetTable.${targetColumnName}
+            WHERE targetTable.id IS NULL and temp.${originColumnName} IS NOT NULL
         `
-        return DbUtil.execute(db, genreTransaction);
+        return DbUtil.execute(db, insertTransaction);
     }
+
+    //album statement
+    //     insert into album (id, name, artistId)
+    // select null, temp.albumName, temp.albumId
+    // from (
+    //     select distinct t.albumName, art.id as albumId from temp_read_table as t inner join artist art on t.artistName = art.name
+    // ) as temp
+    // left join album as alb on temp.albumName = alb.name
+    // where alb.id is null;
+
 
     private static async processLibrary(directoryPath: string, insertStatements: string[]): Promise<void> {
         let files = await fs.promises.readdir(directoryPath);
         const directories = [];
 
-        for(let file of files){    
+        for (let file of files) {
             const filePath = path.join(directoryPath, file);
             const stats = await fs.promises.stat(filePath);
             if (stats.isDirectory()) {
                 directories.push(filePath);
             }
-            else{
+            else {
                 await this.proccessAudioFile(filePath, insertStatements)
             }
         }
         files = null;
 
-        for(let dir of directories){
+        for (let dir of directories) {
             await this.processLibrary(dir, insertStatements);
         }
     }
 
     private static async proccessAudioFile(filePath: string, insertStatements: string[]): Promise<void> {
-        if(this.isSupportedFileType(path.extname(filePath))){
+        if (this.isSupportedFileType(path.extname(filePath))) {
             let metadata = await mm.parseFile(filePath, { duration: true });
 
-            
+
             const albumName = this.processString(metadata.common.album);
-            const artistName = this.processString(metadata.common.artist); 
+            const artistName = this.processString(metadata.common.artist);
             const songName = this.processString(metadata.common.title);
             const songPosition = metadata.common.track.no;
             const genre = metadata.common.genre;
-    
+
             const insertStatement = `
                 INSERT INTO ${fileReadingTempTable} (albumName, artistName, songName, songPosition, genre) values (
                     '${albumName}', '${artistName}', '${songName}', '${songPosition}', '${genre}'
                 );
             `
             metadata = null;
-            insertStatements.push(insertStatement);    
+            insertStatements.push(insertStatement);
         }
     }
 
     private static processString(str: string) {
-        if(!str){
+        if (!str) {
             return null;
         }
 
