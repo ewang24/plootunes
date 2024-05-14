@@ -3,7 +3,7 @@ import { TableUtil } from "../db/tableUtil";
 import { PropertiesUtil } from "../util/propertiesUtil";
 const fs = require('fs');
 
-fs.unlink(`${PropertiesUtil.initProps()}/plootunes.sqlite`, (err) => {
+fs.unlink(`${PropertiesUtil.initProps()}`, (err) => {
     if (err) {
         console.error('Error deleting file:', err);
         return;
@@ -11,7 +11,7 @@ fs.unlink(`${PropertiesUtil.initProps()}/plootunes.sqlite`, (err) => {
     console.log('db file deleted. Preparing to recreate db and tables...');
 });
 
-const db = new Database(`${PropertiesUtil.initProps()}/plootunes.sqlite`, OPEN_CREATE | OPEN_READWRITE, (err: Error | null) => {
+const db = new Database(`${PropertiesUtil.initProps()}`, OPEN_CREATE | OPEN_READWRITE, (err: Error | null) => {
     if (err) {
       return console.error(err.message);
     }

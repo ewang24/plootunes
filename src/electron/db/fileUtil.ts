@@ -10,15 +10,16 @@ export type SupportedFileTypes = typeof SupportedFileTypesList[number];
 export const fileReadingTempTable = 'temp_read_table';
 
 export class FileUtil {
-    static isSupportedFileType(fileType: unknown): fileType is SupportedFileTypes {
-        return SupportedFileTypesList.indexOf(fileType as SupportedFileTypes) >= 0;
+    static isSupportedFileType(fileType: string): fileType is SupportedFileTypes {
+        let val = fileType.replace(/\./g, '');
+        return SupportedFileTypesList.indexOf(val as SupportedFileTypes) >= 0;
     }
 
 
     static async scanFiles(): Promise<void> {
         //TODO: replace with the path from the config table
         const libraryPath = 'P:/Music/music/rotation';
-        const db = new Database(`${process.env.DB_PATH}/plootunes.sqlite`, OPEN_CREATE | OPEN_READWRITE, (err: Error | null) => {
+        const db = new Database(`${process.env.DB_PATH}`, OPEN_CREATE | OPEN_READWRITE, (err: Error | null) => {
             if (err) {
               return console.error(err.message);
             }
@@ -44,7 +45,23 @@ export class FileUtil {
             BEGIN TRANSACTION; ${insertStatements.join("\n")} COMMIT;
         `
 
-        await DbUtil.execute(db, transaction);
+        console.log(transaction);
+        await DbUtil.execute(db, transaction);   
+        await this.processGenres(db);
+    }
+
+    private static async processGenres(db: Database): Promise<void>{
+        const genreTransaction = `
+            INSERT INTO genre (id, name)
+            SELECT NULL, temp.genre
+            FROM (
+                SELECT DISTINCT genre
+                from ${fileReadingTempTable}
+            ) AS temp
+            LEFT JOIN genre AS g ON temp.genre = g.name
+            WHERE g.id IS NULL and temp.genre IS NOT NULL
+        `
+        return DbUtil.execute(db, genreTransaction);
     }
 
     private static async processLibrary(directoryPath: string, insertStatements: string[]): Promise<void> {
@@ -72,14 +89,16 @@ export class FileUtil {
         if(this.isSupportedFileType(path.extname(filePath))){
             let metadata = await mm.parseFile(filePath, { duration: true });
 
+            
             const albumName = this.processString(metadata.common.album);
             const artistName = this.processString(metadata.common.artist); 
             const songName = this.processString(metadata.common.title);
             const songPosition = metadata.common.track.no;
-
+            const genre = metadata.common.genre;
+    
             const insertStatement = `
-                INSERT INTO ${fileReadingTempTable} (albumName, artistName, songName, songPosition) values (
-                    '${albumName}', '${artistName}', '${songName}', '${songPosition}'
+                INSERT INTO ${fileReadingTempTable} (albumName, artistName, songName, songPosition, genre) values (
+                    '${albumName}', '${artistName}', '${songName}', '${songPosition}', '${genre}'
                 );
             `
             metadata = null;
