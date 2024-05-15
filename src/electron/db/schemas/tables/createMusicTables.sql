@@ -8,7 +8,8 @@ CREATE TABLE IF NOT EXISTS genre (
 --Create artist table
 CREATE TABLE IF NOT EXISTS artist (
     id INTEGER PRIMARY KEY,
-    name TEXT NOT NULL
+    name TEXT NOT NULL,
+    biography TEXT NULL
 );
 
 --Create album table
@@ -25,7 +26,7 @@ CREATE TABLE IF NOT EXISTS song (
     name TEXT NULL,
     songPosition INTEGER NULL,
     songLength INTEGER NULL,
-    albumId INTEGER NULL,
     songFilePath TEXT NOT NULL,
+    albumId INTEGER NULL,
     FOREIGN KEY (albumId) REFERENCES album(id)
 );
