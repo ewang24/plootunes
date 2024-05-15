@@ -25,7 +25,7 @@ async function run() {
     }
   }
 
-  console.log(`reparing to ${re}create db and tables...`);
+  console.log(`preparing to ${re}create db and tables...`);
 
   const db = new Database(`${PropertiesUtil.initProps()}`, OPEN_CREATE | OPEN_READWRITE, (err: Error | null) => {
     if (err) {
@@ -33,7 +33,7 @@ async function run() {
     }
   });
 
-  console.log('db created');
+  console.log(`db ${re}created`);
 
   TableUtil.createAllTables(db).then(() => {
     console.log('Done');

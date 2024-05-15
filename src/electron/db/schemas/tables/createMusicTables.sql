@@ -22,7 +22,10 @@ CREATE TABLE IF NOT EXISTS artist (
 --Create song table
 CREATE TABLE IF NOT EXISTS song (
     id INTEGER PRIMARY KEY,
-    name TEXT NOT NULL,
-    albumId INTEGER NOT NULL,
+    name TEXT NULL,
+    songPosition INTEGER NULL,
+    songLength INTEGER NULL,
+    albumId INTEGER NULL,
+    songFilePath TEXT NOT NULL,
     FOREIGN KEY (albumId) REFERENCES album(id)
 );

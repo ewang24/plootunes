@@ -39,7 +39,8 @@ export class FileUtil {
                 genre TEXT,
                 songName TEXT,
                 songLength INTEGER,
-                songPosition INTEGER
+                songPosition INTEGER,
+                songFilePath TEXT
             );
 
             BEGIN TRANSACTION; ${insertStatements.join("\n")} COMMIT;
@@ -49,6 +50,8 @@ export class FileUtil {
         await DbUtil.execute(db, transaction);
         await this.insertDistinctIntoTable('genre', 'genre', 'name', db);
         await this.insertDistinctIntoTable('artist', 'artistName', 'name', db);
+        await this.insertAlbums(db);
+        await this.insertSongs(db);
     }
 
     private static async insertDistinctIntoTable(
@@ -69,18 +72,42 @@ export class FileUtil {
             LEFT JOIN ${targetTableName} AS targetTable ON temp.${originColumnName} = targetTable.${targetColumnName}
             WHERE targetTable.id IS NULL and temp.${originColumnName} IS NOT NULL
         `
+        console.log(insertTransaction);
         return DbUtil.execute(db, insertTransaction);
     }
 
-    //album statement
-    //     insert into album (id, name, artistId)
-    // select null, temp.albumName, temp.albumId
-    // from (
-    //     select distinct t.albumName, art.id as albumId from temp_read_table as t inner join artist art on t.artistName = art.name
-    // ) as temp
-    // left join album as alb on temp.albumName = alb.name
-    // where alb.id is null;
 
+    private static async insertAlbums(db: Database): Promise<void> {
+        const insertTransaction = `
+            insert into album (id, name, artistId)
+            select null, temp.albumName, temp.artistId
+            from (
+                select distinct t.albumName, art.id as artistId from ${fileReadingTempTable} as t inner join artist art on t.artistName = art.name
+                where t.albumName IS NOT NULL
+            ) as temp
+            left join album as alb on temp.albumName = alb.name
+            where alb.id is null;
+        `;
+        
+        console.log(insertTransaction);
+        return DbUtil.execute(db, insertTransaction);
+    }
+
+    private static async insertSongs(db: Database): Promise<void> {
+        const insertTransaction = `
+        insert into song (id, name, albumId, songPosition, songLength, songFilePath)
+        select null, temp.songName, temp.albumId, temp.songPosition, temp.songLength, temp.songFilePath
+        from (
+            select distinct t.songName, alb.id as albumId, t.songPosition, t.songLength, t.songFilePath
+            from ${fileReadingTempTable} as t inner join album alb on t.albumName = alb.name
+        ) as temp
+        left join song as so on temp.songName = so.name
+        where so.id is null;
+        `;
+        
+        console.log(insertTransaction);
+        return DbUtil.execute(db, insertTransaction);
+    }
 
     private static async processLibrary(directoryPath: string, insertStatements: string[]): Promise<void> {
         let files = await fs.promises.readdir(directoryPath);
@@ -113,10 +140,11 @@ export class FileUtil {
             const songName = this.processString(metadata.common.title);
             const songPosition = metadata.common.track.no;
             const genre = metadata.common.genre;
+            const genreString = this.processString(genre? genre[0]: null);
 
             const insertStatement = `
-                INSERT INTO ${fileReadingTempTable} (albumName, artistName, songName, songPosition, genre) values (
-                    '${albumName}', '${artistName}', '${songName}', '${songPosition}', '${genre}'
+                INSERT INTO ${fileReadingTempTable} (albumName, artistName, songName, songPosition, genre, songFilePath) values (
+                    ${albumName}, ${artistName}, ${songName}, ${songPosition}, ${genreString}, ${this.processString(filePath)}
                 );
             `
             metadata = null;
@@ -126,14 +154,14 @@ export class FileUtil {
 
     private static processString(str: string) {
         if (!str) {
-            return null;
+            return 'NULL';
         }
 
         //Escape single quotes so we don't break the insert
         const quoteEscaped = str.replace(/['"]/g, match => {
             return match === "'" ? "''" : '\\"';
         })
-        return quoteEscaped;
+        return `'${quoteEscaped}'`;
     }
 
 }
