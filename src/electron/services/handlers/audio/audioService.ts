@@ -11,7 +11,6 @@ export class AudioService extends BaseHandlerService {
     async getAudioFileData(): Promise<Buffer>{
         const path = 'P:/Music/music/rotation/Theocracy/Mirror of Souls/01-03- Laying The Demon To Rest.mp3';
         // const path = 'P:/Music/music/rotation/Theocracy/Mirror of Souls/01-08- Mirror Of Souls.mp3';
-        console.log(`loading ${path}`)
         const audioData = fs.readFileSync(path);
         return audioData;
     }

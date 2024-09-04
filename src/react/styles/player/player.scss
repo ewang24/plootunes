@@ -1,0 +1,14 @@
+@import '../constants';
+
+div.player-main{
+    display: flex;
+    box-shadow: 0 -4px 6px -2px $box-shadow-color;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+div.player-controls{
+    display: flex;
+    flex-grow: 1;
+    justify-content: center;
+}

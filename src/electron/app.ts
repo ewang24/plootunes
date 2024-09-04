@@ -3,10 +3,10 @@ import { app, BrowserWindow } from 'electron';
 import Main from './main';
 
 try { 
-    require('electron-reloader')(module
-        , { 
+    require('electron-reloader')(module, { 
         debug: true, 
-        watchMain: true
+        watchMain: true,
+        renderer: true
     }
 ); 
 } catch (err) { console.log(`Error: ${JSON.stringify(err)}`);} 
