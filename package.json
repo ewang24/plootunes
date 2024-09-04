@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "react": "cd ./src/react && webpack-dev-server",
-    "electron": "tsc --project ./src/electron/tsconfig.json && electron ./src/electron/dist/app.js",
+    "electron": "tsc --watch --project ./src/electron/tsconfig.json && electron ./src/electron/dist/app.js",
     "install:all": "npm install && cd ./src/electron && npm install && cd ../react && npm install"
   },
   "private": true,
@@ -15,6 +15,7 @@
     "sass": "^1.75.0",
     "sass-loader": "^14.2.1",
     "style-loader": "^4.0.0",
+    "typescript": "^5.5.4",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^5.0.4"
   }

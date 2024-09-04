@@ -3,8 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "start": "react-scripts start",
-    "build": "",
-    "electron": "tsc --project ./src/electron/tsconfig.json && electron ./src/electron/dist/app.js"
+    "build": ""
   },
   "directories": {
     "buildResources": "dist",

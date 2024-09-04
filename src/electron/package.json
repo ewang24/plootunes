@@ -4,9 +4,9 @@
   "type": "commonjs",
   "main": "main.ts",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "",
-    "electron": "tsc --project ./src/electron/tsconfig.json && electron ./src/electron/dist/app.js",
+    "start": "concurrently \"npm run electron\" \"npm run watch\"",
+    "electron": "tsc --project ./tsconfig.json && electron ./dist/src/electron/app.js",
+    "watch": "tsc --watch --project ./tsconfig.json ",
     "createTables": "ts-node ./utilityRunners/tableUtilRunner.ts",
     "scanFiles": "ts-node ./utilityRunners/scanFilesRunner.ts",
     "clearTables": "ts-node ./utilityRunners/clearTablesRunner.ts"
@@ -38,10 +38,12 @@
     "@babel/preset-env": "^7.24.4",
     "@babel/preset-react": "^7.24.1",
     "@types/electron": "^1.6.10",
+    "@types/node": "^22.5.3",
     "babel-loader": "^9.1.3",
+    "concurrently": "^8.2.2",
     "electron": "^23.2.0",
     "electron-log": "^5.1.2",
-    "electron-reload": "^2.0.0-alpha.1",
+    "electron-reloader": "^1.2.3",
     "gulp": "^5.0.0",
     "gulp-sourcemaps": "^3.0.0",
     "html-webpack-plugin": "^5.6.0",
@@ -49,10 +51,7 @@
     "stream-browserify": "^3.0.0",
     "ts-loader": "^9.5.1",
     "typescript": "^4.9.5",
-    "util": "^0.12.5",
-    "webpack": "^5.91.0",
-    "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^5.0.4"
+    "util": "^0.12.5"
   },
   "browserslist": {
     "production": [

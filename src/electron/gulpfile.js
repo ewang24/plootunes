@@ -1,3 +1,4 @@
+//Sets up source maps for debugging. Only kind of works right now.
 const gulp = require('gulp'); // Import gulp module
 const sourcemaps = require('gulp-sourcemaps');
 gulp.task('build', () => {

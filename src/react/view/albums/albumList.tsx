@@ -17,7 +17,7 @@ const AlbumList = () => {
       .then((albums: Album[]) => {
         setAlbums(albums);
       });
-  }, [])
+  }, []);
 
   function renderAlbumList(): ReactElement {
     return <div className='albums-wrap-container'>

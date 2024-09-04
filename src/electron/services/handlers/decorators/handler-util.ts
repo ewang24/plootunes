@@ -2,6 +2,7 @@ import { ipcMain } from "electron";
 import { HandlerWrapper, handlerMethods } from "./handlerDecorator";
 import { SongService } from "../song/songService";
 import { AlbumService } from "../album/albumService";
+import { AudioService } from "../audio/audioService";
 
 
 /**
@@ -14,6 +15,7 @@ export function injectAllHandlers() {
     // and then they will not be decorated.
     const ss = new SongService();
     const as = new AlbumService();
+    const audioS = new AudioService();
 
 
     Object.keys(handlerMethods).forEach((serviceClassName) => {

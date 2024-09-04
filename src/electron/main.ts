@@ -1,5 +1,5 @@
 import * as path from "path";
-import { BrowserWindow } from "electron";
+import { BrowserWindow, ipcMain } from "electron";
 import { injectAllHandlers } from "./services/handlers/decorators/handler-util";
 
 export default class Main {
@@ -16,8 +16,14 @@ export default class Main {
         // Dereference the window object. 
         Main.mainWindow = null;
     }
-
+    
     private static onReady() {
+
+        ipcMain.on('reload-window', () => {
+            if (Main.mainWindow) {
+                Main.mainWindow.webContents.send('reload');
+            }
+          });
 
         injectAllHandlers();
 
@@ -30,8 +36,10 @@ export default class Main {
                 }
             }
         );
+
         Main.mainWindow!
             .loadURL('http://localhost:3000');
+        Main.mainWindow.webContents.openDevTools();
         Main.mainWindow!.on('closed', Main.onClose);
     }
 
