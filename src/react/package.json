@@ -46,7 +46,8 @@
     "util": "^0.12.5",
     "webpack": "^5.91.0",
     "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^5.0.4"
+    "webpack-dev-server": "^5.0.4",
+    "ts-node": "^10.9.2"
   },
   "browserslist": {
     "production": [

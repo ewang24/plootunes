@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const mm = require('music-metadata');
 import { Database, OPEN_CREATE, OPEN_READWRITE } from "sqlite3";
-import { DbUtil } from "./dbUtil";
+import { DbUtil } from "../../core/db/dbUtil";
 
 
 const SupportedFileTypesList = ['mp3', 'm4a', 'wav', 'flac']

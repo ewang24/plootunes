@@ -1,19 +1,17 @@
 {
   "compilerOptions": {
-    "experimentalDecorators": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
     "target": "ES5",
-    "outDir": "dist",
+    "outDir": "./dist",
     "moduleResolution": "node",
-    "module": "commonJS",
-    "sourceMap": true,
+    "module": "commonjs",
     "removeComments": true,
     "noImplicitAny": false,
     "baseUrl": "./src",
     "paths": {
       "*": [
         "*",
-        "./services",
-        "../../global/*"
       ],
       "typeRoots": [
         "./node_modules/@types"
@@ -21,9 +19,7 @@
     }
   },
   "include": [
-    "./**/*.ts",
-    "./**/*.js",
-     "../../global/**/*.ts", "../core/db/dbUtil.ts", "../core/db/tableUtil.ts", "../core/util/propertiesUtil.ts",
+    "./src/**/*.ts"
   ],
   "exclude": [
     "./dist"

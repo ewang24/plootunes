@@ -6,13 +6,27 @@ import { DbUtil } from "./dbUtil";
 export class TableUtil {
 
     static async createAllTables(db: Database): Promise<void> {
-        const schemaDirectory = "./db/schemas/tables";
+        const schemaDirectory = path.resolve(__dirname, "./schemas/tables");
 
-        const files = await fs.promises.readdir(schemaDirectory);
+        let files;
+        try{
+            files = await fs.promises.readdir(schemaDirectory);
+        }
+        catch(err){
+            console.error(`Error reading contents of schema directory at ${schemaDirectory}: ${JSON.stringify(err)}`)
+        }
+         
 
         for (let file of files) {
             const filePath = path.join(schemaDirectory, file);
-            const schemasData = await fs.promises.readFile(filePath, 'utf8');
+            let schemasData;
+            try{
+                 schemasData = await fs.promises.readFile(filePath, 'utf8');
+            }
+            catch(err){
+                console.error(`Error reading schema file from ${filePath}: ${JSON.stringify(err)}`)
+            }
+            
 
             if (!schemasData) {
                 console.error(`No schema(s) present at ${filePath}. Empty file!`);

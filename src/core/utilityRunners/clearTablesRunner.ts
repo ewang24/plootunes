@@ -1,12 +1,12 @@
 import { Database, OPEN_CREATE, OPEN_READWRITE } from "sqlite3";
-import { TableUtil } from "../db/tableUtil";
+import { TableUtil } from "../../core/db/tableUtil";
 import { PropertiesUtil } from "../util/propertiesUtil";
 const fs = require('fs');
 
 async function run() {
 
   const dbPath = `${PropertiesUtil.initProps()}`;
-  let re;
+  let re: string | undefined;
 
   try {
     console.log('checking db file');

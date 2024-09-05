@@ -1,15 +1,21 @@
 {
   "name": "physic-octo-rotary-phone",
   "version": "0.0.0",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "react": "cd ./src/react && webpack-dev-server",
     "electron": "tsc --watch --project ./src/electron/tsconfig.json && electron ./src/electron/dist/app.js",
-    "install:all": "npm install && cd ./src/electron && npm install && cd ../react && npm install"
+    "install:all": "npm install && cd ./src/electron && npm install && cd ../react && npm install",
+    "scanFiles": "ts-node ./src/electron/utilityRunners/scanFilesRunner.ts",
+    "createTables": "ts-node ./src/core/utilityRunners/tableUtilRunner.ts",
+    "clearTables": "ts-node ./src/core/utilityRunners/clearTablesRunner.ts"
   },
   "private": true,
+  "dependencies": {
+    "sqlite3": "^5.1.7"
+  },
   "devDependencies": {
-    "@types/node": "^20.12.8",
+    "@types/node": "^22.5.3",
     "css-loader": "^7.1.1",
     "music-metadata": "^7.14.0",
     "sass": "^1.75.0",
@@ -17,6 +23,7 @@
     "style-loader": "^4.0.0",
     "typescript": "^5.5.4",
     "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^5.0.4"
+    "webpack-dev-server": "^5.0.4",
+    "ts-node": "^10.9.2"
   }
 }

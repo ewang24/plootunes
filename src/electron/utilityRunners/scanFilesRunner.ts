@@ -1,5 +1,5 @@
-import { FileUtil } from "../db/fileUtil";
-import { PropertiesUtil } from "../util/propertiesUtil";
+import { FileUtil } from "../util/fileUtil";
+import { PropertiesUtil } from "../../core/util/propertiesUtil";
 
 PropertiesUtil.initProps()
 FileUtil.scanFiles();
