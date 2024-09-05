@@ -1,4 +1,4 @@
-import path from "path";
+const path = require('path');
 const fs = require('fs');
 
 export class PropertiesUtil{

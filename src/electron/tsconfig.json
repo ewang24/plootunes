@@ -23,7 +23,8 @@
   "include": [
     "./**/*.ts",
     "./**/*.js",
-     "../../global/**/*.ts", "../core/db/dbUtil.ts", "../core/db/tableUtil.ts", "../core/util/propertiesUtil.ts",
+    "../../global/**/*.ts",
+    "../core/**/*.ts"
   ],
   "exclude": [
     "./dist"

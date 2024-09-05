@@ -4,8 +4,8 @@
   "type": "commonjs",
   "main": "main.ts",
   "scripts": {
-    "start": "concurrently \"npm run electron\" \"npm run watch\"",
-    "electron": "tsc --project ./tsconfig.json && electron ./dist/src/electron/app.js",
+    "start": "concurrently -n 'electron,tsc' -c 'cyan,magenta' \"npm run electron\" \"npm run watch\"",
+    "electron": "tsc --project ./tsconfig.json && electron ./dist/electron/app.js",
     "watch": "tsc --watch --project ./tsconfig.json ",
     "createTables": "ts-node ./utilityRunners/tableUtilRunner.ts",
     "scanFiles": "ts-node ./utilityRunners/scanFilesRunner.ts",

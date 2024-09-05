@@ -1,11 +1,11 @@
 import React, { ReactElement, useEffect, useState } from 'react';
-import { Album } from '../../../../global/dbEntities/album';
 import ViewContainer from '../global/viewContainer';
 import '../../styles/albums/albumsList.scss'
 import '../../assets/img/test.jpg'
 import '../../assets/img/up.jpg'
 import SongsForAlbum from './songsForAlbum';
 import OverlayView from '../global/overlayView';
+import { Album } from '../../../core/db/dbEntities/album';
 
 const AlbumList = () => {
 
