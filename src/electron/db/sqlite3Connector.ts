@@ -1,26 +1,12 @@
 
-import { cached, Database, OPEN_READONLY, Statement } from 'sqlite3';
+import { Database, Statement } from 'sqlite3';
 import {Connector, QueryParam} from '../../core/db/dto/connector'
 export class Sqlite3Connector implements Connector{
 
-    private static instance: Sqlite3Connector;
     private db: Database;
 
-    private constructor(){
-        this.db = cached.Database(process.env.DB_PATH, OPEN_READONLY, (err: Error | null) => {
-            if (err) {
-              return console.error(err.message);
-            }
-            console.log('Connected to the on-disk SQlite database.');
-          });      
-    }
-
-    static getInstance(): Sqlite3Connector{
-        if(!Sqlite3Connector.instance){
-            Sqlite3Connector.instance = new Sqlite3Connector();
-        }
-
-        return Sqlite3Connector.instance;
+    constructor(db: Database){
+        this.db = db;
     }
 
     get<T>(query: string, params?: QueryParam): Promise<T> {

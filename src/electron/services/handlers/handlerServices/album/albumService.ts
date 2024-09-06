@@ -1,12 +1,12 @@
 import { Database, OPEN_READONLY, Statement } from "sqlite3";
-import { BaseHandlerService } from "../baseHandlerService";
-import { handler } from "../decorators/handlerDecorator";
-import { Album } from "../../../../core/db/dbEntities/album";
-import { Artist } from "../../../../core/db/dbEntities/artist";
+import { handler } from "../../decorators/handlerDecorator";
+import { Album } from "../../../../../core/db/dbEntities/album";
+import { Artist } from "../../../../../core/db/dbEntities/artist";
 
-export class AlbumService extends BaseHandlerService {
+export class AlbumService{
+  
   constructor() {
-    super('AlbumService');
+    
   }
 
   @handler

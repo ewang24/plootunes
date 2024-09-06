@@ -1,33 +1,64 @@
 import { ipcMain } from "electron";
-import { HandlerWrapper, handlerMethods } from "./handlerDecorator";
-import { SongService } from "../song/songService";
-import { AlbumService } from "../album/albumService";
-import { AudioService } from "../audio/audioService";
+import { handlerMethods } from "./handlerDecorator";
+import { handlersFactories } from "./handlerFactoryDecorator";
+import path = require("path");
+import fs = require("fs");
 
 
 /**
- * Inject handlers for all service methods annoted with @handler into the ipcMain context.
+ * Inject an ipc handler for each function decorated with @handler from classes created by factories decorated with @handlerFactory
  */
-export function injectAllHandlers() {
-    const results = {};
+export async function injectAllHandlers() {
+    await importAllHandlerFiles();
 
-    //Unfortunately do to tree shaking, we need to declare an instance of each service here or the imports for the service will be removed during transpiling
-    // and then they will not be decorated.
-    const ss = new SongService();
-    const as = new AlbumService();
-    const audioS = new AudioService();
+    console.log(`handler factories: ${handlersFactories}`);
+    console.log(`handlers: ${JSON.stringify(handlerMethods)}`);
+    for(let factory of handlersFactories){
+        const handler = factory.createInstance();
 
-
-    Object.keys(handlerMethods).forEach((serviceClassName) => {
-        const handlerWrapper: HandlerWrapper = handlerMethods[serviceClassName];
+        const prototype = Object.getPrototypeOf(handler);
+        console.log(JSON.stringify(handler));
+        for(let key of Object.getOwnPropertyNames(prototype)){
+            if(key === 'constructor'){
+                continue;
+            }
         
-        const service = new handlerWrapper.constructor();
-        handlerMethods[serviceClassName].functions.forEach((handler) => {
-            console.log(`creating handler for: ${handler}`)
-            ipcMain.handle(handler as string, (event, ...args) => {
-                const handlerFunction = service[handler];
-                return handlerFunction.call(service, ...args);
-            });
-        });
-    });
+            if(typeof handler[key] === 'function' && handlerMethods[key]){
+                ipcMain.handle(key as string, (event, ...args) => {
+                    return handler[key].call(handler, ...args);
+                });
+            }
+        }
+    }
+}
+
+/**
+ * Import all handler service files so that the decorators will apply. 
+ * Doing it dynamically like this means you don't have to type out an import statement for each service,
+ * and they will not be removed by treeshaken when the app is transpiled and built.
+ */
+async function importAllHandlerFiles(){
+
+    //This will be in the dist folder: dist/electron/services/handlers/handlerServices
+    const handlersDirectory = path.resolve(__dirname, '../handlerServices')
+
+    const imports: Promise<any>[] = [];
+
+    const readDirectory = async (dir: string): Promise<void> => {
+        const entries = await fs.promises.readdir(dir, { withFileTypes: true });
+        for (const entry of entries) {
+            const fullPath = path.join(dir, entry.name);
+
+            if (entry.isDirectory()) {
+                await readDirectory(fullPath);
+            } 
+            //This is going to be operating out of the dist folder when it runs, so the extensions will be .js
+            else if (entry.isFile() && entry.name.endsWith('.js')) {
+                imports.push(import(fullPath));
+            }
+        }
+    };
+
+    await readDirectory(handlersDirectory);
+    await Promise.all(imports);
 }

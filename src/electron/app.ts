@@ -4,7 +4,7 @@ import Main from './main';
 
 try { 
     require('electron-reloader')(module, { 
-        debug: true, 
+        // debug: true, 
         watchMain: true,
         renderer: true
     }
