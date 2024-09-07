@@ -19,8 +19,14 @@ html, body{
    width: 100%;
 }
 
+
+h1, h2, h3, h4, h5, h6 {
+   color: $text-primary
+}
+
 .p-main-container{
     display: flex;
+    flex-grow: 1;
     justify-content: stretch;
     align-items: stretch;
     flex-direction: column;
@@ -32,6 +38,10 @@ html, body{
 }
 
 .p-overlay-view{
+   top: 0;
+   left: 0;
+   right: 0;
+   bottom: 0;
    position: absolute;
    display: flex;
    justify-content: stretch;
@@ -80,5 +90,35 @@ div.p-row-align-end{
 
 div.p-row-align-stretch{
    align-items: stretch;
+}
+
+div.p-tile {
+   flex: 0 0 auto;
+   display: flex;
+   flex-direction: column;
+   justify-content: flex-start;
+   margin: 5px;
+   max-width: 100px;
+
+   &:hover {
+       div.p-tile-image {
+           box-shadow: 1px 1px 5px 1px #979797;
+       }
+
+       cursor: pointer;
+   }
+
+   div.p-tile-image {
+      border: $border-style;
+      border-radius: 5px;
+      overflow: hidden;
+   }
+   
+   img {
+      height: 100px;
+      width: 100px;
+      background-size: 'cover';
+      background-position: 'center';
+   }
 }
 

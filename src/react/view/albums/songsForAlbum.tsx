@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import ViewContainer from '../global/viewContainer';
 import { Song } from '../../../core/db/dbEntities/song';
+import { ElectronUtil } from '../util/electronUtil';
 
 function SongsForAlbum ({ album, closeSongsForAlbumView }){
 
     const [songs, setSongs] = useState<Song[]>(undefined);
     useEffect(() => {
-        (window as any).electron.ipcRenderer.invoke('getSongsByAlbum', album.id)
+        ElectronUtil.invoke('getSongsByAlbum', album.id)
             .then((songs: Song[]) => {
                 setSongs(songs);
             });
-    }, [])
+    }, []);
 
     return <>
     {/*start songs for album*/}

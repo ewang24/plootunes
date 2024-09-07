@@ -23,8 +23,8 @@ const AlbumList = () => {
   function renderAlbumList(): ReactElement {
     return <div className='albums-wrap-container'>
       {albums.map((album: Album, index) => {
-        return <div key={index} className='child' onClick={() => setSelectedAlbum(album)}>
-          <div className='child-image'>
+        return <div key={index} className='p-tile' onClick={() => setSelectedAlbum(album)}>
+          <div className='p-tile-image'>
             {index % 2 === 0 &&
               <img
                 src='../../assets/img/test.jpg'

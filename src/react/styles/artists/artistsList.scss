@@ -1,0 +1,14 @@
+@import '../constants';
+div.artist-wrap-container{
+    display: flex;
+    flex-wrap: wrap;
+
+    div.artist-tile{
+        &:hover{
+            strong.artist-name{
+                color: $accent-green;
+            }
+        }
+    }
+}
+

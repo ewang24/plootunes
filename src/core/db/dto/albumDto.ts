@@ -6,7 +6,8 @@ import { Queries } from "./queries";
 
 export class AlbumDto{
     queries: Queries = {
-        getAlbums: "SELECT * FROM album"
+        getAlbums: "SELECT * FROM album",
+        getAlbumsForArtist: "SELECT * FROM album WHERE artistId = $artistId"
     }
 
     connector: Connector;
@@ -33,5 +34,9 @@ export class AlbumDto{
         }
 
         return albums;
+    }
+
+    async getAlbumsForArtist(artistId: number): Promise<Album[]>{
+        return this.connector.getAll(this.queries.getAlbumsForArtist, {artistId})
     }
 }
