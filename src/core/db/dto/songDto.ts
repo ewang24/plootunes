@@ -21,7 +21,7 @@ export class SongDto{
     
     async getSongsByAlbum(albumId: number): Promise<Song[]>{
         try{
-            return this.connector.getAll(this.queries.getSongsByAlbum, {albumId});
+            return this.connector.getAll<Song>(this.queries.getSongsByAlbum, {albumId});
         }
         catch(err){
             console.error(`An error occurred in getSongsByAlbum: ${JSON.stringify(err, null, 2)}`)

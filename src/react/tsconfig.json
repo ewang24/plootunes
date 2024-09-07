@@ -17,6 +17,7 @@
   },
   "include": [
     "./view/**/*.tsx",
+    "./view/**/*.ts",
     "../core/**/*.ts"
   ]
 }

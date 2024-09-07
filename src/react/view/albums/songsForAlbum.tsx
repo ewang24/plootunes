@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import ViewContainer from '../global/viewContainer';
-import { Album } from '../../../core/db/dbEntities/album';
 import { Song } from '../../../core/db/dbEntities/song';
 
-const SongsForAlbum: React.FC<{ album: Album, closeSongsForAlbumView: Function }> = ({ album, closeSongsForAlbumView }) => {
+function SongsForAlbum ({ album, closeSongsForAlbumView }){
 
     const [songs, setSongs] = useState<Song[]>(undefined);
     useEffect(() => {

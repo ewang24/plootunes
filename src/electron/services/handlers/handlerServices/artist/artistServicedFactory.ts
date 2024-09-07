@@ -1,11 +1,11 @@
 import { ConnectorFactory } from "../../../../db/connectorFactory";
 import { handlerFactory, HandlerFactoryDecorator } from "../../decorators/handlerFactoryDecorator";
-import { AlbumService } from "./albumService";
+import { ArtistService } from "./artistService";
 
 @handlerFactory
-export class AlbumServiceFactory implements HandlerFactoryDecorator{
+export class ArtistServiceFactory implements HandlerFactoryDecorator{
     createInstance(): Object {
         const connectorFactory = new ConnectorFactory();
-        return new AlbumService(connectorFactory.createConnector());
+        return new ArtistService(connectorFactory.createConnector());
     }
 }

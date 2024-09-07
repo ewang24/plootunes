@@ -5,6 +5,7 @@ import SongsList from '../songs/songs';
 import LeftNav from './leftNav';
 import Landing from '../landing/landing';
 import '../../styles/navigation/router.scss'
+import ArtistList from '../artists/artistsList';
 
 interface AppRoutes {
     path: string,
@@ -22,6 +23,7 @@ const AppRouter = () => {
         { path: '/home', element: <Landing />, name: "Home" },
         { path: '/albums', element: <AlbumList />, name: "Albums" },
         { path: '/songs', element: <SongsList />, name: "Songs" },
+        { path: '/artists', element: <ArtistList />, name: "Artists" }
     ];
 
     return <MemoryRouter>

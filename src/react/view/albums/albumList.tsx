@@ -6,6 +6,7 @@ import '../../assets/img/up.jpg'
 import SongsForAlbum from './songsForAlbum';
 import OverlayView from '../global/overlayView';
 import { Album } from '../../../core/db/dbEntities/album';
+import { AlbumService } from './electronServices/albumService';
 
 const AlbumList = () => {
 
@@ -13,7 +14,7 @@ const AlbumList = () => {
   const [selectedAlbum, setSelectedAlbum] = useState<Album | undefined>();
 
   useEffect(() => {
-    (window as any).electron.ipcRenderer.invoke('fetchAlbums')
+    AlbumService.getAlbums()
       .then((albums: Album[]) => {
         setAlbums(albums);
       });
