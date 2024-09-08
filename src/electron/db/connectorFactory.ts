@@ -11,17 +11,17 @@ export class ConnectorFactory{
 
     createConnector(write?: boolean){
 
-        if(!ConnectorFactory.db){
+        // if(!ConnectorFactory.db){
           // const mode = write? OPEN_READWRITE: OPEN_READONLY;
-          ConnectorFactory.db = cached.Database(process.env.DB_PATH, OPEN_CREATE | OPEN_READWRITE, (err: Error | null) => {
+          const db = cached.Database(process.env.DB_PATH, OPEN_CREATE | OPEN_READWRITE, (err: Error | null) => {
               if (err) {
                 return console.error(err.message);
               }
-              console.log(`Handler connected to the on-disk SQlite database with ${OPEN_READWRITE}.`);
+              console.log(`Handler connected to the on-disk SQlite database at ${process.env.DB_PATH} with ${OPEN_READWRITE}.`);
             });   
-        }
+        // }
         
-        return new Sqlite3Connector(ConnectorFactory.db);
+        return new Sqlite3Connector(db);
     }
 
 }

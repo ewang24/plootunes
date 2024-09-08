@@ -1,0 +1,1 @@
+#TODO turn this into a script that will set up the symlink for the DB in a location not inside the project
