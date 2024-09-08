@@ -2,20 +2,20 @@ import { Database, OPEN_CREATE, OPEN_READONLY, OPEN_READWRITE, RunResult, Statem
 
 export class DbUtils {
 
-  static async fetchSongs(): Promise<string>{
-    const db = new Database('P:/Documents/GitHub/psychic-octo-rotary-phone/plootunes.sqlite', OPEN_READONLY, (err: Error | null) => {
-      if (err) {
-        return console.error(err.message);
-      }
-      console.log('Connected to the in-memory SQlite database.');
-    });
+  // static async fetchSongs(): Promise<string>{
+  //   const db = new Database('P:/Documents/GitHub/psychic-octo-rotary-phone/plootunes.sqlite', OPEN_READONLY, (err: Error | null) => {
+  //     if (err) {
+  //       return console.error(err.message);
+  //     }
+  //     console.log('Connected to the in-memory SQlite database.');
+  //   });
 
-    const query = `
-      SELECT * FROM song 
-    `
+  //   const query = `
+  //     SELECT * FROM song 
+  //   `
 
-    return this.fetch(db, query);
-  }
+  //   return this.fetch(db, query);
+  // }
 
   private static fetch(db: Database, query: string): Promise<string> {
     return new Promise((resolve, reject) => {

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import ViewContainer from '../global/viewContainer';
 import { Song } from '../../../core/db/dbEntities/song';
 import { ElectronUtil } from '../util/electronUtil';
+import PButton from '../global/widgets/pButton';
 
 function SongsForAlbum ({ album, closeSongsForAlbumView }){
 
@@ -9,9 +10,18 @@ function SongsForAlbum ({ album, closeSongsForAlbumView }){
     useEffect(() => {
         ElectronUtil.invoke('getSongsByAlbum', album.id)
             .then((songs: Song[]) => {
+                console.log(songs);
                 setSongs(songs);
             });
     }, []);
+
+    function playSong(songId: number){
+
+        //TODO: change this from queueing, this is just for testing for now.
+        ElectronUtil.invoke('queueSong', songId).catch((err) => {
+            console.error(`An error occurred: ${JSON.stringify(err, null, 2)}`)
+        })
+    }
 
     return <>
     {/*start songs for album*/}
@@ -54,6 +64,9 @@ function SongsForAlbum ({ album, closeSongsForAlbumView }){
                     <tbody>
                         {songs.map((song: Song, index: number) => {
                             return <tr className={`song-album-row ${index % 2 == 0 ? 'song-album-even' : 'song-album-odd'}`} key={`${album}-song-${index}`}>
+                                <td>
+                                    <PButton label='Play' onClick={() => {playSong(song.id)}}/>
+                                </td>
                                 <td>
                                     <div className='p-row'>
                                         {index + 1}

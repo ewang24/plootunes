@@ -19,6 +19,9 @@ export default class Main {
 
     private static onReady() {
 
+        const {app} = require('electron');
+        console.log(`this is the user data path: ${app.getPath('userData')}`);
+
         // ipcMain.on('reload-window', () => {
         //     if (Main.mainWindow) {
         //         Main.mainWindow.webContents.send('reload');

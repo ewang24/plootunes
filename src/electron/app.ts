@@ -2,14 +2,17 @@ const fs = require('fs');
 import { app, BrowserWindow } from 'electron';
 import Main from './main';
 
-try { 
-    require('electron-reloader')(module, { 
-        // debug: true, 
-        watchMain: true,
-        renderer: true
-    }
-); 
-} catch (err) { console.log(`Error: ${JSON.stringify(err)}`);} 
+// try { 
+//     require('electron-reloader')(module, { 
+//         debug: true, 
+//         watchMain: true,
+//         renderer: true
+//     }
+// ); 
+// } catch (err) { console.log(`Error: ${JSON.stringify(err)}`);} 
+
+
+fs.writeFileSync("P:/Desktop/elec.txt", "test");
 
 async function init(){
     const propertiesFile = fs.readFileSync('../../properties.json');

@@ -9,3 +9,4 @@ plootunes.sqlite
 *.code-workspace
 properties.json
 .vscode/extensions.json
+*.sqlite

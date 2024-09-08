@@ -30,3 +30,12 @@ CREATE TABLE IF NOT EXISTS song (
     albumId INTEGER NULL,
     FOREIGN KEY (albumId) REFERENCES album(id)
 );
+
+--Create queue table
+CREATE TABLE IF NOT EXISTS queue (
+    id INTEGER PRIMARY KEY,
+    songId INTEGER NOT NULL,
+    position INTEGER NULL,
+    current INTEGER NOT NULL DEFAULT 0,
+    FOREIGN KEY (songId) references song(id)
+);

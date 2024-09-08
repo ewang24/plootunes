@@ -1,28 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import '../../styles/player/player.scss'
+import Player from './player';
+import { PlayerContext } from '../main';
 
 const PlayerMain = () => {
-
-    const [audioSrc, setAudioSrc] = useState<string | undefined>(undefined);
-    useEffect(() => {
-        (window as any).electron.ipcRenderer.invoke('getAudioFileData')
-            .then((data: Buffer) => {
-                const blob = new Blob([data], { type: 'audio/mpeg' });
-                const url = URL.createObjectURL(blob);
-                setAudioSrc(url);
-            });
-    }, []);
-
-
+    const {isPlaying} = useContext(PlayerContext);
     return <div className={'player-main'}>
-        <div className = {'player-controls'}>
-            {audioSrc &&
-                <audio controls>
-                    <source src={audioSrc} type="audio/mpeg" />
-                    Your browser does not support the audio element.
-                </audio>
-            }
-        </div>
+        <Player isPlaying = {isPlaying}/>
     </div>
 };
 

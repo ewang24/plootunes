@@ -17,7 +17,7 @@ export async function injectAllHandlers() {
         const handler = factory.createInstance();
 
         const prototype = Object.getPrototypeOf(handler);
-        console.log(JSON.stringify(handler));
+        // console.log(JSON.stringify(handler));
         for(let key of Object.getOwnPropertyNames(prototype)){
             if(key === 'constructor'){
                 continue;

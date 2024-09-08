@@ -1,3 +1,7 @@
 export interface Song{
-    name: string
+    id: number;
+    albumId: number;
+    name: string;
+    songPosition: number;
+    songFilePath: string;
 }
