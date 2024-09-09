@@ -1,6 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
+console.log(path.resolve(__dirname, '../core/assets'));
 module.exports = {
     entry: './index.js',
     mode: 'development',
@@ -17,7 +18,10 @@ module.exports = {
         filename: 'bundle.js'
     },
     resolve: {
-        extensions: ['.js', '.jsx', '.json', '.tsx', '.ts']
+        extensions: ['.js', '.jsx', '.json', '.tsx', '.ts'],
+        alias: {
+            '~core-assets': path.resolve(__dirname, '../core/assets')
+        }
     },
     externals: {
         "electron": 'commonjs electron',
@@ -46,6 +50,10 @@ module.exports = {
                 ]
             },
             {
+                test: /\.svg$/i,
+                use: ['@svgr/webpack'],
+            },
+            {
                 test: /\.(png|jpe?g|gif)$/i,
                 type: 'asset/resource',
                 generator: {
@@ -53,7 +61,7 @@ module.exports = {
                 }
             },
             {
-                test:/\.(woff|woff2|eot|ttf|otf)$/i,
+                test: /\.(woff|woff2|eot|ttf|otf)$/i,
                 type: 'asset/resource',
                 generator: {
                     filename: 'assets/font/[name][ext]'

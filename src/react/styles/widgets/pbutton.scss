@@ -1,3 +1,47 @@
-button.p-button-widget{
-    
+@import '../constants';
+
+div.p-button-container {
+    display: flex;
+
+    &:hover {
+        button.p-button-widget {
+            color: $accent-green;
+        }
+
+        svg {
+            path {
+                fill: $accent-green;
+                stroke: $accent-green !important;
+            }
+        }
+    }
+
+    button.p-button-widget {
+        color: $text-primary;
+        background: $foreground;
+        border: none;
+        font-weight: 600;
+        font-family: 'Roboto';
+        font-size: 20px;
+        background-size: cover;
+        background-repeat: none;
+        background-position: center;
+        max-width: 100px;
+        max-height: 100px;
+    }
+
+    div.p-button-icon {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        max-height: 50px;
+        max-width: 50px;
+    }
+
+    svg {
+        path {
+            fill: $text-primary;
+            stroke: $text-primary !important;
+        }
+    }
 }

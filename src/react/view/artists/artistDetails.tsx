@@ -4,6 +4,8 @@ import { Artist } from "../../../core/db/dbEntities/artist";
 import { ElectronUtil } from "../util/electronUtil";
 import { Album } from "../../../core/db/dbEntities/album";
 import AlbumsForArtists from "./albumsForArtists";
+import PButton from "../global/widgets/pButton";
+import { Icons } from "../../../core/assets/icons";
 
 export interface ArtistDetailsProps {
     artist: Artist,
@@ -25,7 +27,7 @@ function ArtistDetails(props: ArtistDetailsProps) {
             <h1>
                 {artist.name}
             </h1>
-            <button onClick={() => closeArtistDetails()}>Back</button>
+            <PButton onClick={() => closeArtistDetails()} label="Back" icon={Icons.BACK_ARROW}/>
             {
                 albums && albums.length > 0 &&
                 <AlbumsForArtists artist={artist} albums={albums}></AlbumsForArtists>
