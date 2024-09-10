@@ -9,6 +9,7 @@ export interface PlayerContext {
   playSongNow(songId: number): void;
   queueSong(songId): void;
   currentlyPlayingSong: number | undefined;
+  setCurrentlyPlayingSong: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export const PlayerContext = createContext<PlayerContext | undefined>(undefined);
@@ -19,9 +20,7 @@ const Main = () => {
 
 
   function playSongNow(songId: number){
-    debugger;
-    ElectronUtil.invoke('queueSong', songId).then(() => {
-      debugger;
+    ElectronUtil.invoke('playSong', songId).then(() => {
       setCurrentlyPlayingSong(songId);
     });
   }
@@ -37,7 +36,7 @@ const Main = () => {
   }
 
   return <div className='main-container'>
-    <PlayerContext.Provider value={{playSongNow, queueSong, currentlyPlayingSong}}>
+    <PlayerContext.Provider value={{playSongNow, queueSong, currentlyPlayingSong, setCurrentlyPlayingSong}}>
       <>
         <AppRouter />
         <PlayerMain />

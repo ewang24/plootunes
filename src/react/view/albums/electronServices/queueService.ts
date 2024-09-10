@@ -1,0 +1,12 @@
+import { Song } from "../../../../core/db/dbEntities/song";
+import { ElectronUtil } from "../../util/electronUtil";
+
+export class QueueService{
+    static async getNextSongInQueue(): Promise<Song>{
+        return ElectronUtil.invoke<Song>("getNextSongInQueue");
+    }
+
+    static async transitionCurrentSong(songId: number): Promise<void>{
+        return ElectronUtil.invoke<void>("transitionCurrentSong", songId);
+    }
+}

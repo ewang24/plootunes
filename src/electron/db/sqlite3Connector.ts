@@ -1,83 +1,93 @@
 
 import { Database, Statement } from 'sqlite3';
-import {Connector, QueryParam} from '../../core/db/dto/connector'
-export class Sqlite3Connector implements Connector{
+import { Connector, QueryParam } from '../../core/db/dto/connector'
+export class Sqlite3Connector implements Connector {
 
-    private db: Database;
+  private db: Database;
 
-    constructor(db: Database){
-        this.db = db;
+  constructor(db: Database) {
+    this.db = db;
+  }
+
+  /**
+   * Run a query that is expected to return a single record, of a shape that matches T.
+   * @param query The query to run. If the query has any placholder parameters, they should be specified like this in the query string: $variableName
+   * @param params The parameters to insert into place holders.
+   *               The parameters must be literal values, E.G. you cannot do this: SELECT COUNT(*) AS count FROM $tableName 
+   *               because it will insert the table name as a string literal.
+   * @returns A single record of type T
+   */
+  get<T>(query: string, params?: QueryParam): Promise<T> {
+    if (!query) {
+      throw new Error("No query specified!");
     }
 
-    get<T>(query: string, params?: QueryParam): Promise<T> {
-        this.wrapParams(params);
-        const selectStatement = this.db.prepare(query, params || {});
-        return new Promise((resolve, reject) => {
-            selectStatement.get(
-                function (this: Statement, err: Error | null, record: T) {
-                    if (err) {
-                      console.error(`An error occurred: ${JSON.stringify(err, null, 2)}`)
-                      reject(err);
-                    }
-    
-                    selectStatement.finalize();
-                    resolve(record);
-                  }
-            );
-        });
-    }
+    this.wrapParams(params);
+    console.log(query, ",", JSON.stringify(params));
+    const selectStatement = this.db.prepare(query, params || {});
+    return new Promise((resolve, reject) => {
+      selectStatement.get(
+        function (this: Statement, err: Error | null, record: T) {
+          if (err) {
+            console.error(`An error occurred: ${JSON.stringify(err, null, 2)}`)
+            reject(err);
+          }
 
-    getAll<T>(query: string, params?: QueryParam): Promise<T[]> {
-        this.wrapParams(params);
-        const selectStatement = this.db.prepare(query, params || {});
-        return new Promise((resolve, reject) => {
-            selectStatement.all(
-              function (this: Statement, err: Error | null, rows: T[]) {
-                if (err) {
-                  console.error(`An error occurred: ${JSON.stringify(err, null, 2)}`)
-                  reject(err);
-                }
-
-                selectStatement.finalize();
-                resolve(rows);
-              }
-            );
-          })
-    }
-
-    execute(query: string, params?: QueryParam): Promise<void> {
-
-      return new Promise<void>((resolve, reject: (error?: Error) => void) => {
-        this.db.exec(query, (err: Error | null) => {
-            if (err) {
-                reject(err);
-                return;
-            }
-            resolve();
-        });
+          selectStatement.finalize();
+          resolve(record);
+        }
+      );
     });
-      // this.wrapParams(params);
-      // const execStatement = this.db.prepare(query, params || {});
-      // return new Promise<void>((resolve, reject: (error?: Error) => void) => {
-      //   execStatement.run(
-      //     function (this: Statement, err: Error | null) {
-      //       if (err) {
-      //           reject(err);
-      //           return;
-      //       }
-      //       resolve();
-      //   });
-    // });
+  }
+
+  getAll<T>(query: string, params?: QueryParam): Promise<T[]> {
+    if (!query) {
+      throw new Error("No query specified!");
     }
 
-    private wrapParams(params?: QueryParam){
-        if(!params){
-            return;
-        }
+    this.wrapParams(params);
+    const selectStatement = this.db.prepare(query, params || {});
+    return new Promise((resolve, reject) => {
+      selectStatement.all(
+        function (this: Statement, err: Error | null, rows: T[]) {
+          if (err) {
+            console.error(`An error occurred: ${JSON.stringify(err, null, 2)}`)
+            reject(err);
+          }
 
-        for(let key of Object.keys(params)){
-            params[`$${key}`] = params[key];
-            delete params[key];
+          selectStatement.finalize();
+          resolve(rows);
         }
+      );
+    })
+  }
+
+  run(query: string, params?: QueryParam): Promise<void> {
+    if(!query){
+      throw new Error("No query specified!");
     }
+
+    this.wrapParams(params);
+    console.log(`executing query: ${query}. Optionally, with params: ${JSON.stringify(params)}`)
+    return new Promise<void>((resolve, reject: (error?: Error) => void) => {
+      this.db.run(query, params, (err: Error | null) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve();
+      });
+    });
+  }
+
+  private wrapParams(params?: QueryParam) {
+    if (!params) {
+      return;
+    }
+
+    for (let key of Object.keys(params)) {
+      params[`$${key}`] = params[key];
+      delete params[key];
+    }
+  }
 }
