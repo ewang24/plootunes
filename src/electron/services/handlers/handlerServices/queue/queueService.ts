@@ -12,7 +12,6 @@ export class QueueService{
 
     @handler
     async queueSong(songId: number): Promise<void>{
-        fs.writeFileSync("P:/Desktop/elec.txt", `test: ${songId}`);
         return this.queueDto.queueSong(songId);
     }
 }

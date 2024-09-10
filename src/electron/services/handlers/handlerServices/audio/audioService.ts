@@ -17,7 +17,7 @@ export class AudioService {
     }
 
     @handler
-    async getAudioFileData(songId: number): Promise<Buffer>{
+    async getSongBuffer(songId: number): Promise<Buffer>{
         console.log(`looking up song ${songId}`)
         const song = await this.songDto.getSong(songId);
         const audioData = fs.readFileSync(song.songFilePath);

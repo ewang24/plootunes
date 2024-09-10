@@ -1,24 +1,41 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { ElectronUtil } from '../util/electronUtil';
+import { PlayerContext } from '../main';
+import { AudioService } from '../albums/electronServices/audioService';
 
 export interface PlayerProps {
     isPlaying: boolean;
 }
 
-function Player(props: PlayerProps) {
-    const { isPlaying } = props;
+function Player() {
+    const { currentlyPlayingSong } = useContext(PlayerContext);
     const [audioSrc, setAudioSrc] = useState<string | undefined>(undefined);
+    const audioPlayer = useRef(null);
 
     useEffect(() => {
-        if (!isPlaying) {
+        debugger;
+        if(!audioSrc){
             return;
         }
 
-        ElectronUtil.invoke('getQueuedSongToPlay')
+        if(!audioPlayer.current){
+            window.alert("Fatal error! Audio player not available. Please restart the application.")
+        }
+        audioPlayer.current.play();
+    }, [audioSrc]);
+
+    useEffect(() => {
+        debugger;
+        if (!currentlyPlayingSong) {
+            return;
+        }
+
+        AudioService.getSongBuffer(currentlyPlayingSong)
             .then((data: Buffer) => {
                 processAudioBuffer(data);
             });
-    }, [isPlaying]);
+
+    }, [currentlyPlayingSong]);
 
     function processAudioBuffer(data: Buffer) {
         const blob = new Blob([data], { type: 'audio/mpeg' });
@@ -28,7 +45,7 @@ function Player(props: PlayerProps) {
 
     return <div className={'player-controls'}>
         {audioSrc &&
-            <audio controls>
+            <audio ref = {audioPlayer} key = {audioSrc} controls>
                 <source src={audioSrc} type="audio/mpeg" />
                 Your browser does not support the audio element.
             </audio>

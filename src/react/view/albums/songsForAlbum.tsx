@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import ViewContainer from '../global/viewContainer';
 import { Song } from '../../../core/db/dbEntities/song';
 import { ElectronUtil } from '../util/electronUtil';
 import PButton from '../global/widgets/pButton';
+import { PlayerContext } from '../main';
 
 function SongsForAlbum ({ album, closeSongsForAlbumView }){
 
+    const {playSongNow} = useContext(PlayerContext);
     const [songs, setSongs] = useState<Song[]>(undefined);
     useEffect(() => {
         ElectronUtil.invoke('getSongsByAlbum', album.id)
@@ -16,11 +18,7 @@ function SongsForAlbum ({ album, closeSongsForAlbumView }){
     }, []);
 
     function playSong(songId: number){
-
-        //TODO: change this from queueing, this is just for testing for now.
-        ElectronUtil.invoke('queueSong', songId).catch((err) => {
-            console.error(`An error occurred: ${JSON.stringify(err, null, 2)}`)
-        })
+        playSongNow(songId);
     }
 
     return <>
@@ -88,8 +86,8 @@ function SongsForAlbum ({ album, closeSongsForAlbumView }){
 
             }
             {/*end songs for album*/}
-        </ViewContainer>;
+        </ViewContainer>
     </>
-};
+}
 
 export default SongsForAlbum;
