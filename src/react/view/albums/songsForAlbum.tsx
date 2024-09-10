@@ -27,7 +27,7 @@ function SongsForAlbum ({ album, closeSongsForAlbumView }){
             <div className='p-row p-row-space-between'>
                 <div className='p-row p-row-flex-start'>
                     <div className='album-songs-cover'>
-                        <img
+                        <img draggable = "false"
                             src='../../assets/img/test.jpg'
                         />
                     </div>

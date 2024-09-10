@@ -24,12 +24,12 @@ function ArtistTile(props: ArtistTileProps) {
         <div className={'artist-tile p-tile'} onClick={showArtistDetails}>
             <div className='p-tile-image'>
                 {index % 2 === 0 &&
-                    <img
+                    <img draggable = "false"
                         src='../../assets/img/up.jpg'
                     />
                 }
                 {index % 2 !== 0 &&
-                    <img
+                    <img draggable = "false"
                         src='../../assets/img/test.jpg'
                     />
                 }

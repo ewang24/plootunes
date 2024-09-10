@@ -26,12 +26,12 @@ const AlbumList = () => {
         return <div key={index} className='p-tile' onClick={() => setSelectedAlbum(album)}>
           <div className='p-tile-image'>
             {index % 2 === 0 &&
-              <img
+              <img draggable = "false"
                 src='../../assets/img/test.jpg'
               />
             }
             {index % 2 !== 0 &&
-              <img
+              <img draggable = "false"
                 src='../../assets/img/up.jpg'
               />
             }
