@@ -25,6 +25,10 @@ function SongsForAlbum({ album, closeSongsForAlbumView }) {
         queueSong(songId);
     }
 
+    function getLength(song: Song): string{
+        return `${Math.floor(song.songLength/60)}:${Math.floor(song.songLength % 60)}`
+    }
+
     return <>
         {/*start songs for album*/}
         <ViewContainer>
@@ -85,7 +89,7 @@ function SongsForAlbum({ album, closeSongsForAlbumView }) {
                                     0
                                 </td>
                                 <td>
-                                    0:00
+                                    {getLength(song)}
                                 </td>
                             </tr>
                         })}

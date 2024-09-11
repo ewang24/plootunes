@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS artist (
     id INTEGER PRIMARY KEY,
     name TEXT NOT NULL,
     artistId INTEGER NOT NULL,
+    coverImage BLOB NULL,
     FOREIGN KEY (artistId) REFERENCES artist(id)
 );
 

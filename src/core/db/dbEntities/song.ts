@@ -4,4 +4,5 @@ export interface Song{
     name: string;
     songPosition: number;
     songFilePath: string;
+    songLength: number;
 }

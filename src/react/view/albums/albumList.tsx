@@ -16,6 +16,7 @@ const AlbumList = () => {
   useEffect(() => {
     AlbumService.getAlbums()
       .then((albums: Album[]) => {
+        console.log(albums[0])
         setAlbums(albums);
       });
   }, []);
@@ -23,9 +24,13 @@ const AlbumList = () => {
   function renderAlbumList(): ReactElement {
     return <div className='albums-wrap-container'>
       {albums.map((album: Album, index) => {
+
+        // const coverArt = album.coverImage?.toString('base64');
+        // console.log(coverArt);
         return <div key={index} className='p-tile' onClick={() => setSelectedAlbum(album)}>
           <div className='p-tile-image'>
-            {index % 2 === 0 &&
+            <img src= {`data:image/jpg;base64,${album.coverImageBase64}`}></img>
+            {/* {index % 2 === 0 &&
               <img draggable = "false"
                 src='../../assets/img/test.jpg'
               />
@@ -34,7 +39,7 @@ const AlbumList = () => {
               <img draggable = "false"
                 src='../../assets/img/up.jpg'
               />
-            }
+            } */}
           </div>
           <span className='album-name'>{album.name}</span>
           <span className='artist-name'>{`${album.artistName}`}</span>

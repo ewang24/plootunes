@@ -49,14 +49,14 @@ export class Sqlite3Connector implements Connector {
     const selectStatement = this.db.prepare(query, params || {});
     return new Promise((resolve, reject) => {
       selectStatement.all(
-        function (this: Statement, err: Error | null, rows: T[]) {
+        function (this: Statement, err: Error | null, rows) {
           if (err) {
             console.error(`An error occurred: ${JSON.stringify(err, null, 2)}`)
             reject(err);
           }
 
           selectStatement.finalize();
-          resolve(rows);
+          resolve(rows as T[]);
         }
       );
     })

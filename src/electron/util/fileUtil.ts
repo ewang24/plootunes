@@ -5,9 +5,16 @@ import { Database, OPEN_CREATE, OPEN_READWRITE } from "sqlite3";
 import { DbUtil } from "../../core/db/dbUtil";
 
 
+/*
+ * This functionality uses the music-metadata library. Documentation is here: https://www.npmjs.com/package/music-metadata
+   IAudioMetadata is the interface that defines the shape of the metadata returned. 
+ */
+
 const SupportedFileTypesList = ['mp3', 'm4a', 'wav', 'flac']
 export type SupportedFileTypes = typeof SupportedFileTypesList[number];
 export const fileReadingTempTable = 'temp_read_table';
+let albumCovers: Record<string, Buffer> = {};
+
 
 export class FileUtil {
     static isSupportedFileType(fileType: string): fileType is SupportedFileTypes {
@@ -15,10 +22,11 @@ export class FileUtil {
         return SupportedFileTypesList.indexOf(val as SupportedFileTypes) >= 0;
     }
 
-
     static async scanFiles(): Promise<void> {
+        albumCovers = {};
         //TODO: replace with the path from the config table
-        const libraryPath = 'P:/Music/music/rotation';
+        // const libraryPath = 'P:/Music/music/rotation/Amorphis';
+        const libraryPath = 'P:/Music/music/rotation/Abbath';
         const db = new Database(`${process.env.DB_PATH}`, OPEN_CREATE | OPEN_READWRITE, (err: Error | null) => {
             if (err) {
                 return console.error(err.message);
@@ -52,6 +60,7 @@ export class FileUtil {
         await this.insertDistinctIntoTable('artist', 'artistName', 'name', db);
         await this.insertAlbums(db);
         await this.insertSongs(db);
+        await DbUtil.execute(db, `DROP TABLE ${fileReadingTempTable}`);
     }
 
     private static async insertDistinctIntoTable(
@@ -90,7 +99,43 @@ export class FileUtil {
         `;
         
         console.log(insertTransaction);
-        return DbUtil.execute(db, insertTransaction);
+        await DbUtil.execute(db, insertTransaction);
+        
+        console.log('buffer info:')
+        console.log(Object.keys(albumCovers));
+        console.log(albumCovers['Abbath'].toString('hex'));
+        console.log(Buffer.isBuffer(albumCovers['Abbath'])); // Should be true
+        const sql = `UPDATE album SET coverImage = ? WHERE name = ?`;
+        db.run(sql, [albumCovers['Abbath'], 'Abbath'], function(err) {
+            if (err) {
+                console.error('Error updating cover image:', err.message);
+            } else {
+                // console.log(`Updated cover image for ${albumName}`);
+            }
+        });
+        // const statement = db.prepare(`UPDATE album SET coverImage = X'48656c6c6f' WHERE name = $albumName;`);
+        // for(let album of Object.keys(albumCovers)){
+        //     console.log(`preparing: cover art for ${album}.`)
+        //     await this.runStatement(statement, {
+        //       $albumName: album,
+        //     //   $blobData: Buffer.from('test')
+        //     });
+        //     console.log(`Updated album art for ${album}`)
+        // }
+
+        // statement.finalize();
+    }
+
+    private static async runStatement(statement, params) {
+        return new Promise((resolve, reject) => {
+            statement.run(params, function (err) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(this.changes); // 'this' refers to the run context (SQLite statement)
+                }
+            });
+        });
     }
 
     private static async insertSongs(db: Database): Promise<void> {
@@ -139,29 +184,39 @@ export class FileUtil {
             const artistName = this.processString(metadata.common.artist);
             const songName = this.processString(metadata.common.title);
             const songPosition = metadata.common.track.no;
-            const genre = metadata.common.genre;
-            const genreString = this.processString(genre? genre[0]: null);
-
+            const _genre = metadata.common.genre;
+            const genre = this.processString(_genre? _genre[0]: null);
+            const length = Math.floor(metadata.format.duration);
             const insertStatement = `
-                INSERT INTO ${fileReadingTempTable} (albumName, artistName, songName, songPosition, genre, songFilePath) values (
-                    ${albumName}, ${artistName}, ${songName}, ${songPosition}, ${genreString}, ${this.processString(filePath)}
+                INSERT INTO ${fileReadingTempTable} (albumName, artistName, songName, songPosition, genre, songFilePath, songLength) values (
+                    ${albumName}, ${artistName}, ${songName}, ${songPosition}, ${genre}, ${this.processString(filePath)}, ${length}
                 );
             `
+
+            console.log(`recording art for :${albumName}, ${this.quoteEscape(metadata.common.album)}`)
+            //TODO: [0] is the first album cover. If there are more embedded, we will not pick up on them. Perhaps need to suppor that in the future.
+            albumCovers[this.quoteEscape(metadata.common.album)] = albumCovers[this.quoteEscape(metadata.common.album)] || metadata.common.picture[0].data;
+
             metadata = null;
             insertStatements.push(insertStatement);
         }
+    }
+
+    private static quoteEscape(str: string){
+        //Escape single quotes so we don't break the insert
+        const quoteEscaped = str.replace(/['"]/g, match => {
+            return match === "'" ? "''" : '\\"';
+        })
+
+        return quoteEscaped;
     }
 
     private static processString(str: string) {
         if (!str) {
             return 'NULL';
         }
-
-        //Escape single quotes so we don't break the insert
-        const quoteEscaped = str.replace(/['"]/g, match => {
-            return match === "'" ? "''" : '\\"';
-        })
-        return `'${quoteEscaped}'`;
+        
+        return `'${this.quoteEscape(str)}'`;
     }
 
 }
