@@ -13,7 +13,29 @@ export class QueueDto extends Dto{
         getNextSongInQueue: "SELECT * FROM song WHERE id = (SELECT songId from queue WHERE id > (SELECT id FROM queue where current = 1))",
         setCurrentSongToNotCurrent: "UPDATE queue SET current = 0 where id = (SELECT id FROM queue where current = 1)",
         setSongToCurrent: "UPDATE queue SET current = 1 where songId = $songId",
-        queueAlbum: "INSERT INTO queue (songId, current, position) SELECT id as songId, 0 AS current, 0 AS position FROM song where albumId = $albumId order by songPosition;"
+        queueAlbum: `
+            INSERT INTO queue (songId, current, position)
+            SELECT id as songId, 
+                CASE
+                   WHEN $setCurrent = 1 AND ROW_NUMBER() OVER () = 1 THEN 1
+                   ELSE 0
+                END AS current,
+             0 AS position FROM
+            song where albumId = $albumId order by songPosition;
+        `,
+        queueArtist: `
+         INSERT INTO queue (songId, current, position)
+            SELECT s.id as songId, 
+                CASE
+                   WHEN $setCurrent = 1 AND ROW_NUMBER() OVER () = 1 THEN 1
+                   ELSE 0
+                END AS current,
+             0 AS position FROM
+            song s inner join album alb on s.albumId = alb.id
+                inner join artist art on alb.artistId = art.id
+                where art.id = $artistId
+                order by s.songPosition;
+        `
     }
 
     constructor(connector: Connector){
@@ -54,7 +76,13 @@ export class QueueDto extends Dto{
         return this.connector.run(this.queries.setSongToCurrent, {songId})
     }
 
-    async queueAlbum(albumId: number): Promise<void>{
-        return this.connector.run(this.queries.queueAlbum, {albumId});
+    async queueAlbum(albumId: number, setCurrent?: boolean): Promise<void>{
+        const _setCurrent = setCurrent? 1: 0;
+        return this.connector.run(this.queries.queueAlbum, {albumId, setCurrent: _setCurrent});
+    }
+
+    async queueArtist(artistId: number, setCurrent?: boolean): Promise<void>{
+        const _setCurrent = setCurrent? 1: 0;       
+        return this.connector.run(this.queries.queueArtist, {artistId, setCurrent: _setCurrent});
     }
 }

@@ -18,4 +18,11 @@ export class QueueService{
         return ElectronUtil.invoke<void>("queueAlbum", albumId);
     }
 
+    static async playArtist(artistId: number): Promise<void>{
+        return ElectronUtil.invoke<void>("playArtist", artistId);
+    }
+
+    static async queueArtist(artistId: number): Promise<void>{
+        return ElectronUtil.invoke<void>("queueArtist", artistId);
+    }
 }

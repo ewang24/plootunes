@@ -38,11 +38,22 @@ export class QueueService{
     @handler
     async playAlbum(albumId: number): Promise<void>{
         await this.queueDto.clearQueue();
-        this.queueAlbum(albumId);
+        this.queueAlbum(albumId, true);
     }
 
     @handler
-    async queueAlbum(albumId: number): Promise<void>{
-        this.queueDto.queueAlbum(albumId);
+    async queueAlbum(albumId: number, setCurrent?: boolean): Promise<void>{
+        this.queueDto.queueAlbum(albumId, setCurrent);
+    }
+
+    @handler
+    async playArtist(artistId: number): Promise<void>{
+        await this.queueDto.clearQueue();
+        this.queueArtist(artistId, true);
+    }
+
+    @handler
+    async queueArtist(artistId: number, setCurrent?: boolean): Promise<void>{
+        this.queueDto.queueArtist(artistId, setCurrent);       
     }
 }
