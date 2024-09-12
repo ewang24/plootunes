@@ -24,22 +24,25 @@ const AlbumList = () => {
   function renderAlbumList(): ReactElement {
     return <div className='albums-wrap-container'>
       {albums.map((album: Album, index) => {
-
-        // const coverArt = album.coverImage?.toString('base64');
-        // console.log(coverArt);
         return <div key={index} className='p-tile' onClick={() => setSelectedAlbum(album)}>
           <div className='p-tile-image'>
-            <img src= {`data:image/jpg;base64,${album.coverImageBase64}`}></img>
-            {/* {index % 2 === 0 &&
-              <img draggable = "false"
-                src='../../assets/img/test.jpg'
-              />
+            {album.coverImageBase64 &&
+              <img src={`data:image/jpg;base64,${album.coverImageBase64}`}></img>
             }
-            {index % 2 !== 0 &&
-              <img draggable = "false"
-                src='../../assets/img/up.jpg'
-              />
-            } */}
+            {!album.coverImageBase64 &&
+              <>
+                {index % 2 === 0 &&
+                  <img draggable="false"
+                    src='../../assets/img/test.jpg'
+                  />
+                }
+                {index % 2 !== 0 &&
+                  <img draggable="false"
+                    src='../../assets/img/up.jpg'
+                  />
+                }
+              </>
+            }
           </div>
           <span className='album-name'>{album.name}</span>
           <span className='artist-name'>{`${album.artistName}`}</span>

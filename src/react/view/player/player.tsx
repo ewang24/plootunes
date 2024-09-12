@@ -26,54 +26,54 @@ function Player() {
         processCurrentlyPlayingSong();
     }, [currentlyPlayingSong]);
 
-    function setUpAudioPlayerListeners(){
+    function setUpAudioPlayerListeners() {
         // console.log('setting up ending audio listener');
-        if(!audioPlayer.current){
+        if (!audioPlayer.current) {
             return;
         }
 
         audioPlayer.current.addEventListener("ended", audioEnded);
         // console.log('audio player listener created');
 
-        return () =>{
-            if(!audioPlayer?.current){
+        return () => {
+            if (!audioPlayer?.current) {
                 return;
             }
             audioPlayer.current.removeEventListener("ended", audioEnded);
         }
     }
 
-    async function audioEnded(){
+    async function audioEnded() {
         const nextSongInQueue: Song = await QueueService.getNextSongInQueue()
-        if(!nextSongInQueue){
+        if (!nextSongInQueue) {
             return;
         }
 
         QueueService.transitionCurrentSong(nextSongInQueue.id).then(() => {
-            setCurrentlyPlayingSong(nextSongInQueue.id);
+            setCurrentlyPlayingSong(nextSongInQueue);
         })
-        .catch((err) => {
-            window.alert(`Fatal error: ${JSON.stringify(err, null, 2)}`)
-        })
+            .catch((err) => {
+                window.alert(`Fatal error: ${JSON.stringify(err, null, 2)}`)
+            })
     }
 
-    function processAudioSrc(){
-        if(!audioSrc){
+    function processAudioSrc() {
+        if (!audioSrc) {
             return;
         }
 
-        if(!audioPlayer.current){
+        if (!audioPlayer.current) {
             window.alert("Fatal error! Audio player not available. Please restart the application.")
         }
         audioPlayer.current.play();
     }
 
-    function processCurrentlyPlayingSong(){
+    function processCurrentlyPlayingSong() {
         if (!currentlyPlayingSong) {
             return;
         }
 
-        AudioService.getSongBuffer(currentlyPlayingSong)
+        AudioService.getSongBuffer(currentlyPlayingSong.id)
             .then((data: Buffer) => {
                 processAudioBuffer(data);
             });
@@ -87,10 +87,17 @@ function Player() {
 
     return <div className={'player-controls'}>
         {audioSrc &&
-            <audio ref = {audioPlayer} key = {audioSrc} controls>
-                <source src={audioSrc} type="audio/mpeg" />
-                Your browser does not support the audio element.
-            </audio>
+            <div className='p-row'>
+                <strong>
+                    {
+                        currentlyPlayingSong.name
+                    }
+                </strong>
+                <audio ref={audioPlayer} key={audioSrc} controls>
+                    <source src={audioSrc} type="audio/mpeg" />
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
         }
     </div>
 }

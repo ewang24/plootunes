@@ -17,12 +17,12 @@ function SongsForAlbum({ album, closeSongsForAlbumView }) {
             });
     }, []);
 
-    function playSongCallback(songId: number) {
-        playSongNow(songId);
+    function playSongCallback(song: Song) {
+        playSongNow(song);
     }
 
-    function queueSongCallback(songId: number) {
-        queueSong(songId);
+    function queueSongCallback(song: Song) {
+        queueSong(song);
     }
 
     function getLength(song: Song): string{
@@ -73,8 +73,8 @@ function SongsForAlbum({ album, closeSongsForAlbumView }) {
                             return <tr className={`song-album-row ${index % 2 == 0 ? 'song-album-even' : 'song-album-odd'}`} key={`${album}-song-${index}`}>
                                 <td>
                                     <div className='p-row'>
-                                        <PButton label='Play' onClick={() => { playSongCallback(song.id) }} />
-                                        <PButton label='Queue' onClick={() => { queueSongCallback(song.id) }} />
+                                        <PButton label='Play' onClick={() => { playSongCallback(song) }} />
+                                        <PButton label='Queue' onClick={() => { queueSongCallback(song) }} />
                                     </div>
                                 </td>
                                 <td>

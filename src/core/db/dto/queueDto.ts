@@ -12,7 +12,7 @@ export class QueueDto extends Dto{
         clearQueue: "DELETE FROM queue",
         getNextSongInQueue: "SELECT * FROM song WHERE id = (SELECT songId from queue WHERE id > (SELECT id FROM queue where current = 1))",
         setCurrentSongToNotCurrent: "UPDATE queue SET current = 0 where id = (SELECT id FROM queue where current = 1)",
-        setSongToCurrent: "UPDATE queue SET current = 1 where id = $songId"
+        setSongToCurrent: "UPDATE queue SET current = 1 where songId = $songId"
     }
 
     constructor(connector: Connector){

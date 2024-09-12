@@ -4,34 +4,35 @@ import '../styles/main.scss'
 import AppRouter from './navigation/router';
 import PlayerMain from './player/playerMain';
 import { ElectronUtil } from './util/electronUtil';
+import { Song } from '../../core/db/dbEntities/song';
 
 export interface PlayerContext {
-  playSongNow(songId: number): void;
+  playSongNow(song: Song): void;
   queueSong(songId): void;
-  currentlyPlayingSong: number | undefined;
-  setCurrentlyPlayingSong: React.Dispatch<React.SetStateAction<number>>;
+  currentlyPlayingSong: Song | undefined;
+  setCurrentlyPlayingSong: React.Dispatch<React.SetStateAction<Song>>;
 }
 
 export const PlayerContext = createContext<PlayerContext | undefined>(undefined);
 
 const Main = () => {
 
-  const [currentlyPlayingSong, setCurrentlyPlayingSong] = useState<number | undefined>(undefined);
+  const [currentlyPlayingSong, setCurrentlyPlayingSong] = useState<Song | undefined>(undefined);
 
 
-  function playSongNow(songId: number){
-    ElectronUtil.invoke('playSong', songId).then(() => {
-      setCurrentlyPlayingSong(songId);
+  function playSongNow(song: Song){
+    ElectronUtil.invoke('playSong', song.id).then(() => {
+      setCurrentlyPlayingSong(song);
     });
   }
 
-  function queueSong(songId: number){
-    ElectronUtil.invoke('queueSong', songId).then(() => {
+  function queueSong(song: Song){
+    ElectronUtil.invoke('queueSong', song.id).then(() => {
       if(currentlyPlayingSong){
         return;
       }
 
-      setCurrentlyPlayingSong(songId);
+      setCurrentlyPlayingSong(song);
     });
   }
 

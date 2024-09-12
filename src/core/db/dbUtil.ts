@@ -13,6 +13,18 @@ export class DbUtil {
         });
     }
 
+    static async run(db: Database, statement: string, params): Promise<void> {
+        return new Promise<void>((resolve, reject: (error?: Error) => void) => {
+            db.run(statement, params, (err: Error | null) => {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+                resolve();
+            });
+        });
+    }
+
     static async get(): Promise<void> {
 
     }

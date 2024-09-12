@@ -25,8 +25,8 @@ export class FileUtil {
     static async scanFiles(): Promise<void> {
         albumCovers = {};
         //TODO: replace with the path from the config table
-        // const libraryPath = 'P:/Music/music/rotation/Amorphis';
-        const libraryPath = 'P:/Music/music/rotation/Abbath';
+        const libraryPath = 'P:/Music/music/rotation/';
+        // const libraryPath = 'P:/Music/music/rotation/Abbath';
         const db = new Database(`${process.env.DB_PATH}`, OPEN_CREATE | OPEN_READWRITE, (err: Error | null) => {
             if (err) {
                 return console.error(err.message);
@@ -97,34 +97,26 @@ export class FileUtil {
             left join album as alb on temp.albumName = alb.name
             where alb.id is null;
         `;
-        
-        console.log(insertTransaction);
-        await DbUtil.execute(db, insertTransaction);
-        
-        console.log('buffer info:')
-        console.log(Object.keys(albumCovers));
-        console.log(albumCovers['Abbath'].toString('hex'));
-        console.log(Buffer.isBuffer(albumCovers['Abbath'])); // Should be true
-        const sql = `UPDATE album SET coverImage = ? WHERE name = ?`;
-        db.run(sql, [albumCovers['Abbath'], 'Abbath'], function(err) {
-            if (err) {
-                console.error('Error updating cover image:', err.message);
-            } else {
-                // console.log(`Updated cover image for ${albumName}`);
-            }
-        });
-        // const statement = db.prepare(`UPDATE album SET coverImage = X'48656c6c6f' WHERE name = $albumName;`);
-        // for(let album of Object.keys(albumCovers)){
-        //     console.log(`preparing: cover art for ${album}.`)
-        //     await this.runStatement(statement, {
-        //       $albumName: album,
-        //     //   $blobData: Buffer.from('test')
-        //     });
-        //     console.log(`Updated album art for ${album}`)
-        // }
 
-        // statement.finalize();
-    }
+        // console.log(insertTransaction);
+        await DbUtil.execute(db, insertTransaction);
+
+        const sql = `UPDATE album SET coverImage = ? WHERE name = ?`;
+        for (let album of Object.keys(albumCovers)) {
+            await DbUtil.run(db, sql, [albumCovers[album], album]);
+        }
+        // const statement = db.prepare(`UPDATE album SET coverImage = X'48656c6c6f' WHERE name = $albumName;`);
+        // for (let album of Object.keys(albumCovers)) {
+            //     console.log(`preparing: cover art for ${album}.`)
+            //     await this.runStatement(statement, {
+            //       $albumName: album,
+            //     //   $blobData: Buffer.from('test')
+            //     });
+            //     console.log(`Updated album art for ${album}`)
+            // }
+
+            // statement.finalize();
+        }
 
     private static async runStatement(statement, params) {
         return new Promise((resolve, reject) => {
@@ -149,7 +141,7 @@ export class FileUtil {
         left join song as so on temp.songName = so.name
         where so.id is null;
         `;
-        
+
         console.log(insertTransaction);
         return DbUtil.execute(db, insertTransaction);
     }
@@ -185,7 +177,7 @@ export class FileUtil {
             const songName = this.processString(metadata.common.title);
             const songPosition = metadata.common.track.no;
             const _genre = metadata.common.genre;
-            const genre = this.processString(_genre? _genre[0]: null);
+            const genre = this.processString(_genre ? _genre[0] : null);
             const length = Math.floor(metadata.format.duration);
             const insertStatement = `
                 INSERT INTO ${fileReadingTempTable} (albumName, artistName, songName, songPosition, genre, songFilePath, songLength) values (
@@ -193,16 +185,22 @@ export class FileUtil {
                 );
             `
 
-            console.log(`recording art for :${albumName}, ${this.quoteEscape(metadata.common.album)}`)
-            //TODO: [0] is the first album cover. If there are more embedded, we will not pick up on them. Perhaps need to suppor that in the future.
-            albumCovers[this.quoteEscape(metadata.common.album)] = albumCovers[this.quoteEscape(metadata.common.album)] || metadata.common.picture[0].data;
+            
+
+            const coverImage = metadata.common?.picture?.[0]?.data;
+            if(coverImage && metadata.common.album){
+                const unquotedAlbumName = this.quoteEscape(metadata.common.album);
+                //TODO: [0] is the first album cover. If there are more embedded, we will not pick up on them. Perhaps need to suppor that in the future.
+                albumCovers[unquotedAlbumName] = albumCovers[unquotedAlbumName] || coverImage;
+            }
+            
 
             metadata = null;
             insertStatements.push(insertStatement);
         }
     }
 
-    private static quoteEscape(str: string){
+    private static quoteEscape(str: string) {
         //Escape single quotes so we don't break the insert
         const quoteEscaped = str.replace(/['"]/g, match => {
             return match === "'" ? "''" : '\\"';
@@ -215,7 +213,7 @@ export class FileUtil {
         if (!str) {
             return 'NULL';
         }
-        
+
         return `'${this.quoteEscape(str)}'`;
     }
 
