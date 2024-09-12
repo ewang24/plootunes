@@ -12,7 +12,8 @@ export class QueueDto extends Dto{
         clearQueue: "DELETE FROM queue",
         getNextSongInQueue: "SELECT * FROM song WHERE id = (SELECT songId from queue WHERE id > (SELECT id FROM queue where current = 1))",
         setCurrentSongToNotCurrent: "UPDATE queue SET current = 0 where id = (SELECT id FROM queue where current = 1)",
-        setSongToCurrent: "UPDATE queue SET current = 1 where songId = $songId"
+        setSongToCurrent: "UPDATE queue SET current = 1 where songId = $songId",
+        queueAlbum: "INSERT INTO queue (songId, current, position) SELECT id as songId, 0 AS current, 0 AS position FROM song where albumId = $albumId order by songPosition;"
     }
 
     constructor(connector: Connector){
@@ -51,5 +52,9 @@ export class QueueDto extends Dto{
         //TODO: wrap these two queries in a transaction
         await this.connector.run(this.queries.setCurrentSongToNotCurrent);
         return this.connector.run(this.queries.setSongToCurrent, {songId})
+    }
+
+    async queueAlbum(albumId: number): Promise<void>{
+        return this.connector.run(this.queries.queueAlbum, {albumId});
     }
 }

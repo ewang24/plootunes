@@ -4,10 +4,11 @@ import { Song } from '../../../core/db/dbEntities/song';
 import { ElectronUtil } from '../util/electronUtil';
 import PButton from '../global/widgets/pButton';
 import { PlayerContext } from '../main';
+import { QueueService } from './electronServices/queueService';
 
 function SongsForAlbum({ album, closeSongsForAlbumView }) {
 
-    const { playSongNow, queueSong } = useContext(PlayerContext);
+    const { playSongNow, queueSong, setCurrentlyPlayingSong, currentlyPlayingSong } = useContext(PlayerContext);
     const [songs, setSongs] = useState<Song[]>(undefined);
     useEffect(() => {
         ElectronUtil.invoke('getSongsByAlbum', album.id)
@@ -17,6 +18,20 @@ function SongsForAlbum({ album, closeSongsForAlbumView }) {
             });
     }, []);
 
+    function playAlbumCallback() {
+        QueueService.playAlbum(album.id).then(() => {
+            setCurrentlyPlayingSong(songs[0]);
+        });
+    }
+
+    function queueAlbumCallback() {
+        QueueService.queueAlbum(album.id).then(() => {
+            if (currentlyPlayingSong) {
+                setCurrentlyPlayingSong(songs[0]);
+            }
+        });
+    }
+
     function playSongCallback(song: Song) {
         playSongNow(song);
     }
@@ -25,33 +40,39 @@ function SongsForAlbum({ album, closeSongsForAlbumView }) {
         queueSong(song);
     }
 
-    function getLength(song: Song): string{
-        return `${Math.floor(song.songLength/60)}:${Math.floor(song.songLength % 60)}`
+    function getLength(song: Song): string {
+        return `${Math.floor(song.songLength / 60)}:${Math.floor(song.songLength % 60).toString().padStart(2, '0')}`
     }
 
     return <>
         {/*start songs for album*/}
         <ViewContainer>
             <div className='p-row p-row-space-between'>
-                <div className='p-row p-row-flex-start'>
-                    <div className='album-songs-cover'>
-                        <img draggable="false"
-                            src='../../assets/img/test.jpg'
-                        />
+                <div className='p-col'>
+                    <div className='p-row p-row-flex-start'>
+                        <div className='album-songs-cover'>
+                            <img draggable="false"
+                                src='../../assets/img/test.jpg'
+                            />
+                        </div>
+                        <div className='p-col p-row-flex-start p-row-align-top album-details-col'>
+                            <h1 className='album-song-list-title'>
+                                {album.name}
+                            </h1>
+                            <div className='album-sub-details'>
+                                {album.artistName}
+                            </div>
+                            <div className='album-sub-details'>
+                                2023
+                            </div>
+                            <div className='album-sub-details'>
+                                1hr 69m
+                            </div>
+                        </div>
                     </div>
-                    <div className='p-col p-row-flex-start p-row-align-top album-details-col'>
-                        <h1 className='album-song-list-title'>
-                            {album.name}
-                        </h1>
-                        <div className='album-sub-details'>
-                            {album.artistName}
-                        </div>
-                        <div className='album-sub-details'>
-                            2023
-                        </div>
-                        <div className='album-sub-details'>
-                            1hr 69m
-                        </div>
+                    <div className='p-row'>
+                        <PButton label='Play Album' onClick={playAlbumCallback} />
+                        <PButton label='Queue Album' onClick={queueAlbumCallback} />
                     </div>
                 </div>
                 <button onClick={() => closeSongsForAlbumView()}>Back</button>

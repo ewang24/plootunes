@@ -34,4 +34,15 @@ export class QueueService{
     async transitionCurrentSong(nextCurrentSongId: number): Promise<void>{
         return this.queueDto.setSongAsCurrent(nextCurrentSongId);
     }
+
+    @handler
+    async playAlbum(albumId: number): Promise<void>{
+        await this.queueDto.clearQueue();
+        this.queueAlbum(albumId);
+    }
+
+    @handler
+    async queueAlbum(albumId: number): Promise<void>{
+        this.queueDto.queueAlbum(albumId);
+    }
 }

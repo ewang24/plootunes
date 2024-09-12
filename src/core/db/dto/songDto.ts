@@ -7,7 +7,7 @@ export class SongDto{
     queries: Queries = {
         getSongById: "SELECT * FROM song where id = $songId",
         getSongs: "SELECT * FROM song where",
-        getSongsByAlbum: "SELECT * FROM song where albumId = $albumId"
+        getSongsByAlbum: "SELECT * FROM song where albumId = $albumId order by songPosition"
     }
 
     connector: Connector;
