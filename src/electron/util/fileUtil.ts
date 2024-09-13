@@ -8,6 +8,7 @@ import { DbUtil } from "../../core/db/dbUtil";
 /*
  * This functionality uses the music-metadata library. Documentation is here: https://www.npmjs.com/package/music-metadata
    IAudioMetadata is the interface that defines the shape of the metadata returned. 
+   Common tags: https://github.com/borewit/music-metadata/blob/HEAD/doc/common_metadata.md
  */
 
 const SupportedFileTypesList = ['mp3', 'm4a', 'wav', 'flac']
@@ -22,11 +23,11 @@ export class FileUtil {
         return SupportedFileTypesList.indexOf(val as SupportedFileTypes) >= 0;
     }
 
-    static async scanFiles(): Promise<void> {
+    static async scanFiles(libraryPath: string): Promise<void> {
         albumCovers = {};
-        //TODO: replace with the path from the config table
-        const libraryPath = 'P:/Music/music/rotation/';
-        // const libraryPath = 'P:/Music/music/rotation/Blackbraid';
+        //TODO: replace with the path from the config table (maybe)
+        //'P:/Music/music/rotation/'
+        console.log(`Creating library db with ${process.argv[2]} as the source at ${process.env.DB_PATH}`);
         const db = new Database(`${process.env.DB_PATH}`, OPEN_CREATE | OPEN_READWRITE, (err: Error | null) => {
             if (err) {
                 return console.error(err.message);

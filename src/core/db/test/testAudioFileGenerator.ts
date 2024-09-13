@@ -92,6 +92,7 @@ export class TestAudioFileGenerator {
         const songPosition = metadata.common?.track?.no || 0;
         const _genre = metadata.common.genre;
         const genre = _genre ? _genre[0] : undefined;
+        const year = metadata.common.year;
 
         //Supported tags: https://www.npmjs.com/package/node-id3
         const tags = {
@@ -99,7 +100,8 @@ export class TestAudioFileGenerator {
             artist: artistName,
             album: albumName,
             trackNumber: songPosition,
-            genre: genre
+            genre: genre,
+            year: year
         }
 
         NodeID3.write(tags, targetAudioFilePath);

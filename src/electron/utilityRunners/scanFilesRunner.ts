@@ -2,4 +2,4 @@ import { FileUtil } from "../util/fileUtil";
 import { PropertiesUtil } from "../../core/util/propertiesUtil";
 
 PropertiesUtil.initProps()
-FileUtil.scanFiles();
+FileUtil.scanFiles(process.argv[2]);
