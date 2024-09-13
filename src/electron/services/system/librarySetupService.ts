@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const mm = require('music-metadata');
 import { Database, OPEN_CREATE, OPEN_READWRITE } from "sqlite3";
-import { DbUtil } from "../../core/db/dbUtil";
+import { DbUtil } from "../../../core/db/dbUtil";
 
 
 /*
@@ -14,17 +14,25 @@ import { DbUtil } from "../../core/db/dbUtil";
 const SupportedFileTypesList = ['mp3', 'm4a', 'wav', 'flac']
 export type SupportedFileTypes = typeof SupportedFileTypesList[number];
 export const fileReadingTempTable = 'temp_read_table';
-let albumCovers: Record<string, Buffer> = {};
 
+export class LibrarySetupService {
 
-export class FileUtil {
+    librarySource: string;
+    dbPath: string;
+    albumCovers: Record<string, Buffer>;
+
+    constructor(librarySource: string, dbPath: string){
+        this.librarySource = librarySource;
+        this.dbPath = dbPath;
+    }
+
     static isSupportedFileType(fileType: string): fileType is SupportedFileTypes {
         let val = fileType.replace(/\./g, '');
         return SupportedFileTypesList.indexOf(val as SupportedFileTypes) >= 0;
     }
 
-    static async scanFiles(libraryPath: string): Promise<void> {
-        albumCovers = {};
+    async scanFiles(): Promise<void> {
+        this.albumCovers = {};
         //TODO: replace with the path from the config table (maybe)
         //'P:/Music/music/rotation/'
         console.log(`Creating library db with ${process.argv[2]} as the source at ${process.env.DB_PATH}`);
@@ -36,7 +44,7 @@ export class FileUtil {
 
         const insertStatements: string[] = [];
         console.log('starting library processing');
-        await this.processLibrary(libraryPath, insertStatements);
+        await this.processLibrary(this.librarySource, insertStatements);
         console.log('processed, preparing to insert');
 
         const transaction = `
@@ -64,7 +72,7 @@ export class FileUtil {
         await DbUtil.execute(db, `DROP TABLE ${fileReadingTempTable}`);
     }
 
-    private static async insertDistinctIntoTable(
+    private async insertDistinctIntoTable(
         targetTableName: string,
         originColumnName: string,
         targetColumnName: string,
@@ -87,7 +95,7 @@ export class FileUtil {
     }
 
 
-    private static async insertAlbums(db: Database): Promise<void> {
+    private async insertAlbums(db: Database): Promise<void> {
         const insertTransaction = `
             insert into album (id, name, artistId)
             select null, temp.albumName, temp.artistId
@@ -103,12 +111,12 @@ export class FileUtil {
         await DbUtil.execute(db, insertTransaction);
 
         const sql = `UPDATE album SET coverImage = ? WHERE name = ?`;
-        for (let album of Object.keys(albumCovers)) {
-            await DbUtil.run(db, sql, [albumCovers[album], album]);
+        for (let album of Object.keys(this.albumCovers)) {
+            await DbUtil.run(db, sql, [this.albumCovers[album], album]);
         }
     }
 
-    private static async insertSongs(db: Database): Promise<void> {
+    private async insertSongs(db: Database): Promise<void> {
         const insertTransaction = `
         insert into song (id, name, albumId, songPosition, songLength, songFilePath)
         select null, temp.songName, temp.albumId, temp.songPosition, temp.songLength, temp.songFilePath
@@ -124,7 +132,7 @@ export class FileUtil {
         return DbUtil.execute(db, insertTransaction);
     }
 
-    private static async processLibrary(directoryPath: string, insertStatements: string[]): Promise<void> {
+    private async processLibrary(directoryPath: string, insertStatements: string[]): Promise<void> {
         let files = await fs.promises.readdir(directoryPath);
         const directories = [];
 
@@ -145,8 +153,8 @@ export class FileUtil {
         }
     }
 
-    private static async proccessAudioFile(filePath: string, insertStatements: string[]): Promise<void> {
-        if (this.isSupportedFileType(path.extname(filePath))) {
+    private async proccessAudioFile(filePath: string, insertStatements: string[]): Promise<void> {
+        if (LibrarySetupService.isSupportedFileType(path.extname(filePath))) {
             let metadata = await mm.parseFile(filePath, { duration: true });
 
             const albumName = this.quoteString(metadata.common?.album || 'Unknown Album');
@@ -168,7 +176,7 @@ export class FileUtil {
             if (coverImage && metadata.common.album) {
                 const unquotedAlbumName = this.quoteEscape(metadata.common.album);
                 //TODO: [0] is the first album cover. If there are more embedded, we will not pick up on them. Perhaps need to suppor that in the future.
-                albumCovers[unquotedAlbumName] = albumCovers[unquotedAlbumName] || coverImage;
+                this.albumCovers[unquotedAlbumName] = this.albumCovers[unquotedAlbumName] || coverImage;
             }
 
 
@@ -177,7 +185,7 @@ export class FileUtil {
         }
     }
 
-    private static quoteEscape(str: string) {
+    private quoteEscape(str: string) {
         //Escape single quotes so we don't break the insert
         const quoteEscaped = str.replace(/['"]/g, match => {
             return match === "'" ? "''" : '\\"';
@@ -186,7 +194,7 @@ export class FileUtil {
         return quoteEscaped;
     }
 
-    private static quoteString(str: string) {
+    private quoteString(str: string) {
         if (!str) {
             return 'NULL';
         }

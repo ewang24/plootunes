@@ -22,12 +22,10 @@ async function extractAlbumArt(filePath, outputDir) {
                 'tiff': 'tiff'
             };
 
-            imageFormat = formatMap[imageFormat] || 'jpg'; // Default to 'jpg' if format is unknown
-
-            // Define the output file path
+            imageFormat = formatMap[imageFormat] || 'jpg';
+        
             const outputFilePath = path.join(outputDir, `cover_image.${imageFormat}`);
 
-            // Write the image data to the file
             fs.writeFile(outputFilePath, imageData, (err) => {
                 if (err) {
                     console.error('Error writing cover image to file:', err);
@@ -43,9 +41,7 @@ async function extractAlbumArt(filePath, outputDir) {
     }
 }
 
-// Replace these with your actual file path and output directory
-const musicFilePath = 'P:/Music/music/rotation/Abbath/Abbath_ToWar_886445634129_1_1.mp3'; // Path to the music file
-const outputDirectory = 'P:/Music/music/rotation/Abbath'; // Directory where the image will be saved
+const musicFilePath = 'P:/Music/music/rotation/Abbath/Abbath_ToWar_886445634129_1_1.mp3';
+const outputDirectory = 'P:/Music/music/rotation/Abbath';
 
-// Call the function to extract and save the album art
 extractAlbumArt(musicFilePath, outputDirectory);

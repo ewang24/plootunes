@@ -10,24 +10,28 @@
     "scanFilesAnyDir": "ts-node ./src/electron/utilityRunners/scanFilesRunner.ts",
     "createTables": "ts-node ./src/core/utilityRunners/tableUtilRunner.ts",
     "clearTables": "ts-node ./src/core/utilityRunners/clearTablesRunner.ts",
-    "genTestLibrary": "ts-node ./src/core/db/test/testAudioFileGenerator.ts P:/Music/music/rotation/",
-    "createTestDb": "ts-node ./src/core/db/test/util/createTestDb.ts ../assets/testLibrary"
+    "genTestLibrary": "ts-node ./src/core/db/test/util/testAudioFileGenerator.ts P:/Music/music/rotation/",
+    "createTestDb": "ts-node ./src/core/db/test/util/createTestDb.ts ../assets/testLibrary",
+    "countAudioFiles": "ts-node ./src/core/db/test/util/runCountFiles.ts ../assets/testLibrary"
   },
   "private": true,
   "dependencies": {
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
+    "@types/jest": "^29.5.13",
     "@types/node": "^22.5.3",
     "css-loader": "^7.1.1",
+    "jest": "^29.7.0",
     "music-metadata": "^7.14.0",
     "node-id3": "^0.2.6",
     "react": "^18.2.0",
     "sass": "^1.75.0",
     "sass-loader": "^14.2.1",
     "style-loader": "^4.0.0",
+    "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
-    "typescript": "^5.5.4",
+    "typescript": "^5.6.2",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^5.0.4"
   }
