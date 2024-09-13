@@ -26,7 +26,7 @@ export class FileUtil {
         albumCovers = {};
         //TODO: replace with the path from the config table
         const libraryPath = 'P:/Music/music/rotation/';
-        // const libraryPath = 'P:/Music/music/rotation/Abbath';
+        // const libraryPath = 'P:/Music/music/rotation/Blackbraid';
         const db = new Database(`${process.env.DB_PATH}`, OPEN_CREATE | OPEN_READWRITE, (err: Error | null) => {
             if (err) {
                 return console.error(err.message);
@@ -136,7 +136,7 @@ export class FileUtil {
         select null, temp.songName, temp.albumId, temp.songPosition, temp.songLength, temp.songFilePath
         from (
             select distinct t.songName, alb.id as albumId, t.songPosition, t.songLength, t.songFilePath
-            from ${fileReadingTempTable} as t inner join album alb on t.albumName = alb.name
+            from album alb inner join artist art on alb.artistId = art.id inner join ${fileReadingTempTable} t on (t.albumName = alb.name and t.artistName = art.name)
         ) as temp
         left join song as so on temp.songName = so.name
         where so.id is null;
@@ -171,17 +171,16 @@ export class FileUtil {
         if (this.isSupportedFileType(path.extname(filePath))) {
             let metadata = await mm.parseFile(filePath, { duration: true });
 
-
-            const albumName = this.processString(metadata.common.album);
-            const artistName = this.processString(metadata.common.artist);
-            const songName = this.processString(metadata.common.title);
-            const songPosition = metadata.common.track.no;
+            const albumName = this.quoteString(metadata.common?.album || 'Unknown Album');
+            const artistName = this.quoteString(metadata.common?.artist || 'Unknown Artist');
+            const songName = this.quoteString(metadata.common?.title || `Unknown Song: ${filePath}`);
+            const songPosition = metadata.common?.track?.no || 0; 
             const _genre = metadata.common.genre;
-            const genre = this.processString(_genre ? _genre[0] : null);
-            const length = Math.floor(metadata.format.duration);
+            const genre = this.quoteString(_genre ? _genre[0] : 'Unknown Genre');
+            const length = Math.floor(metadata.format?.duration || 0);
             const insertStatement = `
                 INSERT INTO ${fileReadingTempTable} (albumName, artistName, songName, songPosition, genre, songFilePath, songLength) values (
-                    ${albumName}, ${artistName}, ${songName}, ${songPosition}, ${genre}, ${this.processString(filePath)}, ${length}
+                    ${albumName}, ${artistName}, ${songName}, ${songPosition}, ${genre}, ${this.quoteString(filePath)}, ${length}
                 );
             `
 
@@ -209,7 +208,7 @@ export class FileUtil {
         return quoteEscaped;
     }
 
-    private static processString(str: string) {
+    private static quoteString(str: string) {
         if (!str) {
             return 'NULL';
         }
