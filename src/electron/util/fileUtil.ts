@@ -105,29 +105,6 @@ export class FileUtil {
         for (let album of Object.keys(albumCovers)) {
             await DbUtil.run(db, sql, [albumCovers[album], album]);
         }
-        // const statement = db.prepare(`UPDATE album SET coverImage = X'48656c6c6f' WHERE name = $albumName;`);
-        // for (let album of Object.keys(albumCovers)) {
-            //     console.log(`preparing: cover art for ${album}.`)
-            //     await this.runStatement(statement, {
-            //       $albumName: album,
-            //     //   $blobData: Buffer.from('test')
-            //     });
-            //     console.log(`Updated album art for ${album}`)
-            // }
-
-            // statement.finalize();
-        }
-
-    private static async runStatement(statement, params) {
-        return new Promise((resolve, reject) => {
-            statement.run(params, function (err) {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(this.changes); // 'this' refers to the run context (SQLite statement)
-                }
-            });
-        });
     }
 
     private static async insertSongs(db: Database): Promise<void> {
@@ -174,7 +151,7 @@ export class FileUtil {
             const albumName = this.quoteString(metadata.common?.album || 'Unknown Album');
             const artistName = this.quoteString(metadata.common?.artist || 'Unknown Artist');
             const songName = this.quoteString(metadata.common?.title || `Unknown Song: ${filePath}`);
-            const songPosition = metadata.common?.track?.no || 0; 
+            const songPosition = metadata.common?.track?.no || 0;
             const _genre = metadata.common.genre;
             const genre = this.quoteString(_genre ? _genre[0] : 'Unknown Genre');
             const length = Math.floor(metadata.format?.duration || 0);
@@ -184,15 +161,15 @@ export class FileUtil {
                 );
             `
 
-            
+
 
             const coverImage = metadata.common?.picture?.[0]?.data;
-            if(coverImage && metadata.common.album){
+            if (coverImage && metadata.common.album) {
                 const unquotedAlbumName = this.quoteEscape(metadata.common.album);
                 //TODO: [0] is the first album cover. If there are more embedded, we will not pick up on them. Perhaps need to suppor that in the future.
                 albumCovers[unquotedAlbumName] = albumCovers[unquotedAlbumName] || coverImage;
             }
-            
+
 
             metadata = null;
             insertStatements.push(insertStatement);
