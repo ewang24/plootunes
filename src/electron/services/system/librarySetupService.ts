@@ -20,10 +20,27 @@ export class LibrarySetupService {
     librarySource: string;
     dbPath: string;
     albumCovers: Record<string, Buffer>;
+    _verbose: boolean = false;
 
+    /**
+     * 
+     * @param librarySource absolute path to directory representing the source library
+     * @param dbPath absolute path to the sqlite databse file
+     */
     constructor(librarySource: string, dbPath: string){
         this.librarySource = librarySource;
         this.dbPath = dbPath;
+    }
+
+    verbose(): LibrarySetupService{
+        this._verbose = true;
+        return this;
+    }
+
+    log(msg: string){
+        if(this._verbose){
+            console.log(msg);
+        }
     }
 
     static isSupportedFileType(fileType: string): fileType is SupportedFileTypes {
@@ -35,17 +52,17 @@ export class LibrarySetupService {
         this.albumCovers = {};
         //TODO: replace with the path from the config table (maybe)
         //'P:/Music/music/rotation/'
-        console.log(`Creating library db with ${process.argv[2]} as the source at ${process.env.DB_PATH}`);
-        const db = new Database(`${process.env.DB_PATH}`, OPEN_CREATE | OPEN_READWRITE, (err: Error | null) => {
+        this.log(`Creating library db with ${this.librarySource} as the source at ${this.dbPath}`);
+        const db = new Database(`${this.dbPath}`, OPEN_CREATE | OPEN_READWRITE, (err: Error | null) => {
             if (err) {
                 return console.error(err.message);
             }
         });
 
         const insertStatements: string[] = [];
-        console.log('starting library processing');
+        this.log('starting library processing');
         await this.processLibrary(this.librarySource, insertStatements);
-        console.log('processed, preparing to insert');
+        this.log('processed, preparing to insert');
 
         const transaction = `
             CREATE TABLE ${fileReadingTempTable} (
@@ -63,13 +80,14 @@ export class LibrarySetupService {
             BEGIN TRANSACTION; ${insertStatements.join("\n")} COMMIT;
         `
 
-        console.log(transaction);
+        this.log(transaction);
         await DbUtil.execute(db, transaction);
         await this.insertDistinctIntoTable('genre', 'genre', 'name', db);
         await this.insertDistinctIntoTable('artist', 'artistName', 'name', db);
         await this.insertAlbums(db);
         await this.insertSongs(db);
         await DbUtil.execute(db, `DROP TABLE ${fileReadingTempTable}`);
+        await DbUtil.close(db);
     }
 
     private async insertDistinctIntoTable(
@@ -90,7 +108,7 @@ export class LibrarySetupService {
             LEFT JOIN ${targetTableName} AS targetTable ON temp.${originColumnName} = targetTable.${targetColumnName}
             WHERE targetTable.id IS NULL and temp.${originColumnName} IS NOT NULL
         `
-        console.log(insertTransaction);
+        this.log(insertTransaction);
         return DbUtil.execute(db, insertTransaction);
     }
 
@@ -128,7 +146,7 @@ export class LibrarySetupService {
         where so.id is null;
         `;
 
-        console.log(insertTransaction);
+        this.log(insertTransaction);
         return DbUtil.execute(db, insertTransaction);
     }
 

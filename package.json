@@ -5,6 +5,7 @@
   "scripts": {
     "react": "cd ./src/react && webpack-dev-server",
     "electron": "tsc --watch --project ./src/electron/tsconfig.json && electron ./src/electron/dist/app.js",
+    "test": "jest",
     "install:all": "npm install && cd ./src/electron && npm install && cd ../react && npm install",
     "scanFiles": "ts-node ./src/electron/utilityRunners/scanFilesRunner.ts P:/Music/music/rotation/",
     "scanFilesAnyDir": "ts-node ./src/electron/utilityRunners/scanFilesRunner.ts",

@@ -1,12 +1,17 @@
 
 import { Database, Statement } from 'sqlite3';
 import { Connector, QueryParam } from '../../core/db/dto/connector'
+import { DbUtil } from '../../core/db/dbUtil';
 export class Sqlite3Connector implements Connector {
 
   private db: Database;
 
   constructor(db: Database) {
     this.db = db;
+  }
+
+  close(): Promise<void>{
+    return DbUtil.close(this.db);
   }
 
   /**

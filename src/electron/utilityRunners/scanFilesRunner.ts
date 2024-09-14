@@ -3,5 +3,5 @@ import { PropertiesUtil } from "../../core/util/propertiesUtil";
 
 PropertiesUtil.initProps()
 const librarySource = process.argv[2];
-const librarySetupService = new LibrarySetupService(librarySource, process.env.DB_PATH);
+const librarySetupService = new LibrarySetupService(librarySource, process.env.DB_PATH).verbose();
 librarySetupService.scanFiles();

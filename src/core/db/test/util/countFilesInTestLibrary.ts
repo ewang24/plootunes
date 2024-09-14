@@ -4,7 +4,6 @@ const fs = require('fs').promises;
 const path = require('path');
 export class CountFilesInTestLibrary{
     static async count(librarySource: string): Promise<number>{
-        librarySource = path.join(__dirname, librarySource);
         console.log(`Preparing to count files in ${librarySource}`);
         return this.processLibrary(librarySource)
     }
