@@ -145,7 +145,7 @@ describe("LibrarySetupService", () => {
       expect(unknownArtist.name).toEqual("Unknown Artist");
     });
 
-    test("Songs with no artist cause do not cause more than 1 'Unknown Artist' artist to be created", async () => {
+    test("Songs with no artist do not cause more than 1 'Unknown Artist' artist to be created", async () => {
       const unknownArtistQuery = `
         SELECT * FROM artist WHERE name = "Unknown Artist";
       `
