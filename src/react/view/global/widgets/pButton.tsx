@@ -6,21 +6,24 @@ export interface PButtonProps {
     onClick: (event) => void;
     label: string;
     icon?: string;
+    iconSize?: IconSize;
+    iconRight?: boolean
 }
 
+export type IconSize = 'small' | 'medium' | 'large'
+
 function PButton(props: PButtonProps) {
-    const { onClick, label, icon } = props;
+    const { onClick, label, icon, iconSize = 'small', iconRight = false} = props;
     const [IconComponent, setIconComponent] = useState<React.FC | null>(null);
 
     useEffect(() => {
         if (icon) {
             console.log('importing icon');
             // Dynamically import the SVG
+            //It is imported as a react component because of the svgr library so we can use it below as IconComponent
             import(`~core-assets/file/${icon}`)
                 .then((module) => {
-                    console.log('imported icon');
-                    console.log(module);
-                    setIconComponent(() => module.default); // Assuming @svgr/webpack is set up
+                    setIconComponent(() => module.default);
                 })
                 .catch((error) => {
                     console.error(`Error loading icon: ${icon}`, error);
@@ -29,14 +32,19 @@ function PButton(props: PButtonProps) {
     }, [icon]);
 
     return <div className={'p-button-container'} onClick={onClick}>
-        {IconComponent &&
-            <div className='p-button-icon'>
+        {IconComponent && !iconRight &&
+            <div className={`p-button-icon p-button-${iconSize}`}>
                 <IconComponent />
             </div>
         }
         <button id='test' className={'p-button-widget'}>
             {label}
         </button>
+        {IconComponent && iconRight &&
+            <div className={`p-button-icon p-button-${iconSize}`}>
+                <IconComponent />
+            </div>
+        }
     </div>
 }
 
