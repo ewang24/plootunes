@@ -7,6 +7,7 @@ div.p-button-container {
     border: 1px solid $accent-green;
     border-radius: 20px;
     padding: 5px;
+    margin: 2px;
     background: $accent-green;
 
     &:hover {
@@ -18,7 +19,7 @@ div.p-button-container {
 
         svg {
             path {
-                fill: $white;
+                fill: $white !important;
                 stroke: $white !important;
             }
         }
@@ -42,6 +43,8 @@ div.p-button-container {
         display: flex;
         justify-content: center;
         align-items: center;
+        pointer-events: none;
+        padding: 3px;
 
         &.p-button-small{
             max-height: 20px;
@@ -62,7 +65,7 @@ div.p-button-container {
 
     svg {
         path {
-            fill: $text-primary;
+            fill: $text-primary !important;
             stroke: $text-primary !important;
         }
     }

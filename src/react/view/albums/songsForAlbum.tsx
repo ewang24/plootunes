@@ -5,6 +5,7 @@ import { ElectronUtil } from '../util/electronUtil';
 import PButton from '../global/widgets/pButton';
 import { PlayerContext } from '../main';
 import { QueueService } from './electronServices/queueService';
+import { Icons } from '../../../core/assets/icons';
 
 function SongsForAlbum({ album, closeSongsForAlbumView }) {
 
@@ -75,7 +76,7 @@ function SongsForAlbum({ album, closeSongsForAlbumView }) {
                         <PButton label='Queue Album' onClick={queueAlbumCallback} />
                     </div>
                 </div>
-                <button onClick={() => closeSongsForAlbumView()}>Back</button>
+                <PButton onClick={() => closeSongsForAlbumView()} label='Back' displayLabel = {false} icon = {Icons.BACK_ARROW}/>
             </div>
             {
                 songs && songs.length > 0 &&
@@ -94,8 +95,8 @@ function SongsForAlbum({ album, closeSongsForAlbumView }) {
                             return <tr className={`song-album-row ${index % 2 == 0 ? 'song-album-even' : 'song-album-odd'}`} key={`${album}-song-${index}`}>
                                 <td>
                                     <div className='p-row'>
-                                        <PButton label='Play' onClick={() => { playSongCallback(song) }} />
-                                        <PButton label='Queue' onClick={() => { queueSongCallback(song) }} />
+                                        <PButton label='Play' onClick={() => { playSongCallback(song) }} icon={Icons.PLAY} displayLabel = {false}/>
+                                        <PButton label='Queue' onClick={() => { queueSongCallback(song) }} icon={Icons.PLUS} displayLabel = {false}/>
                                     </div>
                                 </td>
                                 <td>

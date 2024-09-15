@@ -5,15 +5,16 @@ import '~core-assets/file/backArrow.svg'
 export interface PButtonProps {
     onClick: (event) => void;
     label: string;
+    displayLabel?: boolean;
     icon?: string;
     iconSize?: IconSize;
-    iconRight?: boolean
+    iconRight?: boolean;
 }
 
 export type IconSize = 'small' | 'medium' | 'large'
 
 function PButton(props: PButtonProps) {
-    const { onClick, label, icon, iconSize = 'small', iconRight = false} = props;
+    const { onClick, label, displayLabel = true, icon, iconSize = 'small', iconRight = false } = props;
     const [IconComponent, setIconComponent] = useState<React.FC | null>(null);
 
     useEffect(() => {
@@ -31,15 +32,17 @@ function PButton(props: PButtonProps) {
         }
     }, [icon]);
 
-    return <div className={'p-button-container'} onClick={onClick}>
+    return <div className={'p-button-container'} onClick={onClick} title={displayLabel ? '' : label}>
         {IconComponent && !iconRight &&
             <div className={`p-button-icon p-button-${iconSize}`}>
                 <IconComponent />
             </div>
         }
-        <button id='test' className={'p-button-widget'}>
-            {label}
-        </button>
+        {displayLabel &&
+            <button id='test' className={'p-button-widget'}>
+                {label}
+            </button>
+        }
         {IconComponent && iconRight &&
             <div className={`p-button-icon p-button-${iconSize}`}>
                 <IconComponent />
