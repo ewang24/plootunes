@@ -60,8 +60,10 @@ describe("LibrarySetupService", () => {
         HAVING COUNT(*) > 1;
       `;
 
-      const duplicatedSongsCount = await connector.getAll<number>(query);
-      expect(duplicatedSongsCount.length).toEqual(0);
+      const duplicatedSongs = await connector.getAll(query);
+      console.log(`duplicated songs: ${JSON.stringify(duplicatedSongs, null, 2)}`)
+
+      expect(duplicatedSongs.length).toEqual(0);
     })
 
     test("Albums with the same names but different artists create multiple albums", async () => {
@@ -199,6 +201,33 @@ describe("LibrarySetupService", () => {
 
     });
   });
+
+  describe("Album table tests", () => {
+    test("No duplicated albums", async() => {
+      const query = `
+        SELECT name, COUNT(*) FROM album
+        GROUP BY name, artistId
+        HAVING COUNT(*) > 1;
+      `;
+
+      const duplicatedAlbums = await connector.getAll(query);
+      expect(duplicatedAlbums.length).toEqual(0);
+    });
+  });
+
+  describe("Artist table tests", () => {
+    test("No duplicated artists", async() => {
+      const query = `
+        SELECT name, COUNT(*) FROM artist
+        GROUP BY name
+        HAVING COUNT(*) > 1;
+      `;
+
+      const duplicatedArtists = await connector.getAll(query);
+      console.log(`Duplicated artists: ${JSON.stringify(duplicatedArtists, null, 2)}`)
+      expect(duplicatedArtists.length).toEqual(0);
+    });
+  })
 
   afterAll(async () => {
     await connector.close();
