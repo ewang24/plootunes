@@ -11,7 +11,7 @@
     "scanFilesAnyDir": "ts-node ./src/electron/utilityRunners/scanFilesRunner.ts",
     "createTables": "ts-node ./src/core/utilityRunners/tableUtilRunner.ts",
     "clearTables": "ts-node ./src/core/utilityRunners/clearTablesRunner.ts",
-    "genTestLibrary": "ts-node ./src/core/db/test/util/testAudioFileGenerator.ts P:/Music/music/rotation/",
+    "genTestLibrary": "ts-node ./src/core/db/test/util/testAudioFileGenerator.ts P:/Music/music/rotation",
     "createTestDb": "ts-node ./src/core/db/test/util/createTestDb.ts ../assets/testLibrary",
     "countAudioFiles": "ts-node ./src/core/db/test/util/runCountFiles.ts ../assets/testLibrary"
   },

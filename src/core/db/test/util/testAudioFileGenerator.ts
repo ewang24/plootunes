@@ -16,8 +16,26 @@ const NodeID3 = require('node-id3');
 export class TestAudioFileGenerator {
     static async generateTestFilesFromExistingLibrary() {
         console.log(`Creating test library with ${process.argv[2]} as the source`);
-        this.processLibrary(process.argv[2], process.argv[2], path.resolve(__dirname, "../assets/testLibrary"));
+        await this.processLibrary(process.argv[2], process.argv[2], path.resolve(__dirname, "../assets/testLibrary"));
+        //Copy the manually crated fake album.
+        await this.copyDir(path.resolve(__dirname, "../assets/Fake Album"), path.resolve(__dirname, "../assets/testLibrary/Fake Album"));        
     }
+
+    private static async copyDir(src, dest) {
+        await fs.mkdir(dest, { recursive: true });
+        const entries = await fs.readdir(src, { withFileTypes: true });
+      
+        for (let entry of entries) {
+          const srcPath = path.join(src, entry.name);
+          const destPath = path.join(dest, entry.name);
+      
+          if (entry.isDirectory()) {
+            await this.copyDir(srcPath, destPath);
+          } else {
+            await fs.copyFile(srcPath, destPath);
+          }
+        }
+      }
 
     private static async processLibrary(currentWorkingDirectoryPath: string, sourcePath: string, targetPath: string, baseFileContents?): Promise<void> {
         let _baseFileContents = baseFileContents;
@@ -55,14 +73,14 @@ export class TestAudioFileGenerator {
 
     private static async proccessAudioFile(filePath: string, sourcePath: string, targetPath: string, baseFileContents): Promise<void> {
         if (LibrarySetupService.isSupportedFileType(path.extname(filePath))) {
-            const fileName = path.basename(filePath);
+            const fileName = path.basename(filePath, path.extname(filePath));
             console.log(`found file: ${fileName}`)
             const targetSubDirectory = this.getTargetpathRelativeToSource(filePath, sourcePath, targetPath);
             console.log(targetSubDirectory);
             try {
                 await fs.mkdir(targetSubDirectory, { recursive: true });
                 console.log(`Created/found directory at ${targetSubDirectory}`);
-                const testDataFilePath = path.join(targetSubDirectory, fileName);
+                const testDataFilePath = path.join(targetSubDirectory, fileName + ".mp3");
                 await fs.writeFile(testDataFilePath, baseFileContents);
                 console.log(`Created test file at ${testDataFilePath}`);
                 await this.updateMetadata(filePath, testDataFilePath)
