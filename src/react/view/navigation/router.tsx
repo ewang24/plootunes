@@ -28,7 +28,7 @@ const AppRouter = () => {
 
     return <MemoryRouter>
             <div className='p-router-row'>
-                <div className='p-row p-row-align-stretch'>
+                <div className='p-row p-row-align-stretch p-row-flex-start'>
                     <LeftNav items={routes} />
                     <div className='p-router-routes-container'>
                         <Routes>

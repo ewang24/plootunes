@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "type": "commonjs",
   "scripts": {
-    "react": "cd ./src/react && webpack-dev-server",
-    "electron": "tsc --watch --project ./src/electron/tsconfig.json && electron ./src/electron/dist/app.js",
+    "react": "npm --prefix ./src/react run dev",
+    "electron": "npm --prefix ./src/electron run electron",
     "test": "jest",
     "install:all": "npm install && cd ./src/electron && npm install && cd ../react && npm install",
     "scanFiles": "ts-node ./src/electron/utilityRunners/scanFilesRunner.ts P:/Music/music/rotation/",

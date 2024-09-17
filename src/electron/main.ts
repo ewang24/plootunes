@@ -19,14 +19,8 @@ export default class Main {
 
     private static onReady() {
 
-        const {app} = require('electron');
-        console.log(`this is the user data path: ${app.getPath('userData')}`);
-
-        // ipcMain.on('reload-window', () => {
-        //     if (Main.mainWindow) {
-        //         Main.mainWindow.webContents.send('reload');
-        //     }
-        // });
+        // const {app} = require('electron');
+        // console.log(`this is the user data path: ${app.getPath('userData')}`);
 
         injectAllHandlers().then(() => {
             Main.mainWindow = new BrowserWindow(
@@ -40,6 +34,9 @@ export default class Main {
                 }
             );
     
+            Main.mainWindow.setMenuBarVisibility(false);
+            Main.mainWindow.removeMenu();
+
             Main.mainWindow!
                 .loadURL('http://localhost:3000');
             Main.mainWindow.webContents.openDevTools();

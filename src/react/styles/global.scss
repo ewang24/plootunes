@@ -3,10 +3,29 @@
 @font-face {
    font-family: 'Roboto';
    src: url('../assets/font/roboto/Roboto-Regular.ttf') format('truetype');
- }
+}
 
-html, body{
-   height:100%;
+/* This causes the browser to create a custom scrollbar. Without this, it will revert to the default scrollbar even if you have other scrollbar styles applied. */
+::-webkit-scrollbar {
+   width: 12px; /* For vertical scrollbar */
+   height: 12px; /* For horizontal scrollbar */
+ }
+ 
+
+::-webkit-scrollbar-thumb {
+   background-color: $inactive-grey;
+   border-radius: 10px;
+   border: 1px solid $inactive-grey;
+
+   &:hover{
+      background-color: $accent-green;
+      border: 1px solid $accent-green;
+   }
+}
+
+html,
+body {
+   height: 100%;
    width: 100%;
    margin: 0;
    overflow: hidden;
@@ -14,29 +33,34 @@ html, body{
    user-select: none;
 }
 
-#root{
-   height:100%;
+#root {
+   height: 100%;
    width: 100%;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
    color: $text-primary
 }
 
-.p-main-container{
-    display: flex;
-    flex-grow: 1;
-    justify-content: stretch;
-    align-items: stretch;
-    flex-direction: column;
-    background-color: $main-background;
-    overflow-y: auto;
-    height: 100%;
-    width: 100%;
-    padding: 10px;
+.p-main-container {
+   display: flex;
+   flex-grow: 1;
+   justify-content: stretch;
+   align-items: stretch;
+   flex-direction: column;
+   background-color: $main-background;
+   overflow-y: auto;
+   height: 100%;
+   padding-left: 10px;
+   padding-right: 10px;
 }
 
-.p-overlay-view{
+.p-overlay-view {
    top: 0;
    left: 0;
    right: 0;
@@ -48,46 +72,46 @@ h1, h2, h3, h4, h5, h6 {
    flex-direction: column;
    background-color: $main-background;
    overflow-y: auto;
-   height: 100%;
-   width: 100%;
-   padding: 10px;
+   // height: 100%;
+   // width: 100%;
+   // padding: 10px;
    z-index: 1;
 }
 
-div.p-row{
+div.p-row {
    display: flex;
    justify-content: center;
    align-items: center;
 }
 
-div.p-col{
+div.p-col {
    display: flex;
    flex-direction: column;
    justify-content: flex-start;
    align-items: center;
 }
 
-div.p-row-flex-start{
+div.p-row-flex-start {
    justify-content: flex-start;
 }
 
-div.p-row-flex-end{
+div.p-row-flex-end {
    justify-content: flex-end;
 }
 
-div.p-row-space-between{
+div.p-row-space-between {
    justify-content: space-between;
 }
 
-div.p-row-align-top{
+div.p-row-align-top {
    align-items: flex-start;
 }
 
-div.p-row-align-end{
+div.p-row-align-end {
    align-items: flex-end;
 }
 
-div.p-row-align-stretch{
+div.p-row-align-stretch {
    align-items: stretch;
 }
 
@@ -100,32 +124,32 @@ div.p-tile {
    max-width: 100px;
 
    &:hover {
-       div.p-tile-image {
-           box-shadow: 1px 1px 5px 1px #979797;
-       }
+      div.p-tile-image {
+         box-shadow: 1px 1px 5px 1px #979797;
+      }
 
-       cursor: pointer;
+      cursor: pointer;
    }
 
-   &.stacked{
+   &.stacked {
       max-width: unset;
-   
-      div.p-tile-stacked-row{
+
+      div.p-tile-stacked-row {
          display: flex;
-   
-         div.p-tile-image:not(:first-child){
+
+         div.p-tile-image:not(:first-child) {
             margin-left: -80px;
          }
       }
    }
 }
 
-div.p-tile-image{
+div.p-tile-image {
    border: $border-style;
    border-radius: 5px;
    overflow: hidden;
 
-   &.p-tile-small{
+   &.p-tile-small {
       height: 100px;
       width: 100px;
 
@@ -135,7 +159,7 @@ div.p-tile-image{
       }
    }
 
-   &.p-tile-medium{
+   &.p-tile-medium {
       height: 200px;
       width: 200px;
 
@@ -145,7 +169,7 @@ div.p-tile-image{
       }
    }
 
-   &.p-tile-large{
+   &.p-tile-large {
       height: 300px;
       width: 300px;
 

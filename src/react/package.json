@@ -2,7 +2,7 @@
   "name": "react",
   "version": "0.0.0",
   "scripts": {
-    "start": "react-scripts start",
+    "dev": "npx webpack-dev-server",
     "build": ""
   },
   "directories": {
