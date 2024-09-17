@@ -7,7 +7,8 @@ import SongsForAlbum from './songsForAlbum';
 import OverlayView from '../global/overlayView';
 import { Album } from '../../../core/db/dbEntities/album';
 import { AlbumService } from './electronServices/albumService';
-import { AutoSizer, List } from 'react-virtualized';
+import Header from '../global/widgets/header';
+// import { AutoSizer, List } from 'react-virtualized';
 
 const AlbumList = () => {
 
@@ -27,8 +28,8 @@ const AlbumList = () => {
 
   function renderAlbumTile(index: number) {
     const album = albums[index];
-    return <div key={index} className='p-tile ' onClick={() => { handleAlbumSelection(album) }}>
-      <div className='p-tile-image p-tile-small'>
+    return <div key={index} className='p-tile p-tile-small' onClick={() => { handleAlbumSelection(album) }}>
+      <div className='p-tile-image'>
         <>
           {album.coverImage &&
             <img draggable="false"
@@ -71,12 +72,12 @@ const AlbumList = () => {
   return (
     <>
       {/* This is the album list */}
-      <ViewContainer>
-        <h1 className='album-list-title'>Your Albums</h1>
-        {albums && albums.length > 0 &&
+      <ViewContainer
+        header={<Header label='Your Albums'/>}
+        content={albums && albums.length > 0 &&
           renderAlbumList()
         }
-      </ViewContainer>
+      />
       {
         selectedAlbum && <OverlayView>
           <SongsForAlbum album={selectedAlbum} closeSongsForAlbumView={closeSongsForAlbumView} />

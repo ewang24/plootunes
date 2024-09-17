@@ -6,6 +6,7 @@ h1.album-song-list-title {
 }
 
 div.albums-wrap-container {
+    padding: 15px;
     display: flex;
     flex-wrap: wrap;
 
@@ -27,6 +28,7 @@ div.albums-wrap-container {
         font-size: 16px;
         text-overflow: ellipsis;
         word-break: break-word;
+        margin-top: 7px;
     }
 
     span.artist-name {

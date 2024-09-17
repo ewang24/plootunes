@@ -22,7 +22,7 @@ function ArtistTile(props: ArtistTileProps) {
 
     function renderImageTile(): ReactElement {
         if (!artist.covers.length) {
-            return <div className='p-tile-image p-tile-medium'>
+            return <div className='p-tile-image'>
                 {index % 2 === 0 &&
                     <img draggable="false"
                         src='../../assets/img/up.jpg'
@@ -38,7 +38,7 @@ function ArtistTile(props: ArtistTileProps) {
 
         return <div className='p-tile-stacked-row'>
             {artist.covers.map((cover) => {
-                return <div className='p-tile-image p-tile-medium'>
+                return <div className='p-tile-image'>
                     <img draggable="false"
                         src= {`http://localhost:3030/${cover}`}
                     />
@@ -48,7 +48,7 @@ function ArtistTile(props: ArtistTileProps) {
     }
 
     return <>
-        <div className={`artist-tile p-tile ${artist.covers?.length? 'stacked': ''}`} onClick={showArtistDetails}>
+        <div className={`artist-tile p-tile p-tile-medium ${artist.covers?.length? 'stacked': ''}`} onClick={showArtistDetails}>
             {renderImageTile()}
             <strong className='artist-name'>
                 {artist.name}

@@ -7,17 +7,19 @@
 
 /* This causes the browser to create a custom scrollbar. Without this, it will revert to the default scrollbar even if you have other scrollbar styles applied. */
 ::-webkit-scrollbar {
-   width: 12px; /* For vertical scrollbar */
-   height: 12px; /* For horizontal scrollbar */
- }
- 
+   width: 12px;
+   /* For vertical scrollbar */
+   height: 12px;
+   /* For horizontal scrollbar */
+}
+
 
 ::-webkit-scrollbar-thumb {
    background-color: $inactive-grey;
    border-radius: 10px;
    border: 1px solid $inactive-grey;
 
-   &:hover{
+   &:hover {
       background-color: $accent-green;
       border: 1px solid $accent-green;
    }
@@ -54,10 +56,16 @@ h6 {
    align-items: stretch;
    flex-direction: column;
    background-color: $main-background;
-   overflow-y: auto;
    height: 100%;
-   padding-left: 10px;
-   padding-right: 10px;
+
+   div.p-main-header {
+      flex-grow: 0;
+   }
+
+   div.p-main-content {
+      flex-grow: 1;
+      overflow-y: auto;
+   }
 }
 
 .p-overlay-view {
@@ -121,7 +129,7 @@ div.p-tile {
    flex-direction: column;
    justify-content: flex-start;
    margin: 5px;
-   max-width: 100px;
+   // max-width: 100px;
 
    &:hover {
       div.p-tile-image {
@@ -142,16 +150,17 @@ div.p-tile {
          }
       }
    }
-}
-
-div.p-tile-image {
-   border: $border-style;
-   border-radius: 5px;
-   overflow: hidden;
 
    &.p-tile-small {
-      height: 100px;
-      width: 100px;
+
+      &:not(.stacked) {
+         max-width: 100px;
+      }
+
+      div.p-tile-image {
+         height: 100px;
+         width: 100px;
+      }
 
       img {
          height: 100px;
@@ -160,8 +169,14 @@ div.p-tile-image {
    }
 
    &.p-tile-medium {
-      height: 200px;
-      width: 200px;
+      &:not(.stacked) {
+         max-width: 200px;
+      }
+
+      div.p-tile-image {
+         height: 200px;
+         width: 200px;
+      }
 
       img {
          height: 200px;
@@ -170,8 +185,14 @@ div.p-tile-image {
    }
 
    &.p-tile-large {
-      height: 300px;
-      width: 300px;
+      &:not(.stacked) {
+         max-width: 300px;
+      }
+
+      div.p-tile-image {
+         height: 300px;
+         width: 300px;
+      }
 
       img {
          height: 300px;
@@ -179,8 +200,14 @@ div.p-tile-image {
       }
    }
 
-   img {
-      background-size: 'cover';
-      background-position: 'center';
+   div.p-tile-image {
+      border: $border-style;
+      border-radius: 5px;
+      overflow: hidden;
+
+      img {
+         background-size: 'cover';
+         background-position: 'center';
+      }
    }
 }

@@ -3,6 +3,7 @@ import { Album } from "../../../core/db/dbEntities/album";
 import { Artist } from "../../../core/db/dbEntities/artist";
 import OverlayView from "../global/overlayView";
 import SongsForAlbum from "../albums/songsForAlbum";
+import '../../styles/artists/albumsForArtist.scss'
 
 export interface AlbumsForArtistsProps {
     artist: Artist;
@@ -18,10 +19,10 @@ function AlbumsForArtists(props: AlbumsForArtistsProps) {
     }
 
     return <>
-        <div className="p-col p-row-align-top">
+        <div className="p-row p-row-flex-start albums-for-artist-container">
             {albums.map((album: Album, index: number) => {
-                return <div className='p-tile' onClick={() => setSelectedAlbum(album)}>
-                    <div className='p-tile-image p-tile-small'>
+                return <div className='p-tile p-tile-medium' onClick={() => setSelectedAlbum(album)}>
+                    <div className='p-tile-image'>
                         {album.coverImage &&
                             <img draggable="false"
                                 src={`http://localhost:3030/${album.coverImage}`}

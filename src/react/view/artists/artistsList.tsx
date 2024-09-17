@@ -6,6 +6,7 @@ import { AlbumService } from '../albums/electronServices/albumService';
 import { Album } from '../../../core/db/dbEntities/album';
 import ViewContainer from '../global/viewContainer';
 import ArtistTile from './artistTile';
+import Header from '../global/widgets/header';
 
 export interface ArtistWithAlbumCovers extends Artist{
     covers: string[];
@@ -40,9 +41,9 @@ const ArtistList = () => {
     }
 
     return <>
-        <ViewContainer>
-            <h1 className='album-list-title'>All Artists</h1>
-            {
+        <ViewContainer
+            header={<Header label='All Artists'/>}
+            content={
                 artists && artists.length > 0 &&
                 <div className={'artist-wrap-container'}>
                     {
@@ -52,7 +53,7 @@ const ArtistList = () => {
                     }
                 </div>
             }
-        </ViewContainer>
+        />
     </>
 }
 

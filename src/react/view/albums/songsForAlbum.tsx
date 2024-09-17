@@ -45,39 +45,41 @@ function SongsForAlbum({ album, closeSongsForAlbumView }) {
         return `${Math.floor(song.songLength / 60)}:${Math.floor(song.songLength % 60).toString().padStart(2, '0')}`
     }
 
-    return <>
-        {/*start songs for album*/}
-        <ViewContainer>
-            <div className='p-row p-row-space-between'>
-                <div className='p-col'>
-                    <div className='p-row p-row-flex-start'>
-                        <div className='album-songs-cover'>
-                            <img draggable="false"
-                                src='../../assets/img/test.jpg'
-                            />
-                        </div>
-                        <div className='p-col p-row-flex-start p-row-align-top album-details-col'>
-                            <h1 className='album-song-list-title'>
-                                {album.name}
-                            </h1>
-                            <div className='album-sub-details'>
-                                {album.artistName}
-                            </div>
-                            <div className='album-sub-details'>
-                                2023
-                            </div>
-                            <div className='album-sub-details'>
-                                1hr 69m
-                            </div>
-                        </div>
+    function header() {
+        return <div className='p-row p-row-space-between'>
+            <div className='p-col'>
+                <div className='p-row p-row-flex-start'>
+                    <div className='album-songs-cover'>
+                        <img draggable="false"
+                            src='../../assets/img/test.jpg'
+                        />
                     </div>
-                    <div className='p-row'>
-                        <PButton label='Play Album' onClick={playAlbumCallback} />
-                        <PButton label='Queue Album' onClick={queueAlbumCallback} />
+                    <div className='p-col p-row-flex-start p-row-align-top album-details-col'>
+                        <h1 className='album-song-list-title'>
+                            {album.name}
+                        </h1>
+                        <div className='album-sub-details'>
+                            {album.artistName}
+                        </div>
+                        <div className='album-sub-details'>
+                            2023
+                        </div>
+                        <div className='album-sub-details'>
+                            1hr 69m
+                        </div>
                     </div>
                 </div>
-                <PButton onClick={() => closeSongsForAlbumView()} label='Back' displayLabel = {false} icon = {Icons.BACK_ARROW}/>
+                <div className='p-row'>
+                    <PButton label='Play Album' onClick={playAlbumCallback} />
+                    <PButton label='Queue Album' onClick={queueAlbumCallback} />
+                </div>
             </div>
+            <PButton onClick={() => closeSongsForAlbumView()} label='Back' displayLabel={false} icon={Icons.BACK_ARROW} />
+        </div>;
+    }
+
+    function albumList() {
+        return <>
             {
                 songs && songs.length > 0 &&
                 <table className='song-list'>
@@ -95,8 +97,8 @@ function SongsForAlbum({ album, closeSongsForAlbumView }) {
                             return <tr className={`song-album-row ${index % 2 == 0 ? 'song-album-even' : 'song-album-odd'}`} key={`${album}-song-${index}`}>
                                 <td>
                                     <div className='p-row'>
-                                        <PButton label='Play' onClick={() => { playSongCallback(song) }} icon={Icons.PLAY} displayLabel = {false}/>
-                                        <PButton label='Queue' onClick={() => { queueSongCallback(song) }} icon={Icons.PLUS} displayLabel = {false}/>
+                                        <PButton label='Play' onClick={() => { playSongCallback(song) }} icon={Icons.PLAY} displayLabel={false} />
+                                        <PButton label='Queue' onClick={() => { queueSongCallback(song) }} icon={Icons.PLUS} displayLabel={false} />
                                     </div>
                                 </td>
                                 <td>
@@ -119,9 +121,13 @@ function SongsForAlbum({ album, closeSongsForAlbumView }) {
                 </table>
 
             }
-            {/*end songs for album*/}
-        </ViewContainer>
-    </>
+        </>
+    }
+
+    return <ViewContainer
+        header={header()}
+        content={albumList()}
+    />
 }
 
 export default SongsForAlbum;

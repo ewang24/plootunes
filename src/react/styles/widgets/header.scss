@@ -1,0 +1,22 @@
+@import '../constants';
+
+div.label-container {
+    flex-grow: 1;
+    justify-content: stretch;
+
+    h1.p-header {
+        flex-grow: 1;
+        background-color: $accent-green;
+        padding: 25px 10px;
+        margin: 0px;
+    }
+}
+
+div.p-header {
+    display: flex;
+    background-color: $accent-green;
+
+    div.widgets-container{
+        padding: 10px;
+    }
+}
