@@ -25,10 +25,6 @@ export class AlbumDto {
 
         const artistMap: { [key: number]: string } = {};
         for (const album of albums) {
-            if(album.coverImage){
-                album.coverImageBase64 = album.coverImage.toString('base64');
-            }
-
             if (!artistMap[album.artistId]) {
                 const artist = artists.find((value) => value.id === album.artistId);
                 artistMap[album.artistId] = artist ? artist.name : 'unknown';

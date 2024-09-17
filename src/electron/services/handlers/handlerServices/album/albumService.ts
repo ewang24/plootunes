@@ -3,6 +3,9 @@ import { Album } from "../../../../../core/db/dbEntities/album";
 import { Connector } from "../../../../../core/db/dto/connector";
 import { AlbumDto } from "../../../../../core/db/dto/albumDto";
 
+//artist id -> album id -> cover
+export type AlbumCoverCache = Record<number, Record<number, string>>;
+
 export class AlbumService{
   
   albumDto: AlbumDto;

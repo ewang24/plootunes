@@ -4,6 +4,5 @@ export interface Album{
     name: string;
     artistName?: string;
     songCount?: string;
-    coverImage?: Buffer;
-    coverImageBase64?:string;
+    coverImage?: string;
 }

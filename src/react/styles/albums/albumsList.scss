@@ -24,7 +24,9 @@ div.albums-wrap-container {
     span.album-name {
         color: $text-primary;
         font-weight: 600;
-        font-size: 16px
+        font-size: 16px;
+        text-overflow: ellipsis;
+        word-break: break-word;
     }
 
     span.artist-name {

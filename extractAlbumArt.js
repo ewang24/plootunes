@@ -2,7 +2,7 @@ const fs = require('fs');
 const mm = require('music-metadata');
 const path = require('path');
 
-async function extractAlbumArt(filePath, outputDir) {
+export async function extractAlbumArt(filePath, outputDir) {
     try {
         // Parse the metadata of the music file
         const metadata = await mm.parseFile(filePath, { duration: true });

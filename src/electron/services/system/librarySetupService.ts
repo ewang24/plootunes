@@ -19,7 +19,7 @@ export class LibrarySetupService {
 
     librarySource: string;
     dbPath: string;
-    albumCovers: Record<string, Buffer>;
+    albumCovers: Record<string, {data:Buffer, type: string}>;
     _verbose: boolean = false;
 
     /**
@@ -130,7 +130,38 @@ export class LibrarySetupService {
 
         const sql = `UPDATE album SET coverImage = ? WHERE name = ?`;
         for (let album of Object.keys(this.albumCovers)) {
-            await DbUtil.run(db, sql, [this.albumCovers[album], album]);
+            const albumCoverDetails = this.albumCovers[album];
+            const fileName = await this.persistAlbumArt(albumCoverDetails.data, this.generateUUID(), albumCoverDetails.type)
+            await DbUtil.run(db, sql, [fileName, album]);
+        }
+    }
+
+    private generateUUID(): string {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+          const r = Math.random() * 16 | 0;
+          const v = c === 'x' ? r : (r & 0x3 | 0x8);
+          return v.toString(16);
+        });
+      }
+
+    private async persistAlbumArt(albumArt: Buffer, coverImageUuid: string, imageFormat: string): Promise<string> {
+        try {        
+                const coversPath = path.join(process.env.APPDATA, 'Electron', 'covers');
+                await fs.promises.mkdir(coversPath, { recursive: true });
+                const coverImageFile =`${coverImageUuid}.${imageFormat}`;
+                const outputFilePath = path.join(coversPath, coverImageFile);
+    
+                await fs.writeFile(outputFilePath, albumArt, (err) => {
+                    if (err) {
+                        console.error('Error writing cover image to file:', err);
+                    } else {
+                        console.log(`Cover image saved as ${outputFilePath}`);
+                    }
+                });
+
+                return coverImageFile;
+        } catch (error) {
+            console.error('Error extracting album art:', error);
         }
     }
 
@@ -187,16 +218,26 @@ export class LibrarySetupService {
                     ${albumName}, ${artistName}, ${songName}, ${songPosition}, ${genre}, ${this.quoteString(filePath)}, ${length}
                 );
             `
-
-
-
             const coverImage = metadata.common?.picture?.[0]?.data;
             if (coverImage && metadata.common.album) {
                 const unquotedAlbumName = this.quoteEscape(metadata.common.album);
                 //TODO: [0] is the first album cover. If there are more embedded, we will not pick up on them. Perhaps need to suppor that in the future.
-                this.albumCovers[unquotedAlbumName] = this.albumCovers[unquotedAlbumName] || coverImage;
-            }
 
+                let imageFormat = metadata.common.picture[0].format;
+    
+                // Map format to proper file extension
+                let formatMap = {
+                    'jpg': 'jpg',
+                    'jpeg': 'jpg',
+                    'png': 'png',
+                    'gif': 'gif',
+                    'bmp': 'bmp',
+                    'tiff': 'tiff'
+                };
+    
+                imageFormat = formatMap[imageFormat] || 'jpg';
+                this.albumCovers[unquotedAlbumName] = this.albumCovers[unquotedAlbumName] || {data: coverImage, type: imageFormat};
+            }
 
             metadata = null;
             insertStatements.push(insertStatement);
