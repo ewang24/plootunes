@@ -21,16 +21,25 @@ function AlbumsForArtists(props: AlbumsForArtistsProps) {
         <div className="p-col p-row-align-top">
             {albums.map((album: Album, index: number) => {
                 return <div className='p-tile' onClick={() => setSelectedAlbum(album)}>
-                    <div className='p-tile-image'>
-                        {index % 2 === 0 &&
-                            <img draggable = "false"
-                                src='../../assets/img/test.jpg'
+                    <div className='p-tile-image p-tile-small'>
+                        {album.coverImage &&
+                            <img draggable="false"
+                                src={`http://localhost:3030/${album.coverImage}`}
                             />
                         }
-                        {index % 2 !== 0 &&
-                            <img draggable = "false"
-                                src='../../assets/img/up.jpg'
-                            />
+                        {!album.coverImage &&
+                            <>
+                                {index % 2 === 0 &&
+                                    <img draggable="false"
+                                        src='../../assets/img/test.jpg'
+                                    />
+                                }
+                                {index % 2 !== 0 &&
+                                    <img draggable="false"
+                                        src='../../assets/img/up.jpg'
+                                    />
+                                }
+                            </>
                         }
                     </div>
                     <strong>

@@ -27,8 +27,8 @@ const AlbumList = () => {
 
   function renderAlbumTile(index: number) {
     const album = albums[index];
-    return <div key={index} className='p-tile' onClick={() => { handleAlbumSelection(album) }}>
-      <div className='p-tile-image'>
+    return <div key={index} className='p-tile ' onClick={() => { handleAlbumSelection(album) }}>
+      <div className='p-tile-image p-tile-small'>
         <>
           {album.coverImage &&
             <img draggable="false"

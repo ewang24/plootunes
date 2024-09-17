@@ -19,10 +19,6 @@ html, body{
    width: 100%;
 }
 
-button{
-   
-}
-
 h1, h2, h3, h4, h5, h6 {
    color: $text-primary
 }
@@ -111,19 +107,56 @@ div.p-tile {
        cursor: pointer;
    }
 
-   div.p-tile-image {
-      border: $border-style;
-      border-radius: 5px;
-      overflow: hidden;
-      height: 100px;
-      width: 100px;
-   }
+   &.stacked{
+      max-width: unset;
    
-   img {
+      div.p-tile-stacked-row{
+         display: flex;
+   
+         div.p-tile-image:not(:first-child){
+            margin-left: -80px;
+         }
+      }
+   }
+}
+
+div.p-tile-image{
+   border: $border-style;
+   border-radius: 5px;
+   overflow: hidden;
+
+   &.p-tile-small{
       height: 100px;
       width: 100px;
+
+      img {
+         height: 100px;
+         width: 100px;
+      }
+   }
+
+   &.p-tile-medium{
+      height: 200px;
+      width: 200px;
+
+      img {
+         height: 200px;
+         width: 200px;
+      }
+   }
+
+   &.p-tile-large{
+      height: 300px;
+      width: 300px;
+
+      img {
+         height: 300px;
+         width: 300px;
+      }
+   }
+
+   img {
       background-size: 'cover';
       background-position: 'center';
    }
 }
-

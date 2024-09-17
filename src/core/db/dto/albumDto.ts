@@ -6,7 +6,7 @@ import { Queries } from "./queries";
 
 export class AlbumDto {
     queries: Queries = {
-        getAlbums: "SELECT * FROM album",
+        getAlbums: "SELECT * FROM album ORDER BY name",
         getAlbumsForArtist: "SELECT * FROM album WHERE artistId = $artistId"
     }
 

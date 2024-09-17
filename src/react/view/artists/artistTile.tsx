@@ -1,10 +1,10 @@
-import React, { ReactElement, useEffect, useState } from 'react';
-import { Artist } from '../../../core/db/dbEntities/artist';
+import React, { ReactElement, useState } from 'react';
 import OverlayView from '../global/overlayView';
 import ArtistDetails from './artistDetails';
+import { ArtistWithAlbumCovers } from './artistsList';
 
 export interface ArtistTileProps {
-    artist: Artist;
+    artist: ArtistWithAlbumCovers;
     index: number;
 }
 
@@ -12,33 +12,49 @@ function ArtistTile(props: ArtistTileProps) {
     const { artist, index } = props;
     const [displayArtistAlbumsList, setDisplayArtistAlbumsList] = useState(false);
 
-    function showArtistDetails(){
+    function showArtistDetails() {
         setDisplayArtistAlbumsList(true);
     }
 
-    function hideArtistDetails(){
+    function hideArtistDetails() {
         setDisplayArtistAlbumsList(false);
     }
 
-    return <>
-        <div className={'artist-tile p-tile'} onClick={showArtistDetails}>
-            <div className='p-tile-image'>
+    function renderImageTile(): ReactElement {
+        if (!artist.covers.length) {
+            return <div className='p-tile-image p-tile-medium'>
                 {index % 2 === 0 &&
-                    <img draggable = "false"
+                    <img draggable="false"
                         src='../../assets/img/up.jpg'
                     />
                 }
                 {index % 2 !== 0 &&
-                    <img draggable = "false"
+                    <img draggable="false"
                         src='../../assets/img/test.jpg'
                     />
                 }
             </div>
+        }
+
+        return <div className='p-tile-stacked-row'>
+            {artist.covers.map((cover) => {
+                return <div className='p-tile-image p-tile-medium'>
+                    <img draggable="false"
+                        src= {`http://localhost:3030/${cover}`}
+                    />
+                </div>
+            })}
+        </div>
+    }
+
+    return <>
+        <div className={`artist-tile p-tile ${artist.covers?.length? 'stacked': ''}`} onClick={showArtistDetails}>
+            {renderImageTile()}
             <strong className='artist-name'>
                 {artist.name}
             </strong>
         </div>
-        {displayArtistAlbumsList && 
+        {displayArtistAlbumsList &&
             <OverlayView>
                 <ArtistDetails artist={artist} closeArtistDetails={hideArtistDetails}></ArtistDetails>
             </OverlayView>

@@ -4,7 +4,7 @@ import { Queries } from "./queries";
 
 export class ArtistDto{
     static queries: Queries = {
-        getArtists: "SELECT * FROM artist"
+        getArtists: "SELECT * FROM artist ORDER BY name"
     }
 
     connector: Connector;
