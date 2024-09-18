@@ -9,6 +9,8 @@ import { Icons } from "../../../core/assets/icons";
 import { QueueService } from "../albums/electronServices/queueService";
 import { PlayerContext } from "../main";
 import Header from "../global/widgets/header";
+import PTabs from "../global/widgets/pTabs";
+import SongsForArtist from "./songsForArtist";
 
 export interface ArtistDetailsProps {
     artist: Artist,
@@ -40,20 +42,40 @@ function ArtistDetails(props: ArtistDetailsProps) {
         });
     }
 
+    function albumListTab() {
+        return <div className='p-col p-row-flex-start p-row-align-stretch'>
+            {/* <div className='p-row'>
+            <PButton label="Play Artist" onClick={playArtist} />
+            <PButton label="Queue Artist" onClick={queueArtist} />
+        </div> */}
+            {
+                albums && albums.length > 0 &&
+                <AlbumsForArtists artist={artist} albums={albums}></AlbumsForArtists>
+            }
+        </div>
+    }
+
+    function songsTab(){
+        return <SongsForArtist artist={artist}/>
+    }
+
+    function content() {
+        return <PTabs tabs={[
+            {
+                label: "Albums",
+                content: albumListTab()
+            },
+            {
+                label: "Songs",
+                content: songsTab()
+            }
+        ]} />
+
+    }
+
     return <ViewContainer
-        header={<Header label={artist.name} widgets={[<PButton onClick={() => closeArtistDetails()} label="Back" icon={Icons.BACK_ARROW} displayLabel = {false}/>]}/>}
-        content={
-            <div className='p-col p-row-flex-start p-row-align-stretch'>
-                <div className='p-row'>
-                    <PButton label="Play Artist" onClick={playArtist} />
-                    <PButton label="Queue Artist" onClick={queueArtist} />
-                </div>
-                {
-                    albums && albums.length > 0 &&
-                    <AlbumsForArtists artist={artist} albums={albums}></AlbumsForArtists>
-                }
-            </div>
-        }
+        header={<Header label={artist.name} widgets={[<PButton onClick={() => closeArtistDetails()} label="Back" icon={Icons.BACK_ARROW} displayLabel={false} />]} />}
+        content={content()}
     />
 }
 
