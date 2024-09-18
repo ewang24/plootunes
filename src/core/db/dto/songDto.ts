@@ -6,8 +6,9 @@ export class SongDto{
 
     queries: Queries = {
         getSongById: "SELECT * FROM song where id = $songId",
-        getSongs: "SELECT * FROM song where",
-        getSongsByAlbum: "SELECT * FROM song where albumId = $albumId order by songPosition"
+        getSongs: "SELECT * FROM song ORDER BY song.name",
+        getSongsByAlbum: "SELECT * FROM song where albumId = $albumId order by songPosition",
+        getSongsByArtist: "SELECT s.* FROM song s INNER JOIN album alb ON alb.id = s.albumId WHERE alb.artistId = $artistId ORDER BY alb.name, s.albumId, s.songPosition"
     }
 
     connector: Connector;
@@ -33,5 +34,9 @@ export class SongDto{
         catch(err){
             console.error(`An error occurred in getSongsByAlbum: ${JSON.stringify(err, null, 2)}`)
         }
+    }
+
+    async getSongsByArtist(artistId: number): Promise<Song[]>{
+        return this.connector.getAll<Song>(this.queries.getSongsByArtist, {artistId});
     }
 }

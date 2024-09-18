@@ -48,7 +48,7 @@ const ArtistList = () => {
                 <div className={'artist-wrap-container'}>
                     {
                         artists.map((artist: ArtistWithAlbumCovers, index: number) => {
-                            return <ArtistTile artist={artist} index={index}></ArtistTile>
+                            return <ArtistTile key = {artist.id} artist={artist} index={index}></ArtistTile>
                         })
                     }
                 </div>

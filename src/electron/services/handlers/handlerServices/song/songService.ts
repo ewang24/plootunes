@@ -14,8 +14,18 @@ export class SongService{
   }
 
   @handler
+  async getSongs(): Promise<Song[]>{
+    return this.songDto.getSongs();
+  }
+
+  @handler
   async getSongsByAlbum(albumId: number): Promise<Song[]> {
     return this.songDto.getSongsByAlbum(albumId);
+  }
+
+  @handler
+  async getSongsByArtist(artistId: number): Promise<Song[]>{
+    return this.songDto.getSongsByArtist(artistId);
   }
 
 }

@@ -133,7 +133,7 @@ div.p-tile {
 
    &:hover {
       div.p-tile-image {
-         box-shadow: 1px 1px 5px 1px #979797;
+         box-shadow: 1px 1px 5px 1px $box-shadow-color;
       }
 
       cursor: pointer;

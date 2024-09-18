@@ -6,13 +6,14 @@ import PButton from '../global/widgets/pButton';
 import { PlayerContext } from '../main';
 import { QueueService } from './electronServices/queueService';
 import { Icons } from '../../../core/assets/icons';
+import { SongService } from '../songs/electronServices/songService';
 
 function SongsForAlbum({ album, closeSongsForAlbumView }) {
 
     const { playSongNow, queueSong, setCurrentlyPlayingSong, currentlyPlayingSong } = useContext(PlayerContext);
     const [songs, setSongs] = useState<Song[]>(undefined);
     useEffect(() => {
-        ElectronUtil.invoke('getSongsByAlbum', album.id)
+        SongService.getSongsByAlbum(album.id)
             .then((songs: Song[]) => {
                 console.log(songs);
                 setSongs(songs);

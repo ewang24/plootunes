@@ -38,7 +38,7 @@ function ArtistTile(props: ArtistTileProps) {
 
         return <div className='p-tile-stacked-row'>
             {artist.covers.map((cover) => {
-                return <div className='p-tile-image'>
+                return <div className='p-tile-image' key = {cover}>
                     <img draggable="false"
                         src= {`http://localhost:3030/${cover}`}
                     />
