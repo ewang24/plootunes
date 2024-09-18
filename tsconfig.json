@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "jsx": "react",
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "target": "ES5",
@@ -20,7 +21,7 @@
   },
   "include": [
     "./src/**/*.ts"
-, "src/electron/expressServer.ts"  ],
+, "src/electron/expressServer.ts", "src/core/assets/icons.ts"  ],
   "exclude": [
     "./dist"
   ]

@@ -13,13 +13,15 @@
     "clearTables": "ts-node ./src/core/utilityRunners/clearTablesRunner.ts",
     "genTestLibrary": "ts-node ./src/core/db/test/util/testAudioFileGenerator.ts P:/Music/music/rotation",
     "createTestDb": "ts-node ./src/core/db/test/util/createTestDb.ts ../assets/testLibrary",
-    "countAudioFiles": "ts-node ./src/core/db/test/util/runCountFiles.ts ../assets/testLibrary"
+    "countAudioFiles": "ts-node ./src/core/db/test/util/runCountFiles.ts ../assets/testLibrary",
+    "svgr": "npx svgr --out-dir ./src/core/assets/icons/components ./src/core/assets/icons/svgs"
   },
   "private": true,
   "dependencies": {
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
+    "@svgr/cli": "^8.1.0",
     "@types/jest": "^29.5.13",
     "@types/node": "^22.5.3",
     "css-loader": "^7.1.1",

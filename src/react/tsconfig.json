@@ -18,6 +18,7 @@
   "include": [
     "./view/**/*.tsx",
     "./view/**/*.ts",
-    "../core/**/*.ts"
-  ]
+    "../core/**/*.ts",
+    "../core/**/*.js"
+, "../core/assets/icons.ts"  ]
 }
