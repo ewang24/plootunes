@@ -1,4 +1,4 @@
-import { Song } from "../dbEntities/song";
+import { Song, SongWithAlbum } from "../dbEntities/song";
 import { Connector } from "./connector";
 import { Queries } from "./queries";
 
@@ -7,6 +7,7 @@ export class SongDto{
     queries: Queries = {
         getSongById: "SELECT * FROM song where id = $songId",
         getSongs: "SELECT * FROM song ORDER BY song.name",
+        getSongsWithAlbum: "SELECT s.*, alb.name as albumName, alb.coverImage as albumCoverImage, art.name as artistName FROM song s INNER JOIN album alb on s.albumId = alb.id INNER JOIN artist art on art.id = alb.artistId ORDER BY s.name",
         getSongsByAlbum: "SELECT * FROM song where albumId = $albumId order by songPosition",
         getSongsByArtist: "SELECT s.* FROM song s INNER JOIN album alb ON alb.id = s.albumId WHERE alb.artistId = $artistId ORDER BY alb.name, s.albumId, s.songPosition"
     }
@@ -25,6 +26,10 @@ export class SongDto{
 
     async getSongs(): Promise<Song[]>{
         return this.connector.getAll(this.queries.getSongs);
+    }
+
+    async getSongsWithAlbum(): Promise<SongWithAlbum[]>{
+        return this.connector.getAll<SongWithAlbum>(this.queries.getSongsWithAlbum);
     }
     
     async getSongsByAlbum(albumId: number): Promise<Song[]>{

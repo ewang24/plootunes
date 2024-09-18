@@ -151,6 +151,22 @@ div.p-tile {
       }
    }
 
+   &.p-tile-ultra-small{
+      &:not(.stacked) {
+         max-width: 35px;
+      }
+
+      div.p-tile-image {
+         height: 35px;
+         width: 35px;
+      }
+
+      img {
+         height: 35px;
+         width: 35px;
+      }
+   }
+
    &.p-tile-small {
 
       &:not(.stacked) {

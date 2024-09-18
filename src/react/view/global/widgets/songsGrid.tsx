@@ -1,16 +1,17 @@
 import React from "react";
-import { Song } from "../../../../core/db/dbEntities/song";
+import { Song, SongWithAlbum } from "../../../../core/db/dbEntities/song";
 import PButton from "./pButton";
 import { Icons } from "../../../../core/assets/icons";
 
 export interface SongsGridProps {
-    songs?: Song[];
+    songs?: SongWithAlbum[];
+    displayAlbumInfo?: boolean;
     onPlay: (song: Song) => void;
     onQueue: (song: Song) => void;
 }
 
 function SongsGrid(props: SongsGridProps) {
-    const { songs, onPlay, onQueue } = props;
+    const { songs, onPlay, onQueue, displayAlbumInfo } = props;
     return <>
         {(!songs || !songs.length) &&
             <strong>
@@ -24,13 +25,19 @@ function SongsGrid(props: SongsGridProps) {
                     <tr>
                         <th className='album-songs-table-header-cell'></th>
                         <th className='album-songs-table-header-cell'>#</th>
+                        {displayAlbumInfo &&
+                            <th className='album-songs-table-header-cell'>Album</th>
+                        }
                         <th className='album-songs-table-header-cell'>Title</th>
+                        {displayAlbumInfo &&
+                            <th className='album-songs-table-header-cell'>Artist</th>
+                        }
                         <th className='album-songs-table-header-cell'>Plays</th>
                         <th className='album-songs-table-header-cell'>Length</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {songs.map((song: Song, index: number) => {
+                    {songs.map((song: SongWithAlbum, index: number) => {
                         return <tr className={`song-album-row ${index % 2 == 0 ? 'song-album-even' : 'song-album-odd'}`} key={song.id}>
                             <td>
                                 <div className='p-row'>
@@ -43,9 +50,43 @@ function SongsGrid(props: SongsGridProps) {
                                     {index + 1}
                                 </div>
                             </td>
+                            {displayAlbumInfo &&
+                                <td>
+                                    <div key={index} className='p-tile p-tile-ultra-small'>
+                                        <div className='p-tile-image'>
+                                            <>
+                                                {song.albumCoverImage &&
+                                                    <img draggable="false"
+                                                        src={`http://localhost:3030/${song.albumCoverImage}`}
+                                                    />
+                                                }
+                                                {!song.albumCoverImage &&
+                                                    <>
+                                                        {index % 2 === 0 &&
+                                                            <img draggable="false"
+                                                                src='../../assets/img/test.jpg'
+                                                            />
+                                                        }
+                                                        {index % 2 !== 0 &&
+                                                            <img draggable="false"
+                                                                src='../../assets/img/up.jpg'
+                                                            />
+                                                        }
+                                                    </>
+                                                }
+                                            </>
+                                        </div>
+                                    </div>
+                                </td>
+                            }
                             <td>
                                 {song.name}
                             </td>
+                            {displayAlbumInfo &&
+                            <td>
+                                {song.artistName}
+                            </td>
+                            }
                             <td>
                                 0
                             </td>

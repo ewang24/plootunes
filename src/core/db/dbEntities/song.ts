@@ -6,3 +6,9 @@ export interface Song{
     songFilePath: string;
     songLength: number;
 }
+
+export interface SongWithAlbum extends Song{
+    albumName?: string;
+    albumCoverImage?: string;
+    artistName?: string;
+}

@@ -9,7 +9,8 @@ const SongsList = () => {
   const [songs, setSongs] = useState<Song[] | undefined>();
 
   useEffect(() => {
-    SongService.getSongs().then((songs: Song[]) => {
+    SongService.getSongs(true).then((songs: Song[]) => {
+      console.log(songs);
       setSongs(songs);
     })
   }, []);
@@ -24,7 +25,7 @@ const SongsList = () => {
 
   return <ViewContainer
     header={<Header label='All Songs'/>}
-    content={<SongsGrid songs={songs} onPlay={onPlayCallback} onQueue={onQueueCallback} />}
+    content={<SongsGrid songs={songs} displayAlbumInfo = {true} onPlay={onPlayCallback} onQueue={onQueueCallback} />}
   />
 };
 

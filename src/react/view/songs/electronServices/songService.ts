@@ -2,8 +2,8 @@ import { Song } from "../../../../core/db/dbEntities/song";
 import { ElectronUtil } from "../../util/electronUtil";
 
 export class SongService{
-    static async getSongs(): Promise<Song[]>{
-        return ElectronUtil.invoke('getSongs');
+    static async getSongs(includeAlbum?: boolean): Promise<Song[]>{
+        return ElectronUtil.invoke('getSongs', includeAlbum || false);
     }
 
     static async getSongsByAlbum(albumId: number): Promise<Song[]>{

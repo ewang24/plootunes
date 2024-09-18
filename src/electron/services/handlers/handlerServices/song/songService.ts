@@ -14,7 +14,12 @@ export class SongService{
   }
 
   @handler
-  async getSongs(): Promise<Song[]>{
+  async getSongs(includeAlbum?: boolean): Promise<Song[]>{
+    console.log(`fetching all songs. With album info: ${includeAlbum}`);
+    if(includeAlbum){
+      return this.songDto.getSongsWithAlbum();
+    }
+
     return this.songDto.getSongs();
   }
 
