@@ -1,27 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { Song } from '../../../core/db/dbEntities/song';
 import { SongService } from './electronServices/songService';
+import SongsGrid from '../global/widgets/songsGrid';
 
 const SongsList = () => {
   const [songs, setSongs] = useState<Song[] | undefined>();
 
-    useEffect(() => {
-        SongService.getSongs().then((songs: Song[]) => {
-            setSongs(songs);
-        })
-    }, []);
-  return <div className = 'p-col'>
-  {
-      songs && 
-      <>
-          {songs.map((song) => {
-              return <div className = 'p-row'>
-                  {song.name}
-              </div>
-          })}
-      </>
+  useEffect(() => {
+    SongService.getSongs().then((songs: Song[]) => {
+      setSongs(songs);
+    })
+  }, []);
+
+  function onPlayCallback(song: Song){
+
   }
-</div>
+
+  function onQueueCallback(song: Song){
+
+  }
+
+  return <SongsGrid songs={songs} onPlay={onPlayCallback} onQueue={onQueueCallback}/>
 };
 
 export default SongsList;

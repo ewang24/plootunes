@@ -17,6 +17,8 @@ export const PlayerContext = createContext<PlayerContext | undefined>(undefined)
 
 const Main = () => {
 
+  
+
   const [currentlyPlayingSong, setCurrentlyPlayingSong] = useState<Song | undefined>(undefined);
 
 

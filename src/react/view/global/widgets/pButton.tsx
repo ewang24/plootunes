@@ -11,7 +11,9 @@ export interface PButtonProps {
     iconRight?: boolean;
 }
 
-export type IconSize = 'small' | 'medium' | 'large'
+export type IconSize = 'small' | 'medium' | 'large';
+
+const iconCache: { [key: string]: React.FC | null } = {};
 
 function PButton(props: PButtonProps) {
     const { onClick, label, displayLabel = true, icon, iconSize = 'small', iconRight = false } = props;
@@ -19,16 +21,26 @@ function PButton(props: PButtonProps) {
 
     useEffect(() => {
         if (icon) {
-            console.log('importing icon');
-            // Dynamically import the SVG
-            //It is imported as a react component because of the svgr library so we can use it below as IconComponent
-            import(`~core-assets/file/${icon}`)
-                .then((module) => {
-                    setIconComponent(() => module.default);
-                })
-                .catch((error) => {
-                    console.error(`Error loading icon: ${icon}`, error);
-                });
+            console.log(JSON.stringify(iconCache));
+            if (iconCache[icon]) {
+                console.log(`icon ${icon} found in cache.`)
+                setIconComponent(() => iconCache[icon]);
+            }
+            else {
+                console.log(`icon ${icon} not found in cache.`)
+                // Dynamically import the SVG
+                //It is imported as a react component because of the svgr library so we can use it below as IconComponent
+                import(`~core-assets/file/${icon}`)
+                    .then((module) => {
+                        console.log(`saving icon ${icon} to cache.`)
+                        iconCache[icon] = module.default;
+                        setIconComponent(() => module.default);
+                    })
+                    .catch((error) => {
+                        console.error(`Error loading icon: ${icon}`, error);
+                    });
+            }
+
         }
     }, [icon]);
 
