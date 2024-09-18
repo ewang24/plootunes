@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Song } from '../../../core/db/dbEntities/song';
 import { SongService } from './electronServices/songService';
 import SongsGrid from '../global/widgets/songsGrid';
+import ViewContainer from '../global/viewContainer';
+import Header from '../global/widgets/header';
 
 const SongsList = () => {
   const [songs, setSongs] = useState<Song[] | undefined>();
@@ -12,15 +14,18 @@ const SongsList = () => {
     })
   }, []);
 
-  function onPlayCallback(song: Song){
+  function onPlayCallback(song: Song) {
 
   }
 
-  function onQueueCallback(song: Song){
+  function onQueueCallback(song: Song) {
 
   }
 
-  return <SongsGrid songs={songs} onPlay={onPlayCallback} onQueue={onQueueCallback}/>
+  return <ViewContainer
+    header={<Header label='All Songs'/>}
+    content={<SongsGrid songs={songs} onPlay={onPlayCallback} onQueue={onQueueCallback} />}
+  />
 };
 
 export default SongsList;
