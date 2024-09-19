@@ -19,9 +19,7 @@ export class QueueService{
 
     @handler
     async queueSong(songId: number): Promise<void>{
-        // console.log(`inserting into queue: ${songId}`)
         const queueSize = await this.queueDto.getQueueSize();
-        // console.log(`queue size is ${JSON.stringify(queueSize)}. queue record will ${queueSize === 0? "": "not "}be current.`)
         return this.queueDto.queueSong(songId, queueSize === 0);
     }
 
@@ -38,22 +36,33 @@ export class QueueService{
     @handler
     async playAlbum(albumId: number): Promise<void>{
         await this.queueDto.clearQueue();
-        this.queueAlbum(albumId, true);
+        return this.queueAlbum(albumId, true);
     }
 
     @handler
     async queueAlbum(albumId: number, setCurrent?: boolean): Promise<void>{
-        this.queueDto.queueAlbum(albumId, setCurrent);
+        return this.queueDto.queueAlbum(albumId, setCurrent);
     }
 
     @handler
     async playArtist(artistId: number): Promise<void>{
         await this.queueDto.clearQueue();
-        this.queueArtist(artistId, true);
+        return this.queueArtist(artistId, true);
     }
 
     @handler
     async queueArtist(artistId: number, setCurrent?: boolean): Promise<void>{
-        this.queueDto.queueArtist(artistId, setCurrent);       
+        return this.queueDto.queueArtist(artistId, setCurrent);       
+    }
+
+    @handler
+    async queueAllSongsAndPlay(songId: number): Promise<void>{
+        await this.queueAllSongs();
+        return this.queueDto.setSongAsCurrent(songId);
+    }
+
+    @handler
+    async queueAllSongs(): Promise<void>{
+        return this.queueDto.queueAllSongs();
     }
 }

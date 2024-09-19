@@ -23,8 +23,9 @@ const Main = () => {
 
 
   function playSongNow(song: Song){
-    ElectronUtil.invoke('playSong', song.id).then(() => {
-      setCurrentlyPlayingSong(song);
+    setCurrentlyPlayingSong(song);
+    ElectronUtil.invoke('playSong', song.id).catch((err) => {
+      window.alert(`Error: ${JSON.stringify(err)}`);
     });
   }
 

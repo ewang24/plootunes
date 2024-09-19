@@ -35,6 +35,10 @@ export class QueueDto extends Dto{
                 inner join artist art on alb.artistId = art.id
                 where art.id = $artistId
                 order by s.songPosition;
+        `,
+        queueAllSongs: `
+            INSERT INTO queue (songId, current, position)
+            SELECT id, 0, 0 FROM song ORDER BY name
         `
     }
 
@@ -84,5 +88,10 @@ export class QueueDto extends Dto{
     async queueArtist(artistId: number, setCurrent?: boolean): Promise<void>{
         const _setCurrent = setCurrent? 1: 0;       
         return this.connector.run(this.queries.queueArtist, {artistId, setCurrent: _setCurrent});
+    }
+
+    async queueAllSongs(): Promise<void>{
+        await this.clearQueue();
+        return this.connector.run(this.queries.queueAllSongs);
     }
 }
