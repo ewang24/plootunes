@@ -3,10 +3,10 @@ import '../styles/global.scss'
 import '../styles/main.scss'
 import AppRouter from './navigation/router';
 import PlayerMain from './player/playerMain';
-import { ElectronUtil } from './util/electronUtil';
 import { Song } from '../../core/db/dbEntities/song';
 import { SystemService } from './global/electronServices/systemService';
 import { QueueService } from './albums/electronServices/queueService';
+import QueueViewer from './queue/queueViewer';
 
 export interface PlayerContext {
   playSongNow(song: Song): void;
@@ -21,21 +21,21 @@ export const PlayerContext = createContext<PlayerContext | undefined>(undefined)
 
 const Main = () => {
 
-  
+
   const [shuffled, setShuffled] = useState<boolean>(false);
   const [currentlyPlayingSong, setCurrentlyPlayingSong] = useState<Song | undefined>(undefined);
 
 
-  function playSongNow(song: Song){
+  function playSongNow(song: Song) {
     setCurrentlyPlayingSong(song);
     QueueService.playSong(song.id).catch((err) => {
       window.alert(`Error: ${JSON.stringify(err)}`);
     });
   }
 
-  function queueSong(song: Song){
+  function queueSong(song: Song) {
     QueueService.queueSong(song.id).then(() => {
-      if(currentlyPlayingSong){
+      if (currentlyPlayingSong) {
         return;
       }
 
@@ -43,16 +43,19 @@ const Main = () => {
     });
   }
 
-  function handleShuffledChange(shuffled: boolean){
+  function handleShuffledChange(shuffled: boolean) {
     SystemService.setShuffled(shuffled).then(() => {
       setShuffled(shuffled);
     })
   }
 
   return <div className='main-container'>
-    <PlayerContext.Provider value={{playSongNow, queueSong, currentlyPlayingSong, setCurrentlyPlayingSong, shuffled, setShuffled: handleShuffledChange}}>
+    <PlayerContext.Provider value={{ playSongNow, queueSong, currentlyPlayingSong, setCurrentlyPlayingSong, shuffled, setShuffled: handleShuffledChange }}>
       <>
-        <AppRouter />
+        <div className='p-row main-container-content'>
+          <AppRouter />
+          <QueueViewer />
+        </div>
         <PlayerMain />
       </>
     </PlayerContext.Provider>

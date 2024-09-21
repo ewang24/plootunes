@@ -4,6 +4,12 @@ div.main-container{
     display:flex;
     flex-direction: column;
 
+    div.main-container-content{
+        align-items: stretch;
+        height:100%;
+        width: 100%;
+    }
+
     > * {
         flex-grow: 1;
     }
