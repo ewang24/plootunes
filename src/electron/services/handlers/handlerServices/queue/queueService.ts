@@ -1,6 +1,7 @@
 import { Song } from "../../../../../core/db/dbEntities/song";
 import { Connector } from "../../../../../core/db/dto/connector";
 import { QueueDto } from "../../../../../core/db/dto/queueDto";
+import { SongDto } from "../../../../../core/db/dto/songDto";
 import { SystemDto } from "../../../../../core/db/dto/systemDto";
 import { handler } from "../../decorators/handlerDecorator";
 const fs = require('fs');
@@ -8,10 +9,12 @@ const fs = require('fs');
 export class QueueService{
     queueDto: QueueDto;
     systemDto: SystemDto;
+    songDto: SongDto;
 
     constructor(connector: Connector){
         this.queueDto = new QueueDto(connector);
         this.systemDto = new SystemDto(connector);
+        this.songDto = new SongDto(connector);
     }
 
     @handler
@@ -74,5 +77,13 @@ export class QueueService{
     async shuffleCurrentQueue(): Promise<void>{
         await this.systemDto.setShuffled(true);
         return this.queueDto.moveCurrentSongToShuffledQueueStart()
+    }
+
+    @handler
+    async shuffleAllSongsAndPlay(): Promise<Song>{
+        await Promise.all([this.queueDto.queueAllSongs(), this.systemDto.setShuffled(true)]);
+        await this.queueDto.setFirstShuffledSongCurrent();
+        const currentQueueRecord = await this.queueDto.getCurrentSong();
+        return this.songDto.getSong(currentQueueRecord.songId);
     }
 }

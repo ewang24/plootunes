@@ -41,4 +41,8 @@ export class QueueService{
     static async shuffleCurrentQueue(): Promise<void>{
         return ElectronUtil.invoke<void>("shuffleCurrentQueue");
     }
+
+    static async shuffleAllSongsAndPlay(): Promise<Song>{
+        return ElectronUtil.invoke<Song>("shuffleAllSongsAndPlay");
+    }
 }
