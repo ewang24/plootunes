@@ -5,12 +5,15 @@ import AppRouter from './navigation/router';
 import PlayerMain from './player/playerMain';
 import { ElectronUtil } from './util/electronUtil';
 import { Song } from '../../core/db/dbEntities/song';
+import { SystemService } from './global/electronServices/systemService';
 
 export interface PlayerContext {
   playSongNow(song: Song): void;
   queueSong(songId): void;
   currentlyPlayingSong: Song | undefined;
   setCurrentlyPlayingSong: React.Dispatch<React.SetStateAction<Song>>;
+  shuffled: boolean;
+  setShuffled: (shuffled: boolean) => void;
 }
 
 export const PlayerContext = createContext<PlayerContext | undefined>(undefined);
@@ -18,7 +21,7 @@ export const PlayerContext = createContext<PlayerContext | undefined>(undefined)
 const Main = () => {
 
   
-
+  const [shuffled, setShuffled] = useState<boolean>(false);
   const [currentlyPlayingSong, setCurrentlyPlayingSong] = useState<Song | undefined>(undefined);
 
 
@@ -39,8 +42,12 @@ const Main = () => {
     });
   }
 
+  function handleShuffledChange(shuffled: boolean){
+    SystemService
+  }
+
   return <div className='main-container'>
-    <PlayerContext.Provider value={{playSongNow, queueSong, currentlyPlayingSong, setCurrentlyPlayingSong}}>
+    <PlayerContext.Provider value={{playSongNow, queueSong, currentlyPlayingSong, setCurrentlyPlayingSong, shuffled, setShuffled: handleShuffledChange}}>
       <>
         <AppRouter />
         <PlayerMain />

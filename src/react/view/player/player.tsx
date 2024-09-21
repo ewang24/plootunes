@@ -4,15 +4,24 @@ import { PlayerContext } from '../main';
 import { AudioService } from '../albums/electronServices/audioService';
 import { QueueService } from '../albums/electronServices/queueService';
 import { Song } from '../../../core/db/dbEntities/song';
+import PButton from '../global/widgets/pButton';
+import { SystemService } from '../global/electronServices/systemService';
 
 export interface PlayerProps {
     isPlaying: boolean;
 }
 
 function Player() {
-    const { currentlyPlayingSong, setCurrentlyPlayingSong } = useContext(PlayerContext);
+    const { shuffled, setShuffled, currentlyPlayingSong, setCurrentlyPlayingSong } = useContext(PlayerContext);
     const [audioSrc, setAudioSrc] = useState<string | undefined>(undefined);
     const audioPlayer = useRef(null);
+
+    useEffect(() => {
+        SystemService.isShuffled().then((shuffled: boolean) => {
+            console.log(shuffled);
+            setShuffled(shuffled);
+        });
+    }, [])
 
     useLayoutEffect(() => {
         return setUpAudioPlayerListeners();
@@ -27,13 +36,11 @@ function Player() {
     }, [currentlyPlayingSong]);
 
     function setUpAudioPlayerListeners() {
-        // console.log('setting up ending audio listener');
         if (!audioPlayer.current) {
             return;
         }
 
         audioPlayer.current.addEventListener("ended", audioEnded);
-        // console.log('audio player listener created');
 
         return () => {
             if (!audioPlayer?.current) {
@@ -85,9 +92,18 @@ function Player() {
         setAudioSrc(url);
     }
 
+    function setShuffledHandler(){
+        if(!shuffled){
+            QueueService.shuffleCurrentQueue();
+        }
+        setShuffled(!shuffled);
+    }
+
     return <div className={'player-controls'}>
         {audioSrc &&
             <div className='p-row'>
+                {`shuffled? ${shuffled}`}
+                <PButton label='Shuffle' onClick={setShuffledHandler}/>
                 <strong>
                     {
                         currentlyPlayingSong.name

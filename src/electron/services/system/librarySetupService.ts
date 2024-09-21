@@ -49,6 +49,8 @@ export class LibrarySetupService {
     }
 
     async scanFiles(): Promise<void> {
+        //TODO clear out cover image files in APPDATA so they don't overflow
+
         this.albumCovers = {};
         //TODO: replace with the path from the config table (maybe)
         //'P:/Music/music/rotation/'

@@ -1,14 +1,17 @@
 import { Song } from "../../../../../core/db/dbEntities/song";
 import { Connector } from "../../../../../core/db/dto/connector";
 import { QueueDto } from "../../../../../core/db/dto/queueDto";
+import { SystemDto } from "../../../../../core/db/dto/systemDto";
 import { handler } from "../../decorators/handlerDecorator";
 const fs = require('fs');
 
 export class QueueService{
     queueDto: QueueDto;
+    systemDto: SystemDto;
 
     constructor(connector: Connector){
         this.queueDto = new QueueDto(connector);
+        this.systemDto = new SystemDto(connector);
     }
 
     @handler
@@ -25,7 +28,8 @@ export class QueueService{
 
     @handler
     async getNextSongInQueue(): Promise<Song>{
-        return this.queueDto.getNextSongInQueue();
+        const shuffled = await this.systemDto.isShuffled();
+        return this.queueDto.getNextSongInQueue(shuffled);
     }
 
     @handler
@@ -64,5 +68,11 @@ export class QueueService{
     @handler
     async queueAllSongs(): Promise<void>{
         return this.queueDto.queueAllSongs();
+    }
+
+    @handler
+    async shuffleCurrentQueue(): Promise<void>{
+        await this.systemDto.setShuffled(true);
+        return this.queueDto.moveCurrentSongToShuffledQueueStart()
     }
 }

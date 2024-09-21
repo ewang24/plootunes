@@ -38,5 +38,6 @@ CREATE TABLE IF NOT EXISTS queue (
     songId INTEGER NOT NULL,
     position INTEGER NULL,
     current INTEGER NOT NULL DEFAULT 0,
+    randomKey INTEGER DEFAULT (RANDOM()),
     FOREIGN KEY (songId) references song(id)
 );
