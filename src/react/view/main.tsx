@@ -6,6 +6,7 @@ import PlayerMain from './player/playerMain';
 import { ElectronUtil } from './util/electronUtil';
 import { Song } from '../../core/db/dbEntities/song';
 import { SystemService } from './global/electronServices/systemService';
+import { QueueService } from './albums/electronServices/queueService';
 
 export interface PlayerContext {
   playSongNow(song: Song): void;
@@ -27,13 +28,13 @@ const Main = () => {
 
   function playSongNow(song: Song){
     setCurrentlyPlayingSong(song);
-    ElectronUtil.invoke('playSong', song.id).catch((err) => {
+    QueueService.playSong(song.id).catch((err) => {
       window.alert(`Error: ${JSON.stringify(err)}`);
     });
   }
 
   function queueSong(song: Song){
-    ElectronUtil.invoke('queueSong', song.id).then(() => {
+    QueueService.queueSong(song.id).then(() => {
       if(currentlyPlayingSong){
         return;
       }
@@ -43,7 +44,9 @@ const Main = () => {
   }
 
   function handleShuffledChange(shuffled: boolean){
-    SystemService
+    SystemService.setShuffled(shuffled).then(() => {
+      setShuffled(shuffled);
+    })
   }
 
   return <div className='main-container'>
