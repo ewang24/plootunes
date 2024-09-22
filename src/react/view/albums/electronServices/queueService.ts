@@ -45,4 +45,8 @@ export class QueueService{
     static async shuffleAllSongsAndPlay(): Promise<Song>{
         return ElectronUtil.invoke<Song>("shuffleAllSongsAndPlay");
     }
+
+    static async getAllQueuedSongs(): Promise<Song[]>{
+        return ElectronUtil.invoke<Song[]>("getAllQueuedSongs");
+    }
 }

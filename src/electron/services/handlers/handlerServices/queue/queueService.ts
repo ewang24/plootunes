@@ -25,6 +25,7 @@ export class QueueService{
 
     @handler
     async queueSong(songId: number): Promise<void>{
+        //TODO account for shuffled queue in this function.
         const queueSize = await this.queueDto.getQueueSize();
         return this.queueDto.queueSong(songId, queueSize === 0);
     }
@@ -43,34 +44,34 @@ export class QueueService{
     @handler
     async playAlbum(albumId: number): Promise<void>{
         await this.queueDto.clearQueue();
-        return this.queueAlbum(albumId, true);
+        await Promise.all([this.systemDto.setShuffled(false), this.queueAlbum(albumId, true)]);
     }
 
     @handler
     async queueAlbum(albumId: number, setCurrent?: boolean): Promise<void>{
-        return this.queueDto.queueAlbum(albumId, setCurrent);
+        await Promise.all([this.systemDto.setShuffled(false), this.queueDto.queueAlbum(albumId, setCurrent)]);
     }
 
     @handler
     async playArtist(artistId: number): Promise<void>{
         await this.queueDto.clearQueue();
-        return this.queueArtist(artistId, true);
+        await Promise.all([this.systemDto.setShuffled(false), this.queueArtist(artistId, true)]);
     }
 
     @handler
     async queueArtist(artistId: number, setCurrent?: boolean): Promise<void>{
-        return this.queueDto.queueArtist(artistId, setCurrent);       
+        await Promise.all([this.systemDto.setShuffled(false), this.queueDto.queueArtist(artistId, setCurrent)]);       
     }
 
     @handler
     async queueAllSongsAndPlay(songId: number): Promise<void>{
-        await this.queueAllSongs();
+        await Promise.all([this.systemDto.setShuffled(false), this.queueAllSongs()]);
         return this.queueDto.setSongAsCurrent(songId);
     }
 
     @handler
     async queueAllSongs(): Promise<void>{
-        return this.queueDto.queueAllSongs();
+        await Promise.all([this.systemDto.setShuffled(false), this.queueDto.queueAllSongs()]);
     }
 
     @handler
@@ -85,5 +86,11 @@ export class QueueService{
         await this.queueDto.setFirstShuffledSongCurrent();
         const currentQueueRecord = await this.queueDto.getCurrentSong();
         return this.songDto.getSong(currentQueueRecord.songId);
+    }
+
+    @handler
+    async getAllQueuedSongs(): Promise<Song[]>{
+        const shuffled = await this.systemDto.isShuffled();
+        return this.songDto.getSongsByQueue(shuffled);
     }
 }

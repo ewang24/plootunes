@@ -1,0 +1,42 @@
+@import '../constants';
+div.queue-viewer {
+    background-color: $foreground-dark;
+
+    &.queue-viewer-opened{
+        box-shadow: -1px 1px 4px 1px $box-shadow-color;
+        z-index: 2;
+    }
+    
+    div.queue-viewer-button {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+    }
+
+    div.queue-viewer-row{
+        border-bottom: 1px solid $foreground;
+
+        span{
+            padding: 10px;
+            color: $text-primary;
+
+            &.currently-playing{
+                font-weight: bold;
+            }
+        }
+
+        &:hover{
+            background: $accent-green;
+
+            span{
+                color: $white;
+            }
+        }
+    }
+
+    div.now-playing-queue-bar{
+        height: 100%;
+        background-color: $accent-green;
+        width: 10px;
+    }
+}

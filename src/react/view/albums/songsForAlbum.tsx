@@ -11,7 +11,7 @@ import SongsGrid from '../global/widgets/songsGrid';
 
 function SongsForAlbum({ album, closeSongsForAlbumView }) {
 
-    const { playSongNow, queueSong, setCurrentlyPlayingSong, currentlyPlayingSong } = useContext(PlayerContext);
+    const { playSongNow, setShuffled, queueSong, setCurrentlyPlayingSong, currentlyPlayingSong } = useContext(PlayerContext);
     const [songs, setSongs] = useState<Song[]>(undefined);
     useEffect(() => {
         SongService.getSongsByAlbum(album.id)
@@ -24,6 +24,7 @@ function SongsForAlbum({ album, closeSongsForAlbumView }) {
     function playAlbumCallback() {
         QueueService.playAlbum(album.id).then(() => {
             setCurrentlyPlayingSong(songs[0]);
+            setShuffled(false);
         });
     }
 
@@ -36,6 +37,7 @@ function SongsForAlbum({ album, closeSongsForAlbumView }) {
     }
 
     function playSongCallback(song: Song) {
+        setShuffled(false);
         playSongNow(song);
     }
 
