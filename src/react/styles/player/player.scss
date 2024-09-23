@@ -5,10 +5,16 @@ div.player-main{
     box-shadow: 0 -6px 4px 1px $box-shadow-color;
     flex-direction: column;
     flex-grow: 1;
-}
 
-div.player-controls{
-    display: flex;
-    flex-grow: 1;
-    justify-content: center;
+    div.player-controls{
+        border-top: 1px solid $foreground;
+
+        div.player-controls-row{
+            padding: 10px;
+        }
+    
+        display: flex;
+        flex-grow: 1;
+        justify-content: center;
+    }
 }

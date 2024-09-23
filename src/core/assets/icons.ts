@@ -6,4 +6,5 @@ export class Icons{
     static X = Object.freeze("x.svg");
     static HAMBURGER = Object.freeze("hamburger.svg");
     static SHUFFLE = Object.freeze("shuffle.svg");
+    static REPEAT_CIRCLE = Object.freeze("repeatCircle.svg");
 }

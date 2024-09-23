@@ -8,17 +8,29 @@ div.p-button-container {
     padding: 5px;
     margin: 2px;
 
-    &.primary{
+    &.borderless:not(:hover){
+        //Since there is no border, the button container would be 1px smaller on each side.
+        //Set the padding to 1px greater than normal (5px) so that hovering a borderless icon doesn't change the container size and cause reflow
+        padding: 6px;
+    }
+    
+
+    &.primary {
         border: 1px solid $accent-green;
         background: $accent-green;
     }
-    
+
 
     &:hover {
         box-shadow: 1px 1px 5px 1px #979797;
 
         button.p-button-widget {
             color: $white;
+        }
+
+        & {
+            border: 1px solid $accent-green;
+            background: $accent-green;
         }
 
         svg {
@@ -50,17 +62,17 @@ div.p-button-container {
         pointer-events: none;
         padding: 3px;
 
-        &.p-button-small{
+        &.p-button-small {
             max-height: 20px;
             max-width: 20px;
         }
 
-        &.p-button-medium{
+        &.p-button-medium {
             max-height: 35px;
             max-width: 35px;
         }
 
-        &.p-button-large{
+        &.p-button-large {
             max-height: 60px;
             max-width: 60px;
         }

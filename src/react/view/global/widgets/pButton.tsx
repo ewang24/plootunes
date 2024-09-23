@@ -9,6 +9,7 @@ import SvgPlay from "../../../../core/assets/icons/components/Play";
 import SvgPlus from "../../../../core/assets/icons/components/Plus";
 import SvgShuffle from "../../../../core/assets/icons/components/Shuffle";
 import { v4 as uuidv4 } from 'uuid';
+import SvgRepeatCircle from "../../../../core/assets/icons/components/RepeatCircle";
 
 
 export interface PButtonProps {
@@ -34,11 +35,12 @@ iconMap[Icons.STOP] = <SvgStop />;
 iconMap[Icons.X] = <SvgX />;
 iconMap[Icons.HAMBURGER] = <SvgHamburger />;
 iconMap[Icons.SHUFFLE] = <SvgShuffle />;
+iconMap[Icons.REPEAT_CIRCLE] = <SvgRepeatCircle />;
 
 
 function PButton(props: PButtonProps) {
     const { onClick, label, displayLabel = true, icon, iconSize = 'small', iconRight = false, fill, iconType = 'primary' } = props;
-    const uuid = useRef<string>(uuidv4());
+    const uuid = useRef<string>('b' + uuidv4());
 
 
     // useEffect(() => {
@@ -72,7 +74,7 @@ function PButton(props: PButtonProps) {
                 {
                     //TODO: need to figure out a way to inject these color values somehow
                     `
-                    #${uuid.current}.p-button-container .p-button-icon svg path {
+                    #${uuid.current}.p-button-container:not(:hover) .p-button-icon svg path {
                         fill: ${fill} !important;
                         stroke: ${fill} !important;
                     }

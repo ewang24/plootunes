@@ -106,16 +106,22 @@ function Player() {
 
     return <div className={'player-controls'}>
         {audioSrc &&
-            <div className='p-row'>
-                {`repeat? ${repeat}`}
-                <PButton label='Repeat' onClick={setRepeatHandler} fill={'#B7E1CC'} />
-                {`shuffled? ${shuffled}`}
+            <div className='p-row player-controls-row'>
+                <PButton label='Repeat' 
+                    displayLabel = {false}
+                    icon={Icons.REPEAT_CIRCLE}
+                    onClick={setRepeatHandler} 
+                    fill={'#B7E1CC'} 
+                    iconType='borderless'
+                    iconSize='medium'
+                />
                 <PButton label='Shuffle'
                     displayLabel={false}
                     icon={Icons.SHUFFLE}
                     onClick={setShuffledHandler}
                     fill={ shuffled? '#B7E1CC': undefined}
                     iconType='borderless'
+                    iconSize='medium'
                 />
                 <strong>
                     {
