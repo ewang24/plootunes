@@ -32,8 +32,8 @@ export class QueueService{
 
     @handler
     async getNextSongInQueue(): Promise<Song>{
-        const shuffled = await this.systemDto.isShuffled();
-        return this.queueDto.getNextSongInQueue(shuffled);
+        const [shuffled, repeat] = await Promise.all([this.systemDto.isShuffled(), this.systemDto.isRepeat()]);
+        return this.queueDto.getNextSongInQueue(shuffled, repeat);
     }
 
     @handler

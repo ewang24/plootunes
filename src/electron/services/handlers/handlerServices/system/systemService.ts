@@ -12,13 +12,21 @@ export class SystemService{
 
     @handler
     async isShuffled(): Promise<boolean>{
-        const shuffled = await this.systemDto.isShuffled();
-        console.log(`shuffled: ${shuffled}`);
-        return shuffled;
+        return await this.systemDto.isShuffled();
     }
 
     @handler
     async setShuffled(shuffled: boolean): Promise<void>{
         return this.systemDto.setShuffled(shuffled);
+    }
+
+    @handler
+    async isRepeat(): Promise<boolean>{
+        return await this.systemDto.isRepeat();
+    }
+ 
+    @handler
+    async setRepeat(repeat: boolean): Promise<void>{
+        return this.systemDto.setRepeat(repeat);
     }
 }

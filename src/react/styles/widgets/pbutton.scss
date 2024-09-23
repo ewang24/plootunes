@@ -4,11 +4,15 @@ div.p-button-container {
     display: flex;
     flex-grow: 0;
     align-items: center;
-    border: 1px solid $accent-green;
     border-radius: 20px;
     padding: 5px;
     margin: 2px;
-    background: $accent-green;
+
+    &.primary{
+        border: 1px solid $accent-green;
+        background: $accent-green;
+    }
+    
 
     &:hover {
         box-shadow: 1px 1px 5px 1px #979797;

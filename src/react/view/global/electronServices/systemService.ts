@@ -9,4 +9,8 @@ export class SystemService{
     static async setShuffled(shuffled: boolean): Promise<void>{
         return ElectronUtil.invoke<void>("setShuffled", shuffled);
     }
+
+    static async setRepeat(shuffled: boolean): Promise<void>{
+        return ElectronUtil.invoke<void>("setRepeat", shuffled);
+    }
 }

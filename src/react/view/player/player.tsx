@@ -6,13 +6,14 @@ import { QueueService } from '../albums/electronServices/queueService';
 import { Song } from '../../../core/db/dbEntities/song';
 import PButton from '../global/widgets/pButton';
 import { SystemService } from '../global/electronServices/systemService';
+import { Icons } from '../../../core/assets/icons';
 
 export interface PlayerProps {
     isPlaying: boolean;
 }
 
 function Player() {
-    const { shuffled, setShuffled, currentlyPlayingSong, setCurrentlyPlayingSong } = useContext(PlayerContext);
+    const { shuffled, setShuffled, repeat, setRepeat, currentlyPlayingSong, setCurrentlyPlayingSong } = useContext(PlayerContext);
     const [audioSrc, setAudioSrc] = useState<string | undefined>(undefined);
     const audioPlayer = useRef(null);
 
@@ -92,8 +93,12 @@ function Player() {
         setAudioSrc(url);
     }
 
-    function setShuffledHandler(){
-        if(!shuffled){
+    function setRepeatHandler() {
+        setRepeat(!repeat);
+    }
+
+    function setShuffledHandler() {
+        if (!shuffled) {
             QueueService.shuffleCurrentQueue();
         }
         setShuffled(!shuffled);
@@ -102,8 +107,16 @@ function Player() {
     return <div className={'player-controls'}>
         {audioSrc &&
             <div className='p-row'>
+                {`repeat? ${repeat}`}
+                <PButton label='Repeat' onClick={setRepeatHandler} fill={'#B7E1CC'} />
                 {`shuffled? ${shuffled}`}
-                <PButton label='Shuffle' onClick={setShuffledHandler}/>
+                <PButton label='Shuffle'
+                    displayLabel={false}
+                    icon={Icons.SHUFFLE}
+                    onClick={setShuffledHandler}
+                    fill={ shuffled? '#B7E1CC': undefined}
+                    iconType='borderless'
+                />
                 <strong>
                     {
                         currentlyPlayingSong.name

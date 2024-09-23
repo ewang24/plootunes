@@ -15,6 +15,8 @@ export interface PlayerContext {
   setCurrentlyPlayingSong: React.Dispatch<React.SetStateAction<Song>>;
   shuffled: boolean;
   setShuffled: (shuffled: boolean) => void;
+  repeat: boolean;
+  setRepeat: (repeat: boolean) => void;
 }
 
 export const PlayerContext = createContext<PlayerContext | undefined>(undefined);
@@ -23,6 +25,7 @@ const Main = () => {
 
 
   const [shuffled, setShuffled] = useState<boolean>(false);
+  const [repeat, setRepeat] = useState<boolean>(false);
   const [currentlyPlayingSong, setCurrentlyPlayingSong] = useState<Song | undefined>(undefined);
 
 
@@ -49,8 +52,14 @@ const Main = () => {
     })
   }
 
+  function handleRepeatChange(repeat: boolean){
+    SystemService.setRepeat(repeat).then(() => {
+      setRepeat(repeat);
+    });
+  }
+
   return <div className='main-container'>
-    <PlayerContext.Provider value={{ playSongNow, queueSong, currentlyPlayingSong, setCurrentlyPlayingSong, shuffled, setShuffled: handleShuffledChange }}>
+    <PlayerContext.Provider value={{ playSongNow, queueSong, currentlyPlayingSong, setCurrentlyPlayingSong, shuffled, setShuffled: handleShuffledChange, repeat, setRepeat:handleRepeatChange }}>
       <>
         <div className='p-row main-container-content'>
           <AppRouter />

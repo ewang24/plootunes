@@ -4,10 +4,11 @@ import { Connector } from "./connector";
 import { Dto } from "./dto";
 import { Queries } from "./queries";
 
-export class QueueDto extends Dto{
+export class QueueDto extends Dto {
     queries: Queries = {
         getCurrentSong: "SELECT * FROM queue WHERE current = 1",
-        getFirstSong: "SELECT * FROM queue LIMIT 1",
+        getFirstSong: "SELECT s.* FROM song s INNER JOIN queue q on s.id = q.songId ORDER BY q.id",
+        getFirstShuffledSong: "SELECT s.* FROM song s INNER JOIN queue q on s.id = q.songId ORDER BY randomKey LIMIT 1",
         queueSong: "INSERT INTO queue (songId, current, position) VALUES ($songId, $current, 0)",
         clearQueue: "DELETE FROM queue",
         getNextSongInQueue: "SELECT * FROM song WHERE id = (SELECT songId from queue WHERE id > (SELECT id FROM queue where current = 1))",
@@ -46,67 +47,73 @@ export class QueueDto extends Dto{
             INSERT INTO queue (songId, current, position)
             SELECT id, 0, 0 FROM song ORDER BY name
         `,
-        moveCurrentSongToShuffledQueueStart: `UPDATE queue SET randomKey = (SELECT MIN(randomKey) - 1 as keyMin FROM queue) WHERE current = 1`,        
+        moveCurrentSongToShuffledQueueStart: `UPDATE queue SET randomKey = (SELECT MIN(randomKey) - 1 as keyMin FROM queue) WHERE current = 1`,
         setFirstShuffledSongCurrent: `UPDATE queue SET current = 1 WHERE id = (SELECT _q.id FROM queue _q ORDER BY randomKey LIMIT 1)`
     }
 
-    constructor(connector: Connector){
+    constructor(connector: Connector) {
         super(connector);
     }
 
-    async getFirstSong(): Promise<QueueRecord>{
-        return this.connector.get<QueueRecord>(this.queries.getFirstSong);
+    async getFirstSong(shuffled?: boolean): Promise<Song> {
+        const query = shuffled? this.queries.getFirstShuffledSong: this.queries.getFirstSong;
+        return this.connector.get<Song>(query);
     }
 
-    async getCurrentSong(): Promise<QueueRecord>{
+    async getCurrentSong(): Promise<QueueRecord> {
         return this.connector.get<QueueRecord>(this.queries.getCurrentSong);
     }
 
-    async queueSong(songId: number, current?: boolean): Promise<void>{
-        const currentBit = (current? current: false)? 1: 0; 
+    async queueSong(songId: number, current?: boolean): Promise<void> {
+        const currentBit = (current ? current : false) ? 1 : 0;
         console.log(`current: ${currentBit}`);
-        return this.connector.run(this.queries.queueSong, {songId, current: currentBit});
+        return this.connector.run(this.queries.queueSong, { songId, current: currentBit });
     }
 
-    async clearQueue(): Promise<void>{
+    async clearQueue(): Promise<void> {
         return this.connector.run(this.queries.clearQueue);
     }
 
-    async getNextSongInQueue(shuffled?: boolean): Promise<Song>{
-        const query = shuffled? this.queries.getNextSongInShuffledQueue: this.queries.getNextSongInQueue
-        return await this.connector.get<Song>(query);
+    async getNextSongInQueue(shuffled: boolean, repeat: boolean): Promise<Song> {
+        const query = shuffled ? this.queries.getNextSongInShuffledQueue : this.queries.getNextSongInQueue
+        let nextSong = await this.connector.get<Song>(query);
+        if(!nextSong && repeat){
+            nextSong = await this.getFirstSong(shuffled);
+        }
+
+        return nextSong;
     }
 
-    async getQueueSize(): Promise<number>{
+    async getQueueSize(): Promise<number> {
         return super.count('queue');
     }
 
-    async setSongAsCurrent(songId: number): Promise<void>{
+    async setSongAsCurrent(songId: number): Promise<void> {
         //TODO: wrap these two queries in a transaction
         await this.connector.run(this.queries.setCurrentSongToNotCurrent);
-        return this.connector.run(this.queries.setSongToCurrent, {songId})
+        return this.connector.run(this.queries.setSongToCurrent, { songId })
     }
 
-    async queueAlbum(albumId: number, setCurrent?: boolean): Promise<void>{
-        const _setCurrent = setCurrent? 1: 0;
-        return this.connector.run(this.queries.queueAlbum, {albumId, setCurrent: _setCurrent});
+    async queueAlbum(albumId: number, setCurrent?: boolean): Promise<void> {
+        const _setCurrent = setCurrent ? 1 : 0;
+        return this.connector.run(this.queries.queueAlbum, { albumId, setCurrent: _setCurrent });
     }
 
-    async queueArtist(artistId: number, setCurrent?: boolean): Promise<void>{
-        const _setCurrent = setCurrent? 1: 0;       
-        return this.connector.run(this.queries.queueArtist, {artistId, setCurrent: _setCurrent});
+    async queueArtist(artistId: number, setCurrent?: boolean): Promise<void> {
+        const _setCurrent = setCurrent ? 1 : 0;
+        return this.connector.run(this.queries.queueArtist, { artistId, setCurrent: _setCurrent });
     }
 
-    async queueAllSongs(): Promise<void>{
+    async queueAllSongs(): Promise<void> {
         await this.clearQueue();
         return this.connector.run(this.queries.queueAllSongs);
     }
 
-    async moveCurrentSongToShuffledQueueStart(): Promise<void>{
+    async moveCurrentSongToShuffledQueueStart(): Promise<void> {
         return this.connector.run(this.queries.moveCurrentSongToShuffledQueueStart);
     }
 
-    async setFirstShuffledSongCurrent(){
+    async setFirstShuffledSongCurrent() {
         return this.connector.run(this.queries.setFirstShuffledSongCurrent);
     }
 }
