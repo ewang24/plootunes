@@ -10,6 +10,8 @@ import SvgPlus from "../../../../core/assets/icons/components/Plus";
 import SvgShuffle from "../../../../core/assets/icons/components/Shuffle";
 import { v4 as uuidv4 } from 'uuid';
 import SvgRepeatCircle from "../../../../core/assets/icons/components/RepeatCircle";
+import SvgRewind from "../../../../core/assets/icons/components/Rewind";
+import SvgFastForward from "../../../../core/assets/icons/components/FastForward";
 
 
 export interface PButtonProps {
@@ -36,44 +38,18 @@ iconMap[Icons.X] = <SvgX />;
 iconMap[Icons.HAMBURGER] = <SvgHamburger />;
 iconMap[Icons.SHUFFLE] = <SvgShuffle />;
 iconMap[Icons.REPEAT_CIRCLE] = <SvgRepeatCircle />;
+iconMap[Icons.REWIND] = <SvgRewind />;
+iconMap[Icons.FAST_FORWARD] = <SvgFastForward />;
 
 
 function PButton(props: PButtonProps) {
     const { onClick, label, displayLabel = true, icon, iconSize = 'small', iconRight = false, fill, iconType = 'primary' } = props;
     const uuid = useRef<string>('b' + uuidv4());
-
-
-    // useEffect(() => {
-    //     if (icon) {
-    //         console.log(JSON.stringify(iconCache));
-    //         if (iconCache[icon]) {
-    //             console.log(`icon ${icon} found in cache.`)
-    //             setIconComponent(() => iconCache[icon]);
-    //         }
-    //         else {
-    //             console.log(`icon ${icon} not found in cache.`)
-    //             // Dynamically import the SVG
-    //             //It is imported as a react component because of the svgr library so we can use it below as IconComponent
-    //             import(`~core-assets/file/${icon}`)
-    //                 .then((module) => {
-    //                     console.log(`saving icon ${icon} to cache.`)
-    //                     iconCache[icon] = module.default;
-    //                     setIconComponent(() => module.default);
-    //                 })
-    //                 .catch((error) => {
-    //                     console.error(`Error loading icon: ${icon}`, error);
-    //                 });
-    //         }
-
-    //     }
-    // }, [icon]);
-
     return <>
         {fill &&
             <style>
                 {
-                    //TODO: need to figure out a way to inject these color values somehow
-                    `
+                `
                     #${uuid.current}.p-button-container:not(:hover) .p-button-icon svg path {
                         fill: ${fill} !important;
                         stroke: ${fill} !important;

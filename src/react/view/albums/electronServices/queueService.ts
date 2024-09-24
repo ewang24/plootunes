@@ -6,6 +6,10 @@ export class QueueService{
         return ElectronUtil.invoke<Song>("getNextSongInQueue");
     }
 
+    static async getPreviousSongInQueue(): Promise<Song>{
+        return ElectronUtil.invoke<Song>("getPreviousSongInQueue");
+    }
+
     static async transitionCurrentSong(songId: number): Promise<void>{
         return ElectronUtil.invoke<void>("transitionCurrentSong", songId);
     }

@@ -37,6 +37,12 @@ export class QueueService{
     }
 
     @handler
+    async getPreviousSongInQueue(): Promise<Song>{
+        const [shuffled, repeat] = await Promise.all([this.systemDto.isShuffled(), this.systemDto.isRepeat()]);
+        return this.queueDto.getPreviousSongInQueue(shuffled);
+    }
+
+    @handler
     async transitionCurrentSong(nextCurrentSongId: number): Promise<void>{
         return this.queueDto.setSongAsCurrent(nextCurrentSongId);
     }

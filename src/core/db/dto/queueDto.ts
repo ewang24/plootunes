@@ -11,11 +11,18 @@ export class QueueDto extends Dto {
         getFirstShuffledSong: "SELECT s.* FROM song s INNER JOIN queue q on s.id = q.songId ORDER BY randomKey LIMIT 1",
         queueSong: "INSERT INTO queue (songId, current, position) VALUES ($songId, $current, 0)",
         clearQueue: "DELETE FROM queue",
-        getNextSongInQueue: "SELECT * FROM song WHERE id = (SELECT songId from queue WHERE id > (SELECT id FROM queue where current = 1))",
+        getNextSongInQueue: "SELECT * FROM song WHERE id = (SELECT songId from queue WHERE id > (SELECT id FROM queue where current = 1) LIMIT 1)",
         getNextSongInShuffledQueue: `
            SELECT s.* FROM song s INNER JOIN queue q ON s.id = q.songId
            WHERE q.randomKey > (SELECT _q.randomKey FROM queue _q WHERE current = 1)
            ORDER BY q.randomKey
+           LIMIT 1;
+        `,
+        getPreviousSongInQueue: "SELECT * FROM song WHERE id = (SELECT songId from queue WHERE id < (SELECT id FROM queue where current = 1) ORDER BY id DESC LIMIT 1);",
+        getPreviousSongInShuffledQueue: `
+           SELECT s.* FROM song s INNER JOIN queue q ON s.id = q.songId
+           WHERE q.randomKey < (SELECT _q.randomKey FROM queue _q WHERE current = 1)
+           ORDER BY q.randomKey DESC
            LIMIT 1;
         `,
         setCurrentSongToNotCurrent: "UPDATE queue SET current = 0 where id = (SELECT id FROM queue where current = 1)",
@@ -82,6 +89,11 @@ export class QueueDto extends Dto {
         }
 
         return nextSong;
+    }
+
+    async getPreviousSongInQueue(shuffled: boolean): Promise<Song>{
+        const query = shuffled ? this.queries.getPreviousSongInShuffledQueue : this.queries.getPreviousSongInQueue
+        return this.connector.get<Song>(query);
     }
 
     async getQueueSize(): Promise<number> {

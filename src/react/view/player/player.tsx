@@ -41,28 +41,14 @@ function Player() {
             return;
         }
 
-        audioPlayer.current.addEventListener("ended", audioEnded);
+        audioPlayer.current.addEventListener("ended", playNextSong);
 
         return () => {
             if (!audioPlayer?.current) {
                 return;
             }
-            audioPlayer.current.removeEventListener("ended", audioEnded);
+            audioPlayer.current.removeEventListener("ended", playNextSong);
         }
-    }
-
-    async function audioEnded() {
-        const nextSongInQueue: Song = await QueueService.getNextSongInQueue()
-        if (!nextSongInQueue) {
-            return;
-        }
-
-        QueueService.transitionCurrentSong(nextSongInQueue.id).then(() => {
-            setCurrentlyPlayingSong(nextSongInQueue);
-        })
-            .catch((err) => {
-                window.alert(`Fatal error: ${JSON.stringify(err, null, 2)}`)
-            })
     }
 
     function processAudioSrc() {
@@ -93,6 +79,34 @@ function Player() {
         setAudioSrc(url);
     }
 
+    async function playPreviousSong(){
+        const previousSongInQueue: Song = await QueueService.getPreviousSongInQueue()
+        if (!previousSongInQueue) {
+            return;
+        }
+
+        QueueService.transitionCurrentSong(previousSongInQueue.id).then(() => {
+            setCurrentlyPlayingSong(previousSongInQueue);
+        })
+        .catch((err) => {
+            window.alert(`Fatal error: ${JSON.stringify(err, null, 2)}`)
+        });
+    }
+
+    async function playNextSong(){
+        const nextSongInQueue: Song = await QueueService.getNextSongInQueue()
+        if (!nextSongInQueue) {
+            return;
+        }
+
+        QueueService.transitionCurrentSong(nextSongInQueue.id).then(() => {
+            setCurrentlyPlayingSong(nextSongInQueue);
+        })
+        .catch((err) => {
+            window.alert(`Fatal error: ${JSON.stringify(err, null, 2)}`)
+        });
+    }
+
     function setRepeatHandler() {
         setRepeat(!repeat);
     }
@@ -107,6 +121,13 @@ function Player() {
     return <div className={'player-controls'}>
         {audioSrc &&
             <div className='p-row player-controls-row'>
+                <PButton label = 'Previous Song'
+                    displayLabel = {false}
+                    onClick={playPreviousSong}
+                    icon= {Icons.REWIND}
+                    iconType='borderless'
+                    iconSize='medium'
+                />
                 <PButton label='Repeat' 
                     displayLabel = {false}
                     icon={Icons.REPEAT_CIRCLE}
@@ -132,6 +153,13 @@ function Player() {
                     <source src={audioSrc} type="audio/mpeg" />
                     Your browser does not support the audio element.
                 </audio>
+                <PButton label = 'Next Song'
+                    displayLabel = {false}
+                    onClick={playNextSong}
+                    icon= {Icons.FAST_FORWARD}
+                    iconType='borderless'
+                    iconSize='medium'
+                />
             </div>
         }
     </div>
