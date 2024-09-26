@@ -1,21 +1,22 @@
-.p-router-row{
-    position: relative;
-    display: flex;
-    justify-content: stretch;
-    align-items: stretch;
-    background-color: #f0f0f0;
-    overflow-y: auto;
-    height: 100%;
-    width: 100%;
-    padding: 0px;
+.p-router-row {
+   position: relative;
+   display: flex;
+   justify-content: stretch;
+   align-items: stretch;
+   background-color: #f0f0f0;
+   overflow-y: auto;
+   height: 100%;
+   width: 100%;
+   padding: 0px;
 
-    > div.p-row{
+   >div.p-row {
       flex-grow: 1;
-    }
- }
+   }
+}
 
- .p-router-routes-container{
-    display: flex;
-    position: relative;
-    flex-grow: 1;
- }
+.p-router-routes-container {
+   background-color: white;
+   display: flex;
+   position: relative;
+   flex-grow: 1;
+}

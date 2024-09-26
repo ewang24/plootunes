@@ -14,11 +14,22 @@ div.p-header {
         flex-grow: 1;
         justify-content: stretch;
     
-        h1.p-header {
+        .p-header {
             flex-grow: 1;
             background-color: $accent-green;
-            padding: 25px 10px;
             margin: 0px;
+        }
+
+        h1.p-header {
+            padding: 25px 10px;
+        }
+
+        h2.p-header{
+            padding: 20px 15px;
+        }
+
+        h3.p-header{
+            padding: 15px 10px;
         }
     }
     

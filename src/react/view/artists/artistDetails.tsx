@@ -74,7 +74,7 @@ function ArtistDetails(props: ArtistDetailsProps) {
     }
 
     return <ViewContainer
-        header={<Header label={artist.name} widgets={[<PButton onClick={() => closeArtistDetails()} label="Back" icon={Icons.BACK_ARROW} displayLabel={false} />]} />}
+        header={<Header label={artist.name} widgets={<PButton onClick={() => closeArtistDetails()} label="Back" icon={Icons.BACK_ARROW} displayLabel={false} />} />}
         content={content()}
     />
 }
