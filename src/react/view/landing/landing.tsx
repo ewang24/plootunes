@@ -5,6 +5,7 @@ import PButton from '../global/widgets/pButton';
 import { Icons } from '../../../core/assets/icons';
 import PModal from '../global/widgets/pModal';
 import '../../styles/landing/landing.scss'
+import WidgetTile from './widgetTile';
 
 const Landing = () => {
 
@@ -71,9 +72,7 @@ const Landing = () => {
             widgets.length > 0 &&
             <div className='landing-widgets-container'>
               {widgets.map((widget) => {
-                return <div className='p-row widget-tile'>
-                  {`${widget.widgetType} - ${widget.displayOrder}`}
-                </div>
+                return <WidgetTile widget={widget}/>
               })}
             </div>
           }
