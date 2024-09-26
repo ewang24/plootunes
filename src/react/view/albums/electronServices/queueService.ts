@@ -1,4 +1,5 @@
 import { Song } from "../../../../core/db/dbEntities/song";
+import { SongsWithCurrentlyPlaying } from "../../../../core/db/dbEntities/songWithCurrentlyPlaying";
 import { ElectronUtil } from "../../util/electronUtil";
 
 export class QueueService{
@@ -50,7 +51,7 @@ export class QueueService{
         return ElectronUtil.invoke<Song>("shuffleAllSongsAndPlay");
     }
 
-    static async getAllQueuedSongs(): Promise<Song[]>{
-        return ElectronUtil.invoke<Song[]>("getAllQueuedSongs");
+    static async getAllQueuedSongs(): Promise<SongsWithCurrentlyPlaying>{
+        return ElectronUtil.invoke<SongsWithCurrentlyPlaying>("getAllQueuedSongs");
     }
 }

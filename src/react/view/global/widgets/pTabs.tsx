@@ -40,7 +40,7 @@ function PTabs(props: PTabsProps) {
                 </div>
             })}
         </div>
-        <div key={activeTab}>
+        <div className = 'p-main-content' key={activeTab}>
             {
                 tabs[activeTab].content
             }

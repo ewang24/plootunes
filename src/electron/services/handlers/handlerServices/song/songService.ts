@@ -1,7 +1,7 @@
 // import { Database, OPEN_READONLY, Statement } from "sqlite3";
 import { handler } from "../../decorators/handlerDecorator";
 // import { BaseHandlerService } from "../baseHandlerService";
-import { Song } from "../../../../../core/db/dbEntities/song";
+import { Song, SongWithAlbum } from "../../../../../core/db/dbEntities/song";
 import { SongDto } from "../../../../../core/db/dto/songDto";
 import { Connector } from "../../../../../core/db/dto/connector";
 
@@ -29,7 +29,7 @@ export class SongService{
   }
 
   @handler
-  async getSongsByArtist(artistId: number): Promise<Song[]>{
+  async getSongsByArtist(artistId: number): Promise<SongWithAlbum[]>{
     return this.songDto.getSongsByArtist(artistId);
   }
 

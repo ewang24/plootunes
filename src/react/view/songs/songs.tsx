@@ -23,6 +23,7 @@ const SongsList = () => {
   function onPlayCallback(song: Song) {
     QueueService.queueAllSongsAndPlay(song.id).then(() => {
       setCurrentlyPlayingSong(song);
+      setShuffled(false);
     });
   }
 

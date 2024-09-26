@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Artist } from "../../../core/db/dbEntities/artist";
 import { SongService } from "../songs/electronServices/songService";
-import { Song } from "../../../core/db/dbEntities/song";
+import { Song, SongWithAlbum } from "../../../core/db/dbEntities/song";
 import React from "react";
+import SongsGrid from "../global/widgets/songsGrid";
 
 export interface SongsForArtistProps {
     artist: Artist;
@@ -10,24 +11,23 @@ export interface SongsForArtistProps {
 
 function SongsForArtist(props: SongsForArtistProps) {
     const { artist } = props;
-    const [songs, setSongs] = useState<Song[] | undefined>();
+    const [songs, setSongs] = useState<SongWithAlbum[] | undefined>();
 
     useEffect(() => {
-        SongService.getSongsByArtist(artist.id).then((songs: Song[]) => {
+        SongService.getSongsByArtist(artist.id).then((songs: SongWithAlbum[]) => {
             setSongs(songs);
         })
     }, []);
 
-    return <div className = 'p-col'>
+    return <div className = 'p-main-content'>
         {
             songs && 
-            <>
-                {songs.map((song) => {
-                    return <div className = 'p-row'>
-                        {song.name}
-                    </div>
-                })}
-            </>
+            <SongsGrid
+                displayAlbumInfo = {true}
+                songs={songs}
+                onPlay={() => {}}
+                onQueue={() => {}}
+            />
         }
     </div>
 }

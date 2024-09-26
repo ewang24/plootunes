@@ -1,4 +1,5 @@
 import { Song } from "../../../../../core/db/dbEntities/song";
+import { SongsWithCurrentlyPlaying } from "../../../../../core/db/dbEntities/songWithCurrentlyPlaying";
 import { Connector } from "../../../../../core/db/dto/connector";
 import { QueueDto } from "../../../../../core/db/dto/queueDto";
 import { SongDto } from "../../../../../core/db/dto/songDto";
@@ -95,8 +96,13 @@ export class QueueService{
     }
 
     @handler
-    async getAllQueuedSongs(): Promise<Song[]>{
+    async getAllQueuedSongs(): Promise<SongsWithCurrentlyPlaying>{
         const shuffled = await this.systemDto.isShuffled();
-        return this.songDto.getSongsByQueue(shuffled);
+        const currentQueue = await this.queueDto.getCurrentSong();
+        const [currentlyPlaying, songs] = await Promise.all([this.songDto.getSong(currentQueue.songId), this.songDto.getSongsByQueue(shuffled)]);
+        return {
+            currentlyPlaying,
+            songs
+        }
     }
 }

@@ -1,8 +1,8 @@
-import React, { FC } from "react";
+import React, { FC, useMemo, useRef } from "react";
 import { Song, SongWithAlbum } from "../../../../core/db/dbEntities/song";
 import PButton from "./pButton";
 import { Icons } from "../../../../core/assets/icons";
-import { AutoSizer, Column, Table } from "react-virtualized";
+import { AutoSizer, Column, ColumnProps, Table } from "react-virtualized";
 import '../../../styles/widgets/songsGrid.scss'
 
 export interface SongsGridProps {
@@ -16,29 +16,31 @@ function SongsGrid(props: SongsGridProps) {
     const { songs, onPlay, onQueue, displayAlbumInfo } = props;
 
     function getAlbumArt(albumCoverImageUrl: string | undefined, index: number) {
-        return <div key={index} className='p-tile p-tile-ultra-small'>
-            <div className='p-tile-image'>
-                <>
-                    {albumCoverImageUrl &&
-                        <img draggable="false"
-                            src={`http://localhost:3030/${albumCoverImageUrl}`}
-                        />
-                    }
-                    {!albumCoverImageUrl &&
-                        <>
-                            {index % 2 === 0 &&
-                                <img draggable="false"
-                                    src='../../assets/img/test.jpg'
-                                />
-                            }
-                            {index % 2 !== 0 &&
-                                <img draggable="false"
-                                    src='../../assets/img/up.jpg'
-                                />
-                            }
-                        </>
-                    }
-                </>
+        return <div className = 'p-row p-row-center'>
+            <div key={index} className='p-tile p-tile-ultra-small'>
+                <div className='p-tile-image'>
+                    <>
+                        {albumCoverImageUrl &&
+                            <img draggable="false"
+                                src={`http://localhost:3030/${albumCoverImageUrl}`}
+                            />
+                        }
+                        {!albumCoverImageUrl &&
+                            <>
+                                {index % 2 === 0 &&
+                                    <img draggable="false"
+                                        src='../../assets/img/test.jpg'
+                                    />
+                                }
+                                {index % 2 !== 0 &&
+                                    <img draggable="false"
+                                        src='../../assets/img/up.jpg'
+                                    />
+                                }
+                            </>
+                        }
+                    </>
+                </div>
             </div>
         </div>
     }
@@ -50,7 +52,77 @@ function SongsGrid(props: SongsGridProps) {
         </div>
     }
 
-    const totalColumns = 3 + (displayAlbumInfo ? 2 : 0);
+    function wrapStringRowCell(content: string) {
+        return <div className='p-row p-row-center'>
+            {content}
+        </div>
+    }
+
+    function renderColumnHeader(columnName: string) {
+        return <div className='p-row p-row-center'>
+            <strong>
+                {columnName}
+            </strong>
+        </div>
+    }
+
+    const columnDefs = useMemo<Partial<ColumnProps>[]>((): Partial<ColumnProps>[] => {
+        const cols: Partial<ColumnProps>[] = [
+            {
+                dataKey: "id",
+                headerRenderer: () => renderColumnHeader("Actions"),
+                cellRenderer: ({ rowData }) => renderRowActions(rowData)
+            },
+            {
+                headerRenderer: () => renderColumnHeader("Track #"),
+                dataKey: "songPosition",
+                cellRenderer: ({ cellData }) => wrapStringRowCell(cellData)
+            }
+        ];
+
+        if (displayAlbumInfo) {
+            cols.push(
+                {
+                    headerRenderer: () => renderColumnHeader("Album"),
+                    dataKey: "albumCoverImage",
+                    cellRenderer: ({ cellData, rowIndex }) => { return getAlbumArt(cellData, rowIndex) }
+                },
+            )
+        }
+
+        cols.push(
+            {
+                headerRenderer: () => renderColumnHeader("Title"),
+                dataKey: "name",
+                cellRenderer: ({ cellData }) => wrapStringRowCell(cellData)
+            }
+        );
+
+        if (displayAlbumInfo) {
+            cols.push(
+                {
+                    headerRenderer: () => renderColumnHeader("Artist"),
+                    dataKey: "artistName",
+                    cellRenderer: ({ cellData }) => wrapStringRowCell(cellData)
+                }
+            );
+        }
+
+        cols.push(...[
+            {
+                headerRenderer: () => renderColumnHeader("# Plays"),
+                dataKey: "plays",
+                cellRenderer: ({ cellData }) => wrapStringRowCell('0')
+            },
+            {
+                headerRenderer: () => renderColumnHeader("Length"),
+                dataKey: "songLength",
+                cellRenderer: ({ cellData }) => wrapStringRowCell(getLength(cellData))
+            }
+        ] as Partial<ColumnProps>[]);
+
+        return cols;
+    }, []);
 
     return <>
         {(!songs || !songs.length) &&
@@ -62,6 +134,7 @@ function SongsGrid(props: SongsGridProps) {
             songs && songs.length > 0 &&
             <div className='song-grid-virtualizer-container'>
                 <div className='song-grid-virtualizer-block'>
+                    {/* The autosizer must be wrapped in a component with defined width/height. song-grid-virtualizer-block is a block element with a set width/height */}
                     <AutoSizer>
                         {({ height, width }) => {
                             return <Table height={height}
@@ -72,65 +145,14 @@ function SongsGrid(props: SongsGridProps) {
                                 headerHeight={50}
                                 rowClassName={'virtualized-song-grid-row'}
                             >
-                                <Column
-                                    width={width / totalColumns}
-                                    disableSort
-                                    label="Actions"
-                                    dataKey="id"
-                                    cellRenderer={({ rowData }) => renderRowActions(rowData)}
-                                // flexGrow={1}
-                                />
-                                <Column
-                                    width={width / totalColumns}
-                                    disableSort
-                                    label="Position"
-                                    dataKey="songPosition"
-                                    cellRenderer={({ cellData }) => cellData}
-                                // flexGrow={1}
-                                />
-                                {displayAlbumInfo &&
-                                    <Column
-                                        width={width / totalColumns}
-                                        disableSort
-                                        label="Album"
-                                        dataKey="albumCoverImage"
-                                        cellRenderer={({ cellData, rowIndex }) => { return getAlbumArt(cellData, rowIndex) }}
-                                    // flexGrow={1}
-                                    />
+                                {
+                                    columnDefs.map((colProps) => {
+                                        return <Column
+                                            width={width / columnDefs.length}
+                                            {...colProps}
+                                        />
+                                    })
                                 }
-                                <Column
-                                    width={width / totalColumns}
-                                    disableSort
-                                    label="Title"
-                                    dataKey="name"
-                                    cellRenderer={({ cellData }) => cellData}
-                                // flexGrow={1}
-                                />
-                                {displayAlbumInfo &&
-                                    <Column
-                                        width={width / totalColumns}
-                                        disableSort
-                                        label="Artist "
-                                        dataKey="artistName"
-                                        cellRenderer={({ cellData }) => cellData}
-                                    // flexGrow={1}
-                                    />
-                                }
-                                {/* <Column
-                                disableSort
-                                label="Plays"
-                                dataKey="plays"
-                                cellRenderer={({ plays }) => plays}
-                                flexGrow={1}
-                            /> */}
-                                <Column
-                                    width={width / totalColumns}
-                                    disableSort
-                                    label="Length"
-                                    dataKey="songLength"
-                                    cellRenderer={({ cellData }) => getLength(cellData)}
-                                // flexGrow={1}
-                                />
                             </Table>
                         }}
                     </AutoSizer>
