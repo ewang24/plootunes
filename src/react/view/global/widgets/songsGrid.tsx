@@ -60,79 +60,81 @@ function SongsGrid(props: SongsGridProps) {
         }
         {
             songs && songs.length > 0 &&
-            <div className = 'song-grid-virtualizer-container'>
-                <AutoSizer>
-                    {({ height, width }) => {
-                        return <Table height={height}
-                            width={width}
-                            rowCount={songs.length}
-                            rowGetter={({ index }) => songs[index]}
-                            rowHeight={50}
-                            headerHeight={50}
-                            rowClassName={'virtualized-song-grid-row'}
-                        >
-                            <Column
-                                width={width / totalColumns}
-                                disableSort
-                                label="Actions"
-                                dataKey="id"
-                                cellRenderer={({ rowData }) => renderRowActions(rowData)}
-                            // flexGrow={1}
-                            />
-                            <Column
-                                width={width / totalColumns}
-                                disableSort
-                                label="Position"
-                                dataKey="songPosition"
-                                cellRenderer={({ cellData }) => cellData}
-                            // flexGrow={1}
-                            />
-                            {displayAlbumInfo &&
+            <div className='song-grid-virtualizer-container'>
+                <div className='song-grid-virtualizer-block'>
+                    <AutoSizer>
+                        {({ height, width }) => {
+                            return <Table height={height}
+                                width={width}
+                                rowCount={songs.length}
+                                rowGetter={({ index }) => songs[index]}
+                                rowHeight={50}
+                                headerHeight={50}
+                                rowClassName={'virtualized-song-grid-row'}
+                            >
                                 <Column
                                     width={width / totalColumns}
                                     disableSort
-                                    label="Album"
-                                    dataKey="albumCoverImage"
-                                    cellRenderer={({ cellData, index }) => { return getAlbumArt(cellData, index) }}
+                                    label="Actions"
+                                    dataKey="id"
+                                    cellRenderer={({ rowData }) => renderRowActions(rowData)}
                                 // flexGrow={1}
                                 />
-                            }
-                            <Column
-                                width={width / totalColumns}
-                                disableSort
-                                label="Title"
-                                dataKey="name"
-                                cellRenderer={({ cellData }) => cellData}
-                            // flexGrow={1}
-                            />
-                            {displayAlbumInfo &&
                                 <Column
                                     width={width / totalColumns}
                                     disableSort
-                                    label="Artist "
-                                    dataKey="artistName"
+                                    label="Position"
+                                    dataKey="songPosition"
                                     cellRenderer={({ cellData }) => cellData}
                                 // flexGrow={1}
                                 />
-                            }
-                            {/* <Column
+                                {displayAlbumInfo &&
+                                    <Column
+                                        width={width / totalColumns}
+                                        disableSort
+                                        label="Album"
+                                        dataKey="albumCoverImage"
+                                        cellRenderer={({ cellData, rowIndex }) => { return getAlbumArt(cellData, rowIndex) }}
+                                    // flexGrow={1}
+                                    />
+                                }
+                                <Column
+                                    width={width / totalColumns}
+                                    disableSort
+                                    label="Title"
+                                    dataKey="name"
+                                    cellRenderer={({ cellData }) => cellData}
+                                // flexGrow={1}
+                                />
+                                {displayAlbumInfo &&
+                                    <Column
+                                        width={width / totalColumns}
+                                        disableSort
+                                        label="Artist "
+                                        dataKey="artistName"
+                                        cellRenderer={({ cellData }) => cellData}
+                                    // flexGrow={1}
+                                    />
+                                }
+                                {/* <Column
                                 disableSort
                                 label="Plays"
                                 dataKey="plays"
                                 cellRenderer={({ plays }) => plays}
                                 flexGrow={1}
                             /> */}
-                            <Column
-                                width={width / totalColumns}
-                                disableSort
-                                label="Length"
-                                dataKey="songLength"
-                                cellRenderer={({ length }) => getLength(length)}
-                            // flexGrow={1}
-                            />
-                        </Table>
-                    }}
-                </AutoSizer>
+                                <Column
+                                    width={width / totalColumns}
+                                    disableSort
+                                    label="Length"
+                                    dataKey="songLength"
+                                    cellRenderer={({ cellData }) => getLength(cellData)}
+                                // flexGrow={1}
+                                />
+                            </Table>
+                        }}
+                    </AutoSizer>
+                </div>
             </div>
         }
     </>

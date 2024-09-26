@@ -5,5 +5,13 @@ div.virtualized-song-grid-row {
 div.song-grid-virtualizer-container {
     display: flex;
     flex: 1;
-    // height: 100%;
+    align-items: stretch;
+
+    div.song-grid-virtualizer-block{
+        display: block;
+        //Slight hack. If this is 100%, then the UI will get into a reflow infinite loop. The AutoSizer will grow to 100% but then the flex parent will 
+        //attempt to grow and it repeats. Caused horrible seizure-inducing screen flicker.
+        height: 99%;
+        width: 99%;
+    }
 }
