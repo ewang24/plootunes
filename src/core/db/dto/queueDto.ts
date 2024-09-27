@@ -35,20 +35,20 @@ export class QueueDto extends Dto {
                    ELSE 0
                 END AS current,
              0 AS position FROM
-            song where albumId = $albumId ORDER BY songPosition;
+            song WHERE albumId = $albumId ORDER BY songPosition;
         `,
         queueArtist: `
          INSERT INTO queue (songId, current, position)
-            SELECT s.id as songId, 
+            SELECT s.id AS songId, 
                 CASE
                    WHEN $setCurrent = 1 AND ROW_NUMBER() OVER () = 1 THEN 1
                    ELSE 0
                 END AS current,
              0 AS position FROM
-            song s inner join album alb on s.albumId = alb.id
-                inner join artist art on alb.artistId = art.id
-                where art.id = $artistId
-                order by s.songPosition;
+            song s INNER JOIN album alb ON s.albumId = alb.id
+                INNER JOIN artist art ON alb.artistId = art.id
+                WHERE art.id = $artistId
+                ORDER BY alb.id, s.songPosition;
         `,
         queueAllSongs: `
             INSERT INTO queue (songId, current, position)

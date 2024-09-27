@@ -58,4 +58,12 @@ export class QueueService{
     static async getAllQueuedSongs(): Promise<SongsWithCurrentlyPlaying>{
         return ElectronUtil.invoke<SongsWithCurrentlyPlaying>("getAllQueuedSongs");
     }
+
+    static async playRandomAlbum(): Promise<Song>{
+        return ElectronUtil.invoke<Song>("playRandomAlbum");
+    }
+
+    static async playRandomArtist(): Promise<Song>{
+        return ElectronUtil.invoke<Song>("playRandomArtist");
+    }
 }

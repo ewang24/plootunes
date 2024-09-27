@@ -1,5 +1,9 @@
+import { Album } from "../../../../../core/db/dbEntities/album";
+import { Artist } from "../../../../../core/db/dbEntities/artist";
 import { Song } from "../../../../../core/db/dbEntities/song";
 import { SongsWithCurrentlyPlaying } from "../../../../../core/db/dbEntities/songWithCurrentlyPlaying";
+import { AlbumDto } from "../../../../../core/db/dto/albumDto";
+import { ArtistDto } from "../../../../../core/db/dto/artistDto";
 import { Connector } from "../../../../../core/db/dto/connector";
 import { QueueDto } from "../../../../../core/db/dto/queueDto";
 import { SongDto } from "../../../../../core/db/dto/songDto";
@@ -11,11 +15,15 @@ export class QueueService{
     queueDto: QueueDto;
     systemDto: SystemDto;
     songDto: SongDto;
+    artistDto: ArtistDto;
+    albumDto: AlbumDto;
 
     constructor(connector: Connector){
         this.queueDto = new QueueDto(connector);
         this.systemDto = new SystemDto(connector);
         this.songDto = new SongDto(connector);
+        this.artistDto = new ArtistDto(connector);
+        this.albumDto = new AlbumDto(connector);
     }
 
     @handler
@@ -112,5 +120,21 @@ export class QueueService{
             currentlyPlaying,
             songs
         }
+    }
+
+    @handler
+    async playRandomAlbum(): Promise<Song>{
+        const [album]: [Album, void, void] = await Promise.all([this.albumDto.getRandomAlbum(), this.queueDto.clearQueue(), this.systemDto.setShuffled(false)]);
+        await this.queueDto.queueAlbum(album.id);
+        await this.queueDto.setFirstSongInQueueCurrent();
+        return this.queueDto.getFirstSong();
+    }
+
+    @handler
+    async playRandomArtist(): Promise<Song>{
+        const [artist]: [Artist, void, void] = await Promise.all([this.artistDto.getRandomArtist(), this.queueDto.clearQueue(), this.systemDto.setShuffled(false)]);
+        await this.queueDto.queueArtist(artist.id);
+        await this.queueDto.setFirstSongInQueueCurrent();
+        return this.queueDto.getFirstSong();
     }
 }

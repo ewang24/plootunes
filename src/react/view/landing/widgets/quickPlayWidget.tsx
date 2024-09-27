@@ -25,11 +25,17 @@ const QuickPlayWidget = (props: QuickPlayWidgetProps) => {
     }
 
     function playRandomArtistHandler(){
-
+        QueueService.playRandomArtist().then((firstInQueue: Song) => {
+            setCurrentlyPlayingSong(firstInQueue);
+            setShuffled(false);
+        })
     }
 
     function playRandomAlbumHandler(){
-
+        QueueService.playRandomAlbum().then((firstInQueue: Song) => {
+            setCurrentlyPlayingSong(firstInQueue);
+            setShuffled(false);
+        })
     }
 
     return <div className = 'p-col p-row-align-top'>

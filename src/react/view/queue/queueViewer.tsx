@@ -66,16 +66,16 @@ const QueueViewer = () => {
 
     function renderQueueRow({index, style, key}) {
         const song = queuedSongs[index];
-        return <div className='p-row queue-viewer-row p-row-flex-start' key={key} style={style}>
+        const songInfo = `${song.name} - ${song.albumName || 'Unknown Album'} - ${song.artistName || 'Unknown Artist'}`;
+        
+        return <div className='p-row queue-viewer-row p-row-flex-start' key={key} style={style} title = {songInfo}>
             {
                 (song.id === currentlyPlayingSong?.id) &&
                 <div className='now-playing-queue-bar'></div>
             }
             {getAlbumArt(song.albumCoverImage, index)}
             <span className={(song.id === currentlyPlayingSong?.id) ? 'currently-playing' : ''}>
-                {
-                    `${song.name} - ${song.albumName || 'Unknown Album'} - ${song.artistName || 'Unknown Artist'}`
-                }
+                {songInfo}
             </span>
         </div>
     }
