@@ -5,10 +5,24 @@ import { Queries } from "./queries";
 export class SongDto {
 
     queries: Queries = {
-        getSongById: "SELECT * FROM song where id = $songId",
+        getSongById: `SELECT s.*, alb.name as albumName, alb.coverImage as albumCoverImage, art.name as artistName 
+            FROM song s INNER JOIN album alb ON alb.id = s.albumId
+            INNER JOIN artist art on art.id = alb.artistId
+            where s.id = $songId
+        `,
         getSongs: "SELECT * FROM song ORDER BY song.name",
-        getSongsWithAlbum: `SELECT s.*, alb.name as albumName, alb.coverImage as albumCoverImage, art.name as artistName FROM song s INNER JOIN album alb on s.albumId = alb.id INNER JOIN artist art on art.id = alb.artistId ORDER BY s.name`,
-        getSongsByAlbum: "SELECT * FROM song where albumId = $albumId order by songPosition",
+        getSongsWithAlbum: `
+            SELECT s.*, alb.name as albumName, alb.coverImage as albumCoverImage, art.name as artistName 
+            FROM song s INNER JOIN album alb on s.albumId = alb.id 
+            INNER JOIN artist art on art.id = alb.artistId 
+            ORDER BY s.name
+        `,
+        getSongsByAlbum: `SELECT s.*, alb.name as albumName, alb.coverImage as albumCoverImage, art.name as artistName 
+            FROM song s INNER JOIN album alb ON alb.id = s.albumId
+            INNER JOIN artist art on art.id = alb.artistId 
+            WHERE albumId = $albumId 
+            ORDER BY songPosition
+        `,
         getSongsByArtist: `
             SELECT s.*, alb.name as albumName, alb.coverImage as albumCoverImage, art.name as artistName 
             FROM song s INNER JOIN album alb ON alb.id = s.albumId
@@ -36,10 +50,8 @@ export class SongDto {
         this.connector = connector;
     }
 
-    async getSong(songId: number): Promise<Song> {
-        const song = await this.connector.get<Song>(this.queries.getSongById, { songId })
-        console.log(`song: ${JSON.stringify(song)}`)
-        return song;
+    async getSong(songId: number): Promise<SongWithAlbum> {
+        return this.connector.get<SongWithAlbum>(this.queries.getSongById, { songId })
     }
 
     async getSongs(): Promise<Song[]> {
@@ -50,9 +62,9 @@ export class SongDto {
         return this.connector.getAll<SongWithAlbum>(this.queries.getSongsWithAlbum);
     }
 
-    async getSongsByAlbum(albumId: number): Promise<Song[]> {
+    async getSongsByAlbum(albumId: number): Promise<SongWithAlbum[]> {
         try {
-            return this.connector.getAll<Song>(this.queries.getSongsByAlbum, { albumId });
+            return this.connector.getAll<SongWithAlbum>(this.queries.getSongsByAlbum, { albumId });
         }
         catch (err) {
             console.error(`An error occurred in getSongsByAlbum: ${JSON.stringify(err, null, 2)}`)
@@ -60,11 +72,11 @@ export class SongDto {
     }
 
     async getSongsByArtist(artistId: number): Promise<SongWithAlbum[]> {
-        return this.connector.getAll<Song>(this.queries.getSongsByArtist, { artistId });
+        return this.connector.getAll<SongWithAlbum>(this.queries.getSongsByArtist, { artistId });
     }
 
     async getSongsByQueue(shuffled?: boolean): Promise<SongWithAlbum[]> {
         const query = shuffled ? this.queries.getShuffledSongsWithAlbumByQueue : this.queries.getSongsWithAlbumByQueue;
-        return this.connector.getAll<Song>(query);
+        return this.connector.getAll<SongWithAlbum>(query);
     }
 }

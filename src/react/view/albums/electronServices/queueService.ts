@@ -1,4 +1,4 @@
-import { Song } from "../../../../core/db/dbEntities/song";
+import { Song, SongWithAlbum } from "../../../../core/db/dbEntities/song";
 import { SongsWithCurrentlyPlaying } from "../../../../core/db/dbEntities/songWithCurrentlyPlaying";
 import { ElectronUtil } from "../../util/electronUtil";
 
@@ -35,8 +35,8 @@ export class QueueService{
         return ElectronUtil.invoke<void>("queueAllSongsAndPlay", songId);
     }
 
-    static async queueAllSongsAndPlayFirstSong(): Promise<Song>{
-        return ElectronUtil.invoke<Song>("queueAllSongsAndPlayFirstSong");
+    static async queueAllSongsAndPlayFirstSong(): Promise<SongWithAlbum>{
+        return ElectronUtil.invoke<SongWithAlbum>("queueAllSongsAndPlayFirstSong");
     }
 
     static async playSong(songId: number): Promise<void>{
@@ -51,19 +51,19 @@ export class QueueService{
         return ElectronUtil.invoke<void>("shuffleCurrentQueue");
     }
 
-    static async shuffleAllSongsAndPlay(): Promise<Song>{
-        return ElectronUtil.invoke<Song>("shuffleAllSongsAndPlay");
+    static async shuffleAllSongsAndPlay(): Promise<SongWithAlbum>{
+        return ElectronUtil.invoke<SongWithAlbum>("shuffleAllSongsAndPlay");
     }
 
     static async getAllQueuedSongs(): Promise<SongsWithCurrentlyPlaying>{
         return ElectronUtil.invoke<SongsWithCurrentlyPlaying>("getAllQueuedSongs");
     }
 
-    static async playRandomAlbum(): Promise<Song>{
-        return ElectronUtil.invoke<Song>("playRandomAlbum");
+    static async playRandomAlbum(): Promise<SongWithAlbum>{
+        return ElectronUtil.invoke<SongWithAlbum>("playRandomAlbum");
     }
 
-    static async playRandomArtist(): Promise<Song>{
-        return ElectronUtil.invoke<Song>("playRandomArtist");
+    static async playRandomArtist(): Promise<SongWithAlbum>{
+        return ElectronUtil.invoke<SongWithAlbum>("playRandomArtist");
     }
 }

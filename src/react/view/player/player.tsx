@@ -35,6 +35,16 @@ function Player() {
 
     useEffect(() => {
         processCurrentlyPlayingSong();
+
+        return () => {
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.setActionHandler('play', null);
+                navigator.mediaSession.setActionHandler('pause', null);
+                navigator.mediaSession.setActionHandler('previoustrack', null);
+                navigator.mediaSession.setActionHandler('nexttrack', null);
+                navigator.mediaSession.metadata = null;
+            }
+        };
     }, [currentlyPlayingSong]);
 
     function setUpAudioPlayerListeners() {
@@ -71,6 +81,35 @@ function Player() {
         AudioService.getSongBuffer(currentlyPlayingSong.id)
             .then((data: Buffer) => {
                 processAudioBuffer(data);
+
+                if ('mediaSession' in navigator) {
+                    const artwork = [];
+
+                    if(currentlyPlayingSong.albumCoverImage){
+                        artwork.push({ src: `http://localhost:3030/${currentlyPlayingSong.albumCoverImage}`, sizes: '128x128', type: 'image/jpeg' });
+                    }
+
+                    navigator.mediaSession.metadata = new MediaMetadata({
+                        title: currentlyPlayingSong.name,
+                        artist: currentlyPlayingSong.artistName || 'Unknown Artist',
+                        album: currentlyPlayingSong.albumName || 'Unknown Album',
+                        artwork: artwork
+                    });
+        
+                    // Set up media session action handlers
+                    navigator.mediaSession.setActionHandler('play', () => {
+                        // Handle play action
+                    });
+                    navigator.mediaSession.setActionHandler('pause', () => {
+                        // Handle pause action
+                    });
+                    navigator.mediaSession.setActionHandler('previoustrack', () => {
+                        // Handle previous track action
+                    });
+                    navigator.mediaSession.setActionHandler('nexttrack', () => {
+                        // Handle next track action
+                    });
+                }
             });
     }
 
@@ -80,7 +119,7 @@ function Player() {
         setAudioSrc(url);
     }
 
-    async function playPreviousSong(){
+    async function playPreviousSong() {
         const previousSongInQueue: Song = await QueueService.getPreviousSongInQueue()
         if (!previousSongInQueue) {
             return;
@@ -89,12 +128,12 @@ function Player() {
         QueueService.transitionCurrentSong(previousSongInQueue.id).then(() => {
             setCurrentlyPlayingSong(previousSongInQueue);
         })
-        .catch((err) => {
-            window.alert(`Fatal error: ${JSON.stringify(err, null, 2)}`)
-        });
+            .catch((err) => {
+                window.alert(`Fatal error: ${JSON.stringify(err, null, 2)}`)
+            });
     }
 
-    async function playNextSong(){
+    async function playNextSong() {
         const [nextSongInQueue]: [Song, void] = await Promise.all([QueueService.getNextSongInQueue(), StatService.addSongPlay(currentlyPlayingSong.id)]);
 
         if (!nextSongInQueue) {
@@ -104,9 +143,9 @@ function Player() {
         QueueService.transitionCurrentSong(nextSongInQueue.id).then(() => {
             setCurrentlyPlayingSong(nextSongInQueue);
         })
-        .catch((err) => {
-            window.alert(`Fatal error: ${JSON.stringify(err, null, 2)}`)
-        });
+            .catch((err) => {
+                window.alert(`Fatal error: ${JSON.stringify(err, null, 2)}`)
+            });
     }
 
     function setRepeatHandler() {
@@ -123,18 +162,18 @@ function Player() {
     return <div className={'player-controls'}>
         {audioSrc &&
             <div className='p-row player-controls-row'>
-                <PButton label = 'Previous Song'
-                    displayLabel = {false}
+                <PButton label='Previous Song'
+                    displayLabel={false}
                     onClick={playPreviousSong}
-                    icon= {Icons.REWIND}
+                    icon={Icons.REWIND}
                     iconType='borderless'
                     iconSize='medium'
                 />
-                <PButton label='Repeat' 
-                    displayLabel = {false}
+                <PButton label='Repeat'
+                    displayLabel={false}
                     icon={Icons.REPEAT_CIRCLE}
-                    onClick={setRepeatHandler} 
-                    fill={'#B7E1CC'} 
+                    onClick={setRepeatHandler}
+                    fill={'#B7E1CC'}
                     iconType='borderless'
                     iconSize='medium'
                 />
@@ -142,7 +181,7 @@ function Player() {
                     displayLabel={false}
                     icon={Icons.SHUFFLE}
                     onClick={setShuffledHandler}
-                    fill={ shuffled? '#B7E1CC': undefined}
+                    fill={shuffled ? '#B7E1CC' : undefined}
                     iconType='borderless'
                     iconSize='medium'
                 />
@@ -155,10 +194,10 @@ function Player() {
                     <source src={audioSrc} type="audio/mpeg" />
                     Your browser does not support the audio element.
                 </audio>
-                <PButton label = 'Next Song'
-                    displayLabel = {false}
+                <PButton label='Next Song'
+                    displayLabel={false}
                     onClick={playNextSong}
-                    icon= {Icons.FAST_FORWARD}
+                    icon={Icons.FAST_FORWARD}
                     iconType='borderless'
                     iconSize='medium'
                 />

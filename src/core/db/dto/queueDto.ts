@@ -1,26 +1,60 @@
 import { QueueRecord } from "../dbEntities/queueRecord";
-import { Song } from "../dbEntities/song";
+import { Song, SongWithAlbum } from "../dbEntities/song";
 import { Connector } from "./connector";
 import { Dto } from "./dto";
 import { Queries } from "./queries";
 
 export class QueueDto extends Dto {
     queries: Queries = {
-        getCurrentSong: "SELECT * FROM queue WHERE current = 1",
-        getFirstSong: "SELECT s.* FROM song s INNER JOIN queue q on s.id = q.songId ORDER BY q.id",
-        getFirstShuffledSong: "SELECT s.* FROM song s INNER JOIN queue q on s.id = q.songId ORDER BY randomKey LIMIT 1",
+        getCurrentSong: `
+            SELECT * FROM queue 
+            WHERE current = 1
+        `,
+        getFirstSong: `
+            SELECT s.*, alb.name as albumName, alb.coverImage as albumCoverImage, art.name as artistName 
+            FROM song s INNER JOIN album alb ON alb.id = s.albumId
+            INNER JOIN artist art on art.id = alb.artistId
+            INNER JOIN queue q on s.id = q.songId 
+            ORDER BY q.id
+        `,
+        getFirstShuffledSong: `
+            SELECT s.*, alb.name as albumName, alb.coverImage as albumCoverImage, art.name as artistName 
+            FROM song s INNER JOIN album alb ON alb.id = s.albumId
+            INNER JOIN artist art on art.id = alb.artistId
+            INNER JOIN queue q on s.id = q.songId 
+            ORDER BY randomKey 
+            LIMIT 1
+        `,
         queueSong: "INSERT INTO queue (songId, current, position) VALUES ($songId, $current, 0)",
         clearQueue: "DELETE FROM queue",
-        getNextSongInQueue: "SELECT * FROM song WHERE id = (SELECT songId from queue WHERE id > (SELECT id FROM queue where current = 1) LIMIT 1)",
+        getNextSongInQueue: `
+            SELECT s.*, alb.name as albumName, alb.coverImage as albumCoverImage, art.name as artistName 
+            FROM song s INNER JOIN album alb ON alb.id = s.albumId
+            INNER JOIN artist art on art.id = alb.artistId
+            WHERE s.id = (SELECT songId from queue WHERE id > (SELECT id FROM queue where current = 1) LIMIT 1)
+        `,
         getNextSongInShuffledQueue: `
-           SELECT s.* FROM song s INNER JOIN queue q ON s.id = q.songId
+           SELECT s.*, alb.name as albumName, alb.coverImage as albumCoverImage, art.name as artistName 
+           FROM song s INNER JOIN album alb ON alb.id = s.albumId
+           INNER JOIN artist art on art.id = alb.artistId
+           INNER JOIN queue q ON s.id = q.songId
            WHERE q.randomKey > (SELECT _q.randomKey FROM queue _q WHERE current = 1)
            ORDER BY q.randomKey
            LIMIT 1;
         `,
-        getPreviousSongInQueue: "SELECT * FROM song WHERE id = (SELECT songId from queue WHERE id < (SELECT id FROM queue where current = 1) ORDER BY id DESC LIMIT 1);",
+        getPreviousSongInQueue: `
+            SELECT s.*, alb.name as albumName, alb.coverImage as albumCoverImage, art.name as artistName 
+            FROM song s INNER JOIN album alb ON alb.id = s.albumId
+            INNER JOIN artist art on art.id = alb.artistId
+            WHERE s.id = (SELECT songId from queue WHERE id < (SELECT id FROM queue where current = 1) 
+            ORDER BY id DESC 
+            LIMIT 1);
+        `,
         getPreviousSongInShuffledQueue: `
-           SELECT s.* FROM song s INNER JOIN queue q ON s.id = q.songId
+           SELECT s.*, alb.name as albumName, alb.coverImage as albumCoverImage, art.name as artistName 
+           FROM song s INNER JOIN album alb ON alb.id = s.albumId
+           INNER JOIN artist art on art.id = alb.artistId
+           INNER JOIN queue q ON s.id = q.songId
            WHERE q.randomKey < (SELECT _q.randomKey FROM queue _q WHERE current = 1)
            ORDER BY q.randomKey DESC
            LIMIT 1;
@@ -63,9 +97,9 @@ export class QueueDto extends Dto {
         super(connector);
     }
 
-    async getFirstSong(shuffled?: boolean): Promise<Song> {
-        const query = shuffled? this.queries.getFirstShuffledSong: this.queries.getFirstSong;
-        return this.connector.get<Song>(query);
+    async getFirstSong(shuffled?: boolean): Promise<SongWithAlbum> {
+        const query = shuffled ? this.queries.getFirstShuffledSong : this.queries.getFirstSong;
+        return this.connector.get<SongWithAlbum>(query);
     }
 
     async getCurrentSong(): Promise<QueueRecord> {
@@ -85,16 +119,16 @@ export class QueueDto extends Dto {
     async getNextSongInQueue(shuffled: boolean, repeat: boolean): Promise<Song> {
         const query = shuffled ? this.queries.getNextSongInShuffledQueue : this.queries.getNextSongInQueue
         let nextSong = await this.connector.get<Song>(query);
-        if(!nextSong && repeat){
+        if (!nextSong && repeat) {
             nextSong = await this.getFirstSong(shuffled);
         }
 
         return nextSong;
     }
 
-    async getPreviousSongInQueue(shuffled: boolean): Promise<Song>{
+    async getPreviousSongInQueue(shuffled: boolean): Promise<SongWithAlbum> {
         const query = shuffled ? this.queries.getPreviousSongInShuffledQueue : this.queries.getPreviousSongInQueue
-        return this.connector.get<Song>(query);
+        return this.connector.get<SongWithAlbum>(query);
     }
 
     async getQueueSize(): Promise<number> {
@@ -126,7 +160,7 @@ export class QueueDto extends Dto {
         return this.connector.run(this.queries.moveCurrentSongToShuffledQueueStart);
     }
 
-    async setFirstSongInQueueCurrent(){
+    async setFirstSongInQueueCurrent() {
         return this.connector.run(this.queries.setFirstSongInQueueCurrent)
     }
 

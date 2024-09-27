@@ -3,7 +3,7 @@ import '../styles/global.scss'
 import '../styles/main.scss'
 import AppRouter from './navigation/router';
 import PlayerMain from './player/playerMain';
-import { Song } from '../../core/db/dbEntities/song';
+import { Song, SongWithAlbum } from '../../core/db/dbEntities/song';
 import { SystemService } from './global/electronServices/systemService';
 import { QueueService } from './albums/electronServices/queueService';
 import QueueViewer from './queue/queueViewer';
@@ -11,8 +11,8 @@ import QueueViewer from './queue/queueViewer';
 export interface PlayerContext {
   playSongNow(song: Song): void;
   queueSong(songId): void;
-  currentlyPlayingSong: Song | undefined;
-  setCurrentlyPlayingSong: React.Dispatch<React.SetStateAction<Song>>;
+  currentlyPlayingSong: SongWithAlbum | undefined;
+  setCurrentlyPlayingSong: React.Dispatch<React.SetStateAction<SongWithAlbum>>;
   shuffled: boolean;
   setShuffled: (shuffled: boolean) => void;
   repeat: boolean;
