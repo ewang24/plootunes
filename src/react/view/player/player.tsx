@@ -7,6 +7,7 @@ import { Song } from '../../../core/db/dbEntities/song';
 import PButton from '../global/widgets/pButton';
 import { SystemService } from '../global/electronServices/systemService';
 import { Icons } from '../../../core/assets/icons';
+import { StatService } from './electronServices/statService';
 
 export interface PlayerProps {
     isPlaying: boolean;
@@ -94,7 +95,8 @@ function Player() {
     }
 
     async function playNextSong(){
-        const nextSongInQueue: Song = await QueueService.getNextSongInQueue()
+        const [nextSongInQueue]: [Song, void] = await Promise.all([QueueService.getNextSongInQueue(), StatService.addSongPlay(currentlyPlayingSong.id)]);
+
         if (!nextSongInQueue) {
             return;
         }
