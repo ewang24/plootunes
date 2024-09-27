@@ -6,7 +6,8 @@ export class WidgetDto{
 
     queries: Queries = {
         getWidgets: 'SELECT * FROM widget ORDER BY displayOrder',
-        addWidget: 'INSERT INTO widget (widgetType, displayOrder) SELECT $widgetType as widgetType, (SELECT COALESCE(MAX(displayOrder), 0) + 1 FROM widget) as displayOrder'
+        addWidget: 'INSERT INTO widget (widgetType, displayOrder) SELECT $widgetType as widgetType, (SELECT COALESCE(MAX(displayOrder), 0) + 1 FROM widget) as displayOrder',
+        removeWidget: 'DELETE FROM widget WHERE id = $widgetId'
     }
 
     connector: Connector;
@@ -21,5 +22,9 @@ export class WidgetDto{
 
     async addWidget(widgetType: string){
         return this.connector.run(this.queries.addWidget, {widgetType});
+    }
+
+    async removeWidget(widgetId: number){
+        return this.connector.run(this.queries.removeWidget, {widgetId});
     }
 }

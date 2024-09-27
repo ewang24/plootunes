@@ -19,4 +19,9 @@ export class WidgetService{
     async addWidget(widgetType: string){
         return this.widgetDto.addWidget(widgetType);   
     }
+
+    @handler
+    async removeWidget(widgetId: number){
+        return this.widgetDto.removeWidget(widgetId);
+    }
 }

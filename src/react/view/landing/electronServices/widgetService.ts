@@ -9,4 +9,8 @@ export class WidgetService{
     static async addWidget(widgetType: string): Promise<Widget[]>{
         return ElectronUtil.invoke("addWidget", widgetType);
     }
+
+    static async removeWidget(widgetId: number): Promise<void>{
+        return ElectronUtil.invoke("removeWidget", widgetId);
+    }
 }

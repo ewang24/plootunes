@@ -72,7 +72,7 @@ const Landing = () => {
             widgets.length > 0 &&
             <div className='landing-widgets-container'>
               {widgets.map((widget) => {
-                return <WidgetTile widget={widget}/>
+                return <WidgetTile widget={widget} widgetReloadHandler={fetchWidgets}/>
               })}
             </div>
           }

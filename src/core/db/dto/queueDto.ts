@@ -55,7 +55,8 @@ export class QueueDto extends Dto {
             SELECT id, 0, 0 FROM song ORDER BY name
         `,
         moveCurrentSongToShuffledQueueStart: `UPDATE queue SET randomKey = (SELECT MIN(randomKey) - 1 as keyMin FROM queue) WHERE current = 1`,
-        setFirstShuffledSongCurrent: `UPDATE queue SET current = 1 WHERE id = (SELECT _q.id FROM queue _q ORDER BY randomKey LIMIT 1)`
+        setFirstShuffledSongCurrent: `UPDATE queue SET current = 1 WHERE id = (SELECT _q.id FROM queue _q ORDER BY randomKey LIMIT 1)`,
+        setFirstSongInQueueCurrent: `UPDATE queue SET current = 1 WHERE id = (SELECT _q.id FROM queue _q ORDER BY id LIMIT 1)`
     }
 
     constructor(connector: Connector) {
@@ -123,6 +124,10 @@ export class QueueDto extends Dto {
 
     async moveCurrentSongToShuffledQueueStart(): Promise<void> {
         return this.connector.run(this.queries.moveCurrentSongToShuffledQueueStart);
+    }
+
+    async setFirstSongInQueueCurrent(){
+        return this.connector.run(this.queries.setFirstSongInQueueCurrent)
     }
 
     async setFirstShuffledSongCurrent() {

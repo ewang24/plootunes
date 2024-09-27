@@ -77,6 +77,14 @@ export class QueueService{
     }
 
     @handler
+    async queueAllSongsAndPlayFirstSong(): Promise<Song>{
+        await Promise.all([this.systemDto.setShuffled(false), this.queueAllSongs()]);
+        await this.queueDto.setFirstSongInQueueCurrent();
+        const currentQueueRecord = await this.queueDto.getCurrentSong();
+        return this.songDto.getSong(currentQueueRecord.songId);
+    }
+
+    @handler
     async queueAllSongs(): Promise<void>{
         await Promise.all([this.systemDto.setShuffled(false), this.queueDto.queueAllSongs()]);
     }
