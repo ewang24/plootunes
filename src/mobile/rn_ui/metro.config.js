@@ -15,6 +15,10 @@ config.resolver.extraNodeModues = {
         core: path.resolve(__dirname, '../../core')
 }
 
+const nodeModulesPaths = [path.resolve(path.join(__dirname, './node_modules'))];
+
+config.resolver.nodeModulesPaths = nodeModulesPaths;
+
 config.watchFolders.push(path.resolve(__dirname, '../../core'))
 
 module.exports = config;
