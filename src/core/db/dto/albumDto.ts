@@ -4,6 +4,7 @@ import { ArtistDto } from "./artistDto";
 import { Connector } from "./connector";
 import { Queries } from "./queries";
 
+//This is a test
 export class AlbumDto {
     queries: Queries = {
         getAlbum: "SELECT * FROM album WHERE id = $albumId",
