@@ -4,7 +4,6 @@ import { ArtistDto } from "./artistDto";
 import { Connector } from "./connector";
 import { Queries } from "./queries";
 
-//This is a test. Now I updated the branch permissions. Let's see if I can push this to main.
 export class AlbumDto {
     queries: Queries = {
         getAlbum: "SELECT * FROM album WHERE id = $albumId",
