@@ -3,7 +3,7 @@ import { ExpoSqliteConnector } from './expoSqliteConnector';
 export class ExpoSqliteConnectorFactory {
 
     async createConnector() {
-        const db = await SQLite.openDatabaseAsync('databaseName');
+        const db = await SQLite.openDatabaseAsync('plootunes.sqlite');
         return new ExpoSqliteConnector(db);
     }
 
