@@ -5,7 +5,8 @@
     "target": "esnext",
     "esModuleInterop": true,
     "strict": false,
-    "noImplicitAny": false,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
     "paths": {
       "@/*": [
         "./*"
@@ -18,5 +19,6 @@
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
     "../../core/**/*.ts"
-  ]
+  ],
+  "exclude": ["./node_modules"]
 }
