@@ -1,4 +1,4 @@
-#About
+# About
 
 Plootunes is my personal music library management and music player project.
 It started last year as a way for me to learn some new technologies outside of work, but my goal is to create a full fledged solution that others can use.
@@ -19,7 +19,8 @@ My road map of features in relatigve priority, at a high level, is below:
 - Both versions of the app provide rich stat tracking for nerds who want to see how many times they listened to song X last year on the third Tuesday of May
 - Year in review at the end of every year (I know, every app is doing this now, but I like them OK)
 
-#Technical Details
+# Technical Details
+
 Plootunes is a TypeScript project.
 The desktop app is written an Electron app with a React render view.
 The mobile app is a React Native app.
@@ -33,7 +34,7 @@ Technical goals:
 - Best Practices, SOLID, all that good stuff
 - Make cool things and have fun
 
-#Documentation
+# Documentation
 
 Desktop app:
     to run:
