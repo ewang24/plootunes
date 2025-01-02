@@ -26,3 +26,4 @@ properties.json
 .externalNativeBuild
 .cxx
 local.properties
+src/electron/dist_electron_builder/

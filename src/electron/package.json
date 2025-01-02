@@ -2,44 +2,42 @@
   "name": "electron",
   "version": "0.0.0",
   "type": "commonjs",
-  "main": "main.ts",
+  "main": "dist/electron/app.js",
+  "description": "Plootunes is a cross-platform music player app.",
+  "author": "Evan Wang",
   "scripts": {
     "start": "concurrently -n 'electron,tsc' -c 'cyan,magenta' \"npm run electron\" \"npm run watch\"",
     "electron": "tsc --project ./tsconfig.json && cross-env RUN_MODE=dev electron ./dist/electron/app.js",
+    "wbuild": "electron-builder --win",
     "watch": "tsc --watch --project ./tsconfig.json ",
     "createTables": "ts-node ./utilityRunners/tableUtilRunner.ts",
     "scanFiles": "ts-node ./utilityRunners/scanFilesRunner.ts",
     "clearTables": "ts-node ./utilityRunners/clearTablesRunner.ts"
   },
   "build": {
+    "extends": null,
     "appId": "com.plootopia.plootunes",
     "directories": {
-      "output": "dist_electron"
+      "output": "dist_electron_builder"
     },
     "files": [
       "dist/**/*",
       "package.json"
     ],
     "win": {
-      "target": "nsis"
+      "target": "portable"
     }
-  },
-  "directories": {
-    "buildResources": "dist",
-    "app": "dist"
   },
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
-    "create-react-app": "^5.0.1",
     "express": "^4.21.0",
     "gulp-typescript": "^6.0.0-alpha.1",
     "path-browserify": "^1.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1",
     "rxjs": "~7.8.0",
     "sqlite3": "^5.1.7",
     "ts-node": "^10.9.2",
