@@ -5,11 +5,24 @@
   "main": "main.ts",
   "scripts": {
     "start": "concurrently -n 'electron,tsc' -c 'cyan,magenta' \"npm run electron\" \"npm run watch\"",
-    "electron": "tsc --project ./tsconfig.json && electron ./dist/electron/app.js",
+    "electron": "tsc --project ./tsconfig.json && cross-env RUN_MODE=dev electron ./dist/electron/app.js",
     "watch": "tsc --watch --project ./tsconfig.json ",
     "createTables": "ts-node ./utilityRunners/tableUtilRunner.ts",
     "scanFiles": "ts-node ./utilityRunners/scanFilesRunner.ts",
     "clearTables": "ts-node ./utilityRunners/clearTablesRunner.ts"
+  },
+  "build": {
+    "appId": "com.plootopia.plootunes",
+    "directories": {
+      "output": "dist_electron"
+    },
+    "files": [
+      "dist/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis"
+    }
   },
   "directories": {
     "buildResources": "dist",
@@ -44,6 +57,7 @@
     "babel-loader": "^9.1.3",
     "concurrently": "^8.2.2",
     "electron": "^23.2.0",
+    "electron-builder": "^25.1.8",
     "electron-log": "^5.1.2",
     "electron-reload": "^2.0.0-alpha.1",
     "electron-reloader": "^1.2.3",

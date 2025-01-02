@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "npx webpack-dev-server",
-    "build": ""
+    "build": "webpack --config webpack.config.js"
   },
   "directories": {
     "buildResources": "dist",

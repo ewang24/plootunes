@@ -33,15 +33,26 @@ export default class Main {
                     }
                 }
             );
-    
+
             Main.mainWindow.setMenuBarVisibility(false);
             Main.mainWindow.removeMenu();
 
-            Main.mainWindow!
-                .loadURL('http://localhost:3000');
+
+            if (process.env.RUN_MODE === 'dev') {
+                Main.mainWindow!
+                    .loadURL('http://localhost:3000');
+            }
+            else if(process.env.RUN_MODE === 'prod'){
+                Main.mainWindow.loadFile(path.join(__dirname, 'dist/front_end/index.html'));
+            }
+            else{
+                console.log(`Unknown run mode ${process.env.RUN_MODE} found, unable to start.`);
+                throw new Error(`Unknown run mode ${process.env.RUN_MODE} found, unable to start.`)
+            }
+
             Main.mainWindow.webContents.openDevTools();
             Main.mainWindow!.on('closed', Main.onClose);
-        
+
             Main.mainWindow!.once('ready-to-show', () => {
                 Main.mainWindow!.maximize();
             });

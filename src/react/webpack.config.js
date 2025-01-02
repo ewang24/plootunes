@@ -14,7 +14,7 @@ module.exports = {
         liveReload: true
     },
     output: {
-        path: path.resolve(__dirname, './dist'),
+        path: path.resolve(__dirname, '../electron/dist/front_end'),
         filename: 'bundle.js'
     },
     resolve: {
