@@ -27,7 +27,6 @@ export class TableUtil {
                 console.error(`Error reading schema file from ${filePath}: ${JSON.stringify(err)}`)
             }
             
-
             if (!schemasData) {
                 console.error(`No schema(s) present at ${filePath}. Empty file!`);
             }
