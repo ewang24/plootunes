@@ -40,6 +40,9 @@ My plan for the library syncing, currently, is to only allow syncing over a loca
 
 # Documentation
 
+Desktop app prereqs:
+    Install node and npm. I recommend using nvm       for windows. In order to install the sqlite3 npm package, you need to be on a version of node that is not too new. 20 works currently, but any later than that and node may not be able to build sqlite3 correctly.
+
 Desktop app:  
     to run:  
     npm run react  
