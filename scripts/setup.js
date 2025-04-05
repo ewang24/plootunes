@@ -7,8 +7,20 @@ const { stdin: input, stdout: output } = require('process');
 const dbShortcut = "../plootunes.sqlite";
 const rl = readline.createInterface({ input, output });
 
-function installAllDependencies() {
+async function installAllDependencies() {
     execSync("npm run install:all", { stdio: 'inherit' });
+    let sqliteSrc = "../deps/sqlite3"
+    let sqliteDest = (await rl.question(
+        `sqlite3 is included in this repo for convenience.
+        Input the location where you would like to copy sqlite3.
+        Enter nothing for default (c:\\sqlite3):`
+    )) || 'c:\\sqlite3';
+
+    fs.cpSync(sqliteSrc, sqliteDest, {
+        recursive: true,
+        force: true
+    });
+    console.log('Copied sqlite3')
 }
 
 async function copyDb() {
@@ -38,9 +50,17 @@ async function copyDb() {
     console.log('Symlink created...');
 }
 
+function createTables() {
+    console.log("Creating tables...")
+    execSync("npm run createTables", { stdio: 'inherit' });
+    console.log("Tables created");
+}
+
+
 async function fullSetup() {
-    installAllDependencies();
+    await installAllDependencies();
     await copyDb();
+    createTables();
 }
 
 async function start() {
@@ -48,7 +68,7 @@ async function start() {
     let useSelection = await rl.question(`
         This script will guide you through setting up the project.
         Select an option below:
-        0: Full setup
+        0: Full setup (this will prompt you for input several times)
         1: Install all dependencies (sqlite included)
         2: Copy DB files
         3: Create DB tables
@@ -61,13 +81,13 @@ async function start() {
             await fullSetup();
             break;
         case "1":
-            installAllDependencies();
+            await installAllDependencies();
             break;
         case "2":
             await copyDb();
             break;
         case "3":
-            console.log("TODO");
+            createTables();
             break;
     }
 
