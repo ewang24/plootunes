@@ -5,12 +5,12 @@ const path = require('path');
 const { stdin: input, stdout: output } = require('process');
 
 const dbShortcut = "../plootunes.sqlite";
-const rl = readline.createInterface({ input, output });
+const lineReader = readline.createInterface({ input, output });
 
 async function installAllDependencies() {
     execSync("npm run install:all", { stdio: 'inherit' });
     let sqliteSrc = "../deps/sqlite3"
-    let sqliteDest = (await rl.question(
+    let sqliteDest = (await lineReader.question(
         `sqlite3 is included in this repo for convenience.
         Input the location where you would like to copy sqlite3.
         Enter nothing for default (c:\\sqlite3):`
@@ -25,7 +25,7 @@ async function installAllDependencies() {
 
 async function copyDb() {
     console.log("This script will copy a sqlite db to the proper location for the dev mode app to read.")
-    let userInputSource = await rl.question("Input the location of the db file to use (default is /plootunes-backup.sqlite). Enter nothing for default:");
+    let userInputSource = await lineReader.question("Input the location of the db file to use (default is /plootunes-backup.sqlite). Enter nothing for default:");
     if (!userInputSource) {
         userInputSource = "./data/plootunes-backup.sqlite";
     }
@@ -65,7 +65,7 @@ async function fullSetup() {
 
 async function start() {
 
-    let useSelection = await rl.question(`
+    let useSelection = await lineReader.question(`
         This script will guide you through setting up the project.
         Select an option below:
         0: Full setup (this will prompt you for input several times)
