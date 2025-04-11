@@ -8,7 +8,8 @@
   "scripts": {
     "start": "concurrently -n 'electron,tsc' -c 'cyan,magenta' \"npm run electron\" \"npm run watch\"",
     "build": "tsc --project ./tsconfig.json",
-    "electron": "npm run build && cross-env RUN_MODE=dev electron ./dist/electron/app.js",
+    "generateHandlerImports": "node ../../scripts/generateElectronServiceImports.js",
+    "electron": "npm run build && npm run generateHandlerImports && cross-env RUN_MODE=dev electron ./dist/electron/app.js",
     "wbuild": "electron-builder --win",
     "watch": "tsc --watch --project ./tsconfig.json ",
     "createTables": "ts-node ./utilityRunners/tableUtilRunner.ts",

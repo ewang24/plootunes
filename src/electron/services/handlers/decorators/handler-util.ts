@@ -1,6 +1,7 @@
 import { ipcMain } from "electron";
 import { handlerMethods } from "./handlerDecorator";
 import { handlersFactories } from "./handlerFactoryDecorator";
+import './generatedHandlerImports';
 import path = require("path");
 import fs = require("fs");
 
@@ -9,10 +10,13 @@ import fs = require("fs");
  * Inject an ipc handler for each function decorated with @handler from classes created by factories decorated with @handlerFactory
  */
 export async function injectAllHandlers() {
-    await importAllHandlerFiles();
 
-    console.log(`handler factories: ${handlersFactories}`);
-    console.log(`handlers: ${JSON.stringify(handlerMethods)}`);
+    if (process.env.RUN_MODE === 'dev') {
+        await importAllHandlerFiles();
+    }
+
+    console.error(`handler factories: ${handlersFactories}`);
+    console.error(`handlers: ${JSON.stringify(handlerMethods)}`);
     for(let factory of handlersFactories){
         const handler = factory.createInstance();
 
@@ -35,7 +39,7 @@ export async function injectAllHandlers() {
 /**
  * Import all handler service files so that the decorators will apply. 
  * Doing it dynamically like this means you don't have to type out an import statement for each service,
- * and they will not be removed by treeshaken when the app is transpiled and built.
+ * and they will not be removed by treeshaking when the app is transpiled and built.
  */
 async function importAllHandlerFiles(){
 
