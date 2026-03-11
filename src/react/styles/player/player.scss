@@ -1,20 +1,17 @@
-@import '../constants';
-
-div.player-main{
+div.player-main {
     display: flex;
-    box-shadow: 0 -6px 4px 1px $box-shadow-color;
+    box-shadow: var(--pds-shadow-lg);
     flex-direction: column;
     flex-grow: 1;
 
-    div.player-controls{
-        border-top: 1px solid $foreground;
-
-        div.player-controls-row{
-            padding: 10px;
-        }
-    
+    div.player-controls {
+        border-top: 1px solid var(--pds-color-border-subtle);
         display: flex;
         flex-grow: 1;
         justify-content: center;
+
+        div.player-controls-row {
+            padding: var(--pds-space-sm);
+        }
     }
 }

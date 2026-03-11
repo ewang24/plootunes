@@ -1,27 +1,21 @@
-@import './constants';
-
 @font-face {
    font-family: 'Roboto';
    src: url('../assets/font/roboto/Roboto-Regular.ttf') format('truetype');
 }
 
-/* This causes the browser to create a custom scrollbar. Without this, it will revert to the default scrollbar even if you have other scrollbar styles applied. */
 ::-webkit-scrollbar {
    width: 12px;
-   /* For vertical scrollbar */
    height: 12px;
-   /* For horizontal scrollbar */
 }
 
-
 ::-webkit-scrollbar-thumb {
-   background-color: $inactive-grey;
-   border-radius: 10px;
-   border: 1px solid $inactive-grey;
+   background-color: var(--pds-color-text-muted);
+   border-radius: var(--pds-radius-full);
+   border: 1px solid var(--pds-color-text-muted);
 
    &:hover {
-      background-color: $accent-green;
-      border: 1px solid $accent-green;
+      background-color: var(--pds-color-primary);
+      border: 1px solid var(--pds-color-primary);
    }
 }
 
@@ -31,8 +25,10 @@ body {
    width: 100%;
    margin: 0;
    overflow: hidden;
-   font-family: 'Roboto';
+   font-family: var(--pds-font-family);
    user-select: none;
+   background-color: var(--pds-color-background);
+   color: var(--pds-color-text-on-background);
 }
 
 #root {
@@ -40,34 +36,8 @@ body {
    width: 100%;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-   color: $text-primary
-}
-
-.p-main-container {
-   display: flex;
-   flex-grow: 1;
-   justify-content: stretch;
-   align-items: stretch;
-   flex-direction: column;
-   background-color: $main-background;
-   height: 100%;
-
-   div.p-main-header {
-      flex-grow: 0;
-   }
-
-   div.p-main-content {
-      flex-grow: 1;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-   }
+h1, h2, h3, h4, h5, h6 {
+   color: var(--pds-color-text-on-background);
 }
 
 .p-overlay-view {
@@ -80,7 +50,7 @@ h6 {
    justify-content: stretch;
    align-items: stretch;
    flex-direction: column;
-   background-color: $main-background;
+   background-color: var(--pds-color-background);
    overflow-y: auto;
    z-index: 1;
 }
@@ -102,24 +72,12 @@ div.p-row-flex-start {
    justify-content: flex-start;
 }
 
-div.p-row-flex-end {
-   justify-content: flex-end;
-}
-
 div.p-row-space-between {
    justify-content: space-between;
 }
 
-div.p-row-space-center {
-   justify-content: center;
-}
-
 div.p-row-align-top {
    align-items: flex-start;
-}
-
-div.p-row-align-end {
-   align-items: flex-end;
 }
 
 div.p-row-align-stretch {
@@ -131,14 +89,12 @@ div.p-tile {
    display: flex;
    flex-direction: column;
    justify-content: flex-start;
-   margin: 5px;
-   // max-width: 100px;
+   margin: var(--pds-space-xs);
 
    &:hover {
       div.p-tile-image {
-         box-shadow: 1px 1px 5px 1px $box-shadow-color;
+         box-shadow: var(--pds-shadow-md);
       }
-
       cursor: pointer;
    }
 
@@ -154,74 +110,27 @@ div.p-tile {
       }
    }
 
-   &.p-tile-ultra-small{
-      &:not(.stacked) {
-         max-width: 35px;
-      }
-
-      div.p-tile-image {
-         height: 35px;
-         width: 35px;
-      }
-
-      img {
-         height: 35px;
-         width: 35px;
-      }
+   &.p-tile-ultra-small {
+      &:not(.stacked) { max-width: 35px; }
+      div.p-tile-image { height: 35px; width: 35px; }
+      img { height: 35px; width: 35px; }
    }
 
    &.p-tile-small {
-
-      &:not(.stacked) {
-         max-width: 100px;
-      }
-
-      div.p-tile-image {
-         height: 100px;
-         width: 100px;
-      }
-
-      img {
-         height: 100px;
-         width: 100px;
-      }
+      &:not(.stacked) { max-width: 100px; }
+      div.p-tile-image { height: 100px; width: 100px; }
+      img { height: 100px; width: 100px; }
    }
 
    &.p-tile-medium {
-      &:not(.stacked) {
-         max-width: 200px;
-      }
-
-      div.p-tile-image {
-         height: 200px;
-         width: 200px;
-      }
-
-      img {
-         height: 200px;
-         width: 200px;
-      }
-   }
-
-   &.p-tile-large {
-      &:not(.stacked) {
-         max-width: 300px;
-      }
-
-      div.p-tile-image {
-         height: 300px;
-         width: 300px;
-      }
-
-      img {
-         height: 300px;
-         width: 300px;
-      }
+      &:not(.stacked) { max-width: 200px; }
+      div.p-tile-image { height: 200px; width: 200px; }
+      img { height: 200px; width: 200px; }
    }
 
    div.p-tile-image {
-      border: $border-style;
-      border-radius: 5px;
+      border: 1px solid var(--pds-color-border);
+      border-radius: var(--pds-radius-sm);
       overflow: hidden;
 
       img {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Widget, WidgetType, WidgetTypes } from '../../../core/db/dbEntities/widget';
 import { WidgetService } from './electronServices/widgetService';
-import { Button, useModal } from '@ploot/pds';
+import { Button, Dropdown, useModal } from '@ploot/pds';
 import '../../styles/landing/landing.scss'
 import WidgetTile from './widgetTile';
 
@@ -31,11 +31,12 @@ const Landing = () => {
     title: 'Add Widget',
     renderContent: (close) => (
       <div className='p-row'>
-        <select value={selectedWidgetType} onChange={(event) => setSelectedWidgetType(event.target.value as WidgetType)}>
-          {Object.keys(WidgetTypes).map((key) => {
-            return <option key={key} value={key}>{WidgetTypes[key].displayName}</option>
-          })}
-        </select>
+        <Dropdown
+          label="Widget Type"
+          value={selectedWidgetType}
+          onChange={(e) => setSelectedWidgetType(e.target.value as WidgetType)}
+          options={Object.keys(WidgetTypes).map((key) => ({ value: key, label: WidgetTypes[key].displayName }))}
+        />
         <Button onClick={() => { createWidget(); }} variant="primary">Submit</Button>
         <Button onClick={close} variant="secondary">Close</Button>
       </div>
@@ -52,7 +53,7 @@ const Landing = () => {
               No widgets enabled
             </strong>
           }
-          <div className='p-row p-row-align-center'>
+          <div className='p-row'>
             <Button onClick={openAddWidget} icon="plus" variant="primary">Add Widget</Button>
           </div>
           {

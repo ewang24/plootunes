@@ -1,46 +1,36 @@
-@import '../constants';
-
 h1.album-song-list-title {
-    color: $text-primary;
+    color: var(--pds-color-text-on-background);
     margin: 0;
 }
 
 div.albums-wrap-container {
-    padding: 15px;
+    padding: var(--pds-space-sm);
     display: flex;
     flex-wrap: wrap;
 
-    div.p-tile{
-        &:hover{
-            span.album-name {
-                color: $accent-green;
-            }
-     
+    div.p-tile {
+        &:hover {
+            span.album-name,
             span.artist-name {
-                color: $accent-green;
+                color: var(--pds-color-primary);
             }
         }
     }
 
     span.album-name {
-        color: $text-primary;
-        font-weight: 600;
-        font-size: 16px;
+        color: var(--pds-color-text-on-background);
+        font-weight: var(--pds-font-weight-semibold);
+        font-size: var(--pds-font-size-md);
         text-overflow: ellipsis;
         word-break: break-word;
-        margin-top: 7px;
+        margin-top: var(--pds-space-xs);
     }
 
     span.artist-name {
-        color: $text-secondary;
-        font-weight: 600;
-        font-size: 14px
+        color: var(--pds-color-text-muted);
+        font-weight: var(--pds-font-weight-semibold);
+        font-size: var(--pds-font-size-sm);
     }
-}
-
-th.album-songs-table-header-cell {
-    text-align: left;
-    color: $text-primary;
 }
 
 div.album-songs-cover {
@@ -54,71 +44,10 @@ div.album-songs-cover {
 }
 
 div.album-details-col {
-    margin-left: 10px;
+    margin-left: var(--pds-space-sm);
 
     div.album-sub-details {
-        font-size: 20px;
-        color: $text-secondary;
-    }
-}
-
-table.song-list {
-    border-collapse: separate;
-    border-spacing: 0;
-    margin-top: 20px;
-
-    th {
-        color: $text-primary;
-    }
-
-    td {
-        color: $text-secondary
-    }
-
-    tr> * {
-        &:first-child {
-            padding-left: 5px;
-            width: 0.1%;
-            white-space: nowrap;
-            min-width: 0;
-            color: $text-primary;
-            text-align: center;
-            margin-right: 3px;
-
-            div.p-row {
-                margin-right: 5px;
-            }
-        }
-
-        &:last-child{
-            padding-right: 5px;
-        }
-    }
-
-    tbody {
-        tr {
-            &:hover {
-                td {
-                    background-color: $highlight-grey;
-                    border-top: $border-style;
-                    border-bottom: $border-style;
-                    border-spacing: 0;
-                }
-
-                td:first-child {
-                    border-top-left-radius: 10px;
-                    border-bottom-left-radius: 10px;
-                }
-
-                td:last-child {
-                    border-top-right-radius: 10px;
-                    border-bottom-right-radius: 10px;
-                }
-
-                td {
-                    color: $accent-green;
-                }
-            }
-        }
+        font-size: var(--pds-font-size-xl);
+        color: var(--pds-color-text-muted);
     }
 }

@@ -1,17 +1,19 @@
-div.main-container{
+div.main-container {
     height: 100%;
     width: 100%;
-    display:flex;
+    display: flex;
     flex-direction: column;
-
-    div.main-container-content{
-        align-items: stretch;
-        height:100%;
-        width: 100%;
-        overflow-y: auto;
-    }
 
     > * {
         flex-grow: 1;
     }
+}
+
+.router-content {
+    height: 100%;
+}
+
+.router-routes {
+    flex: 1;
+    overflow: auto;
 }

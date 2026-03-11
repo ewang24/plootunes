@@ -1,23 +1,19 @@
-@import '../constants';
-div.artist-wrap-container{
+div.artist-wrap-container {
     display: flex;
     flex-direction: column;
-    padding: 15px;
-    // flex-wrap: wrap;
+    padding: var(--pds-space-sm);
 
-    div.artist-tile{
-        padding-top: 15px;
-        padding-bottom: 15px;
+    div.artist-tile {
+        padding-top: var(--pds-space-sm);
+        padding-bottom: var(--pds-space-sm);
 
-        strong.artist-name{
-            padding-top: 10px;
+        strong.artist-name {
+            padding-top: var(--pds-space-xs);
+            color: var(--pds-color-text-on-background);
         }
 
-        &:hover{
-            strong.artist-name{
-                color: $accent-green;
-            }
+        &:hover strong.artist-name {
+            color: var(--pds-color-primary);
         }
     }
 }
-

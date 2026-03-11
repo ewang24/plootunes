@@ -1,6 +1,4 @@
-@import '../constants';
-
-div.albums-for-artist-container{
-    padding: 15px;
+div.albums-for-artist-container {
+    padding: var(--pds-space-sm);
     flex-wrap: wrap;
 }
