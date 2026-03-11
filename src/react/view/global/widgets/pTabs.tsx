@@ -1,51 +1,34 @@
-import React, { ReactElement, useState } from "react";
-import '../../../styles/widgets/ptabs.scss'
+import React, { ReactElement } from "react";
+import { Tab } from "@ploot/pds";
 
 export interface PTabItem {
-    label: string,
-    content: ReactElement;
-    active?: boolean;
+  label: string;
+  content: ReactElement;
+  active?: boolean;
 }
 
 export interface PTabsProps {
-    tabs: PTabItem[];
+  tabs: PTabItem[];
 }
 
 function PTabs(props: PTabsProps) {
-    const { tabs } = props;
-    const [activeTab, setActiveTab] = useState<number>(() => {
-        let activeIndex = 0;
-        for (let i = tabs.length - 1; i > 0; i--) {
-            if (tabs[i].active) {
-                activeIndex = i;
-                break;
-            }
-        }
+  const { tabs } = props;
 
-        return activeIndex;
-    });
+  const activeItem = tabs.find((t) => t.active);
+  const initialSelectedTab = activeItem ? activeItem.label : tabs[0]?.label;
 
-    function switchTab(index) {
-        setActiveTab(index);
-    }
+  const items = tabs.map((tab) => ({
+    id: tab.label,
+    name: tab.label,
+    content: tab.content,
+  }));
 
-    return <div className="p-col p-tabs">
-        <div className='p-row p-row-flex-start p-tab-headers-container'>
-            {tabs.map((tab, index) => {
-                return <div key={index} className={`p-tab-header ${index === activeTab ? 'active' : ''}`} onClick={() => switchTab(index)}>
-                    <span>
-                        {tab.label}
-                    </span>
-                    <div className = 'active-highlight'></div>
-                </div>
-            })}
-        </div>
-        <div className = 'p-main-content' key={activeTab}>
-            {
-                tabs[activeTab].content
-            }
-        </div>
-    </div>
+  return (
+    <Tab
+      initialSelectedTab={initialSelectedTab}
+      items={items}
+    />
+  );
 }
 
 export default PTabs;

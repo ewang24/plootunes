@@ -1,16 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Widget, WidgetType, WidgetTypes } from '../../../core/db/dbEntities/widget';
 import { WidgetService } from './electronServices/widgetService';
-import PButton from '../global/widgets/pButton';
-import { Icons } from '../../../core/assets/icons';
-import PModal from '../global/widgets/pModal';
+import { Button, useModal } from '@ploot/pds';
 import '../../styles/landing/landing.scss'
 import WidgetTile from './widgetTile';
 
 const Landing = () => {
 
   const [widgets, setWidgets] = useState<Widget[] | undefined>();
-  const [displayAddWidgetsModal, setDisplayAddWidgetsModal] = useState<boolean>(false);
   const [selectedWidgetType, setSelectedWidgetType] = useState<WidgetType>('RECENTLY_ADDED');
 
   useEffect(() => {
@@ -23,56 +20,46 @@ const Landing = () => {
     });
   }
 
-  function toggleWidgetModal() {
-    setDisplayAddWidgetsModal(!displayAddWidgetsModal);
-  }
-
-  function addWidgetModalContents() {
-    return <div className='p-row'>
-      <select value={selectedWidgetType} onChange={(event) => setSelectedWidgetType(event.target.value as WidgetType)}>
-        {Object.keys(WidgetTypes).map((key) => {
-          return <option value={key}>{WidgetTypes[key].displayName}</option>
-        })}
-      </select>
-    </div>;
-  }
-
   function createWidget() {
     WidgetService.addWidget(selectedWidgetType).then(() => {
       fetchWidgets();
-      toggleWidgetModal();
+      closeAddWidget();
     });
   }
 
+  const { open: openAddWidget, close: closeAddWidget, Modal: AddWidgetModal } = useModal({
+    title: 'Add Widget',
+    renderContent: (close) => (
+      <div className='p-row'>
+        <select value={selectedWidgetType} onChange={(event) => setSelectedWidgetType(event.target.value as WidgetType)}>
+          {Object.keys(WidgetTypes).map((key) => {
+            return <option key={key} value={key}>{WidgetTypes[key].displayName}</option>
+          })}
+        </select>
+        <Button onClick={() => { createWidget(); }} variant="primary">Submit</Button>
+        <Button onClick={close} variant="secondary">Close</Button>
+      </div>
+    ),
+  });
+
   return <>
-    {displayAddWidgetsModal &&
-      <PModal
-        label='Add Widget'
-        content={addWidgetModalContents()}
-        onClose={toggleWidgetModal}
-        onSubmit={createWidget}
-        displayTopRightClose={true}
-      />
-    }
+    <AddWidgetModal />
     <div className='landing-main'>
       {
         widgets && <>
           {widgets.length === 0 &&
-
             <strong>
               No widgets enabled
             </strong>
-
-
           }
           <div className='p-row p-row-align-center'>
-            <PButton label='Add Widget' onClick={toggleWidgetModal} icon={Icons.PLUS}></PButton>
+            <Button onClick={openAddWidget} icon="plus" variant="primary">Add Widget</Button>
           </div>
           {
             widgets.length > 0 &&
             <div className='landing-widgets-container'>
               {widgets.map((widget) => {
-                return <WidgetTile widget={widget} widgetReloadHandler={fetchWidgets}/>
+                return <WidgetTile key={widget.id} widget={widget} widgetReloadHandler={fetchWidgets}/>
               })}
             </div>
           }
