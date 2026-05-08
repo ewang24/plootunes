@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Project Management
+
+Project: **PlooTunes** (ID: 6). Use the `plootocol` MCP tools to read and write tickets — `vikunja_list_tasks` with `project_id: 6`, `vikunja_create_task` for new work, `vikunja_update_task` to close or update.
+
 ## Commands
 
 ```bash
@@ -41,6 +45,3 @@ This is a TypeScript monorepo with three layers:
 
 **`src/mobile/`** — React Native (Expo) app. Uses `expoSqliteConnector` to implement the shared `Connector` interface against Expo SQLite.
 
-## Vikunja
-
-Project: **PlooTunes** (ID: 6). Use the `plootocol` MCP tools to read and write tickets — `vikunja_list_tasks` with `project_id: 6`, `vikunja_create_task` for new work, `vikunja_update_task` to close or update.
