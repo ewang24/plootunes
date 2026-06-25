@@ -5,6 +5,10 @@ div.virtualized-song-grid-row {
 div.song-grid-virtualizer-container {
     display: flex;
     flex: 1;
+    // The migrated PDS Page renders its content area as display:block, so flex:1
+    // alone no longer gives this container a height. Pin it to the page content's
+    // (definite) height so AutoSizer can size the virtualized table rows.
+    height: 100%;
     align-items: stretch;
 
     div.song-grid-virtualizer-block{

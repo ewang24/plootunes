@@ -4,6 +4,10 @@ import { app, BrowserWindow } from 'electron';
 import Main from './main';
 const { fork } = require('child_process');
 
+// Album cover images live under the platform-specific userData directory.
+// Set this before forking so the express server child process inherits it.
+process.env.COVERS_PATH = path.join(app.getPath('userData'), 'covers');
+
 // try { 
 //     require('electron-reloader')(module, { 
 //         debug: true, 

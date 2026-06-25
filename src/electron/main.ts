@@ -40,7 +40,7 @@ export default class Main {
 
             if (process.env.RUN_MODE === 'dev') {
                 Main.mainWindow!
-                    .loadURL('http://localhost:3000');
+                    .loadURL(process.env.RENDERER_URL || 'http://localhost:3000');
             }
             else
             // if(process.env.RUN_MODE === 'prod')

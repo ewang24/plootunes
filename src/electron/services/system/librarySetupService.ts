@@ -3,6 +3,7 @@ const path = require('path');
 const mm = require('music-metadata');
 import { Database, OPEN_CREATE, OPEN_READWRITE } from "sqlite3";
 import { DbUtil } from "../../../core/db/dbUtil";
+import { getCoversPath } from "../../util/appPaths";
 
 
 /*
@@ -148,7 +149,7 @@ export class LibrarySetupService {
 
     private async persistAlbumArt(albumArt: Buffer, coverImageUuid: string, imageFormat: string): Promise<string> {
         try {        
-                const coversPath = path.join(process.env.APPDATA, 'Electron', 'covers');
+                const coversPath = getCoversPath();
                 await fs.promises.mkdir(coversPath, { recursive: true });
                 const coverImageFile =`${coverImageUuid}.${imageFormat}`;
                 const outputFilePath = path.join(coversPath, coverImageFile);

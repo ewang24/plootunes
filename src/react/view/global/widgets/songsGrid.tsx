@@ -109,7 +109,12 @@ function SongsGrid({ songs, onPlay, onQueue, displayAlbumInfo }: SongsGridProps)
             rowClassName='virtualized-song-grid-row'
           >
             {columnDefs.map((colProps) => (
-              <Column key={colProps.dataKey} width={width / columnDefs.length} {...colProps} />
+              <Column
+                key={colProps.dataKey}
+                width={width / columnDefs.length}
+                cellDataGetter={({ dataKey, rowData }) => rowData?.[dataKey]}
+                {...colProps}
+              />
             ))}
           </Table>
         }

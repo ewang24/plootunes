@@ -33,7 +33,7 @@ function SongsForAlbum({ album, closeSongsForAlbumView }) {
     headerWidgets={<>
       <Button onClick={playAlbumCallback}>Play Album</Button>
       <Button onClick={queueAlbumCallback} variant='secondary'>Queue Album</Button>
-      <Button icon='backArrow' variant='ghost' onClick={closeSongsForAlbumView} title='Back' />
+      <Button icon='arrowLeft' variant='ghost' onClick={closeSongsForAlbumView} title='Back' />
     </>}
   >
     <SongsGrid

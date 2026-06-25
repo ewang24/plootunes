@@ -23,9 +23,10 @@ function ArtistDetails({ artist, closeArtistDetails }: ArtistDetailsProps) {
 
   return <Page
     title={artist.name}
-    headerWidgets={<Button icon='backArrow' variant='ghost' onClick={closeArtistDetails} title='Back' />}
+    headerWidgets={<Button icon='arrowLeft' variant='ghost' onClick={closeArtistDetails} title='Back' />}
   >
     <Tab
+      initialSelectedTab='albums'
       items={[
         {
           id: 'albums',
