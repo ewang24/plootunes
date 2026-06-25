@@ -1,14 +1,15 @@
-@import '../constants';
-
 div.queue-viewer {
-    background-color: $foreground-dark;
-    
+    background-color: var(--pds-color-background-elevated);
+
     &.queue-viewer-opened {
-        box-shadow: -1px 1px 4px 1px $box-shadow-color;
+        box-shadow: var(--pds-shadow-md);
         z-index: 2;
         width: 30%;
     }
 
+    div.queue-viewer-header {
+        padding: var(--pds-space-xs) var(--pds-space-sm);
+    }
 
     div.queue-viewer-virtualizer-container {
         display: flex;
@@ -17,8 +18,7 @@ div.queue-viewer {
 
         div.queue-viewer-virtualizer-block {
             display: block;
-            //Slight hack. If this is 100%, then the UI will get into a reflow infinite loop. The AutoSizer will grow to 100% but then the flex parent will 
-            //attempt to grow and it repeats. Caused horrible seizure-inducing screen flicker.
+            // Slight hack: 100% causes AutoSizer reflow infinite loop (screen flicker).
             height: 99%;
             width: 99%;
         }
@@ -31,33 +31,32 @@ div.queue-viewer {
     }
 
     div.queue-viewer-row {
-        border-bottom: 1px solid $foreground;
+        border-bottom: 1px solid var(--pds-color-border-subtle);
 
         span {
-            padding: 10px;
-            color: $text-primary;
+            padding: var(--pds-space-sm);
+            color: var(--pds-color-text-on-background);
             text-overflow: ellipsis;
             overflow: hidden;
             white-space: nowrap;
 
             &.currently-playing {
-                font-weight: bold;
+                font-weight: var(--pds-font-weight-bold);
             }
         }
 
         &:hover {
-            background: $accent-green;
+            background: var(--pds-color-primary);
 
             span {
-                color: $white;
+                color: var(--pds-color-text-on-primary);
             }
         }
     }
 
     div.now-playing-queue-bar {
         height: 100%;
-        background-color: $accent-green;
+        background-color: var(--pds-color-primary);
         width: 10px;
     }
-
 }

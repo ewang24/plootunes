@@ -1,50 +1,46 @@
 import React, { useContext } from "react"
-import PButton from "../../global/widgets/pButton";
+import { Button } from "@ploot/pds";
 import { PlayerContext } from "../../main";
 import { QueueService } from "../../albums/electronServices/queueService";
-import { Song, SongWithAlbum } from "../../../../core/db/dbEntities/song";
+import { SongWithAlbum } from "../../../../core/db/dbEntities/song";
 
-export interface QuickPlayWidgetProps {
-}
+const QuickPlayWidget = () => {
+    const { setShuffled, setCurrentlyPlayingSong } = useContext(PlayerContext);
 
-const QuickPlayWidget = (props: QuickPlayWidgetProps) => {
-    const { shuffled, setShuffled, repeat, setRepeat, currentlyPlayingSong, setCurrentlyPlayingSong } = useContext(PlayerContext);
-
-    function playAllHandler(){
+    function playAllHandler() {
         QueueService.queueAllSongsAndPlayFirstSong().then((firstInQueue: SongWithAlbum) => {
             setCurrentlyPlayingSong(firstInQueue);
             setShuffled(false);
         });
     }
 
-    function shuffleAllHandler(){
+    function shuffleAllHandler() {
         QueueService.shuffleAllSongsAndPlay().then((firstInQueue: SongWithAlbum) => {
             setCurrentlyPlayingSong(firstInQueue);
             setShuffled(true);
-          });
+        });
     }
 
-    function playRandomArtistHandler(){
+    function playRandomArtistHandler() {
         QueueService.playRandomArtist().then((firstInQueue: SongWithAlbum) => {
-            console.log(JSON.stringify(firstInQueue));
             setCurrentlyPlayingSong(firstInQueue);
             setShuffled(false);
-        })
+        });
     }
 
-    function playRandomAlbumHandler(){
+    function playRandomAlbumHandler() {
         QueueService.playRandomAlbum().then((firstInQueue: SongWithAlbum) => {
             setCurrentlyPlayingSong(firstInQueue);
             setShuffled(false);
-        })
+        });
     }
 
-    return <div className = 'p-col p-row-align-top'>
-        <PButton label="Play All" onClick={playAllHandler}/>
-        <PButton label="Shuffle All" onClick={shuffleAllHandler}/>
-        <PButton label="Play Random Artist" onClick={playRandomArtistHandler}/>
-        <PButton label="Play Random Album" onClick={playRandomAlbumHandler}/>
-    </div>
-}
+    return <div className='p-col p-row-align-top'>
+        <Button onClick={playAllHandler}>Play All</Button>
+        <Button onClick={shuffleAllHandler}>Shuffle All</Button>
+        <Button onClick={playRandomArtistHandler}>Play Random Artist</Button>
+        <Button onClick={playRandomAlbumHandler}>Play Random Album</Button>
+    </div>;
+};
 
 export default QuickPlayWidget;

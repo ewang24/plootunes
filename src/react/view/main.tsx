@@ -6,7 +6,6 @@ import PlayerMain from './player/playerMain';
 import { Song, SongWithAlbum } from '../../core/db/dbEntities/song';
 import { SystemService } from './global/electronServices/systemService';
 import { QueueService } from './albums/electronServices/queueService';
-import QueueViewer from './queue/queueViewer';
 
 export interface PlayerContext {
   playSongNow(song: Song): void;
@@ -22,12 +21,9 @@ export interface PlayerContext {
 export const PlayerContext = createContext<PlayerContext | undefined>(undefined);
 
 const Main = () => {
-
-
   const [shuffled, setShuffled] = useState<boolean>(false);
   const [repeat, setRepeat] = useState<boolean>(false);
   const [currentlyPlayingSong, setCurrentlyPlayingSong] = useState<Song | undefined>(undefined);
-
 
   function playSongNow(song: Song) {
     setCurrentlyPlayingSong(song);
@@ -38,37 +34,27 @@ const Main = () => {
 
   function queueSong(song: Song) {
     QueueService.queueSong(song.id).then(() => {
-      if (currentlyPlayingSong) {
-        return;
-      }
-
+      if (currentlyPlayingSong) return;
       setCurrentlyPlayingSong(song);
     });
   }
 
   function handleShuffledChange(shuffled: boolean) {
-    SystemService.setShuffled(shuffled).then(() => {
-      setShuffled(shuffled);
-    })
+    SystemService.setShuffled(shuffled).then(() => setShuffled(shuffled));
   }
 
-  function handleRepeatChange(repeat: boolean){
-    SystemService.setRepeat(repeat).then(() => {
-      setRepeat(repeat);
-    });
+  function handleRepeatChange(repeat: boolean) {
+    SystemService.setRepeat(repeat).then(() => setRepeat(repeat));
   }
 
-  return <div className='main-container'>
-    <PlayerContext.Provider value={{ playSongNow, queueSong, currentlyPlayingSong, setCurrentlyPlayingSong, shuffled, setShuffled: handleShuffledChange, repeat, setRepeat:handleRepeatChange }}>
-      <>
-        <div className='p-row main-container-content'>
-          <AppRouter />
-          <QueueViewer />
-        </div>
+  return (
+    <div className='main-container'>
+      <PlayerContext.Provider value={{ playSongNow, queueSong, currentlyPlayingSong, setCurrentlyPlayingSong, shuffled, setShuffled: handleShuffledChange, repeat, setRepeat: handleRepeatChange }}>
+        <AppRouter />
         <PlayerMain />
-      </>
-    </PlayerContext.Provider>
-  </div>
+      </PlayerContext.Provider>
+    </div>
+  );
 };
 
 export default Main;

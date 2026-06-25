@@ -1,35 +1,23 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Artist } from "../../../core/db/dbEntities/artist";
-import { SongService } from "../songs/electronServices/songService";
-import { Song, SongWithAlbum } from "../../../core/db/dbEntities/song";
-import React from "react";
+import { SongWithAlbum } from "../../../core/db/dbEntities/song";
 import SongsGrid from "../global/widgets/songsGrid";
+import { SongService } from "../songs/electronServices/songService";
 
 export interface SongsForArtistProps {
     artist: Artist;
 }
 
-function SongsForArtist(props: SongsForArtistProps) {
-    const { artist } = props;
+function SongsForArtist({ artist }: SongsForArtistProps) {
     const [songs, setSongs] = useState<SongWithAlbum[] | undefined>();
 
     useEffect(() => {
-        SongService.getSongsByArtist(artist.id).then((songs: SongWithAlbum[]) => {
-            setSongs(songs);
-        })
+        SongService.getSongsByArtist(artist.id).then((songs: SongWithAlbum[]) => setSongs(songs));
     }, []);
 
-    return <div className = 'p-main-content'>
-        {
-            songs && 
-            <SongsGrid
-                displayAlbumInfo = {true}
-                songs={songs}
-                onPlay={() => {}}
-                onQueue={() => {}}
-            />
-        }
-    </div>
+    return songs
+        ? <SongsGrid displayAlbumInfo songs={songs} onPlay={() => {}} onQueue={() => {}} />
+        : null;
 }
 
 export default SongsForArtist;

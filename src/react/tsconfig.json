@@ -1,24 +1,31 @@
 {
   "compilerOptions": {
-    "jsx": "react",
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
-    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
     "removeComments": false,
     "noImplicitAny": false,
     "allowSyntheticDefaultImports": true,
-    "baseUrl": "./src",
+    "baseUrl": ".",
     "paths": {
-      "*": [
-        "*",
-        "src/*",
-        "../../global/*"
-      ]
+      "~core-assets/*": ["../core/assets/*"]
     }
   },
   "include": [
+    "./index.tsx",
+    "./vite.config.ts",
     "./view/**/*.tsx",
     "./view/**/*.ts",
     "../core/**/*.ts",
-    "../core/**/*.js"
-, "../core/assets/icons.ts"  ]
+    "../core/**/*.js",
+    "../core/assets/icons.ts"
+  ]
 }

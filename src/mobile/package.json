@@ -1,6 +1,7 @@
 {
   "name": "plootunes-mobile",
   "version": "0.0.0",
+  "packageManager": "pnpm@11.5.1",
   "description": "The Mobile Companion App for Plootunes",
   "main": "index.js",
   "scripts": {
