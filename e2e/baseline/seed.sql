@@ -1,0 +1,11 @@
+-- PlooTunes E2E baseline seed
+-- SKELETON — populated in T13 (e2e harness activation ticket).
+--
+-- This file will hold the shared canonical catalog seed:
+--   - artists, albums, genres (no userId)
+--   - songs referencing the above (no userId)
+--   - pre-seeded users (id: 00000000-0000-0000-0000-000000000001 = Emperor)
+--   - user_song rows linking the catalog to seeded users
+--
+-- Regenerate by scraping the dev DB with psql queries documented in
+-- e2e/baseline/README.md. Do not hand-write production data here.
