@@ -1,3 +1,9 @@
+# pnpm 10+ only reads auth/registry settings from .npmrc; these live here.
+# Mirrored in .npmrc (kebab-case) for backward compat with older pnpm.
+strictDepBuilds: true
+minimumReleaseAge: 1440
+blockExoticSubdeps: true
+
 allowBuilds:
   '@parcel/watcher': false
   sqlite3: true
