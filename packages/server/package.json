@@ -4,10 +4,25 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
+  "dependencies": {
+    "cors": "2.8.6",
+    "drizzle-orm": "0.39.3",
+    "express": "5.2.1",
+    "postgres": "3.4.9"
+  },
   "devDependencies": {
+    "@types/cors": "2.8.19",
+    "@types/express": "5.0.6",
+    "@types/node": "22.19.17",
+    "drizzle-kit": "0.30.6",
     "tsx": "^4.19.0",
     "typescript": "~5.8.3",
     "vitest": "^3.0.0"
