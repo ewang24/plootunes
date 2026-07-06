@@ -17,6 +17,8 @@
     "countAudioFiles": "ts-node ./src/core/db/test/util/runCountFiles.ts ../assets/testLibrary",
     "svgr": "npx svgr --out-dir ./src/core/assets/icons/components ./src/core/assets/icons/svgs",
     "typecheck": "pnpm -r --if-present typecheck",
+    "db:generate": "pnpm -F ./packages/server db:generate",
+    "db:migrate": "pnpm -F ./packages/server db:migrate",
     "lint": "eslint 'packages/*/src/**/*.{ts,tsx}'",
     "format": "prettier --write 'packages/*/src/**/*.{ts,tsx,scss}'",
     "app:up": "docker compose -f docker/docker-compose.e2e.yml up --build",
