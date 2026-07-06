@@ -6,4 +6,10 @@ blockExoticSubdeps: true
 
 allowBuilds:
   '@parcel/watcher': false
+  esbuild: true
   sqlite3: true
+
+packages:
+  - packages/shared
+  - packages/server
+  - packages/client

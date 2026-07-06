@@ -1,0 +1,58 @@
+# SKELETON — Dockerfiles/images land in the Docker ticket; not runnable yet.
+# Build contexts and Dockerfile paths reference files that do not exist yet.
+# This compose defines the target shape of the e2e stack for documentation
+# and planning purposes. It will be wired up fully in the Docker ticket (T?).
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: plootunes
+      POSTGRES_USER: plootunes
+      POSTGRES_PASSWORD: plootunes
+    volumes:
+      - e2e_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U plootunes -d plootunes"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  server:
+    build:
+      # NOTE: build context and Dockerfile do not exist yet — added in Docker ticket
+      context: ../..
+      dockerfile: plootunes/docker/Dockerfile.server
+    environment:
+      DATABASE_URL: postgres://plootunes:plootunes@postgres:5432/plootunes
+      MEDIA_ROOT: /app/media
+      PORT: 3000
+      PLOOTUNES_AUTH_BYPASS: "true"
+      PLOOTUNES_E2E_USER_ID: "00000000-0000-0000-0000-000000000001"
+      SCENARIO: ${SCENARIO:-}
+    volumes:
+      - ../e2e:/app/e2e:ro
+      - ./entrypoint.e2e.sh:/app/entrypoint.e2e.sh:ro
+    entrypoint: ["sh", "/app/entrypoint.e2e.sh"]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:3000/api/health || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  client:
+    build:
+      # NOTE: build context and Dockerfile do not exist yet — added in Docker ticket
+      context: ../..
+      dockerfile: plootunes/docker/Dockerfile.client
+    ports:
+      - "3100:80"
+    depends_on:
+      server:
+        condition: service_healthy
+
+volumes:
+  e2e_postgres_data:

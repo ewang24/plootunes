@@ -1,0 +1,12 @@
+-- Scenario: shuffled-queue
+-- SKELETON — populated in T13 (e2e harness activation ticket).
+--
+-- This patch will seed a user mid-shuffle with:
+--   - a populated playOrder array on the active queue
+--   - a non-zero cursor (current position in the shuffled order)
+--   - a non-zero positionMs (current playback offset within the current song)
+--
+-- Goal: verify that the player correctly restores shuffle state on reload —
+-- the right song is highlighted, the progress bar reflects positionMs, and
+-- the next/previous buttons respect the shuffled playOrder rather than
+-- the album/library order.
