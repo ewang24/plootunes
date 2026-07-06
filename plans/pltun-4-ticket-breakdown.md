@@ -1,4 +1,5 @@
 # pltun-4 Ticket Breakdown
+This plan is not up to date. Read the pltun-4 ticket from vikunja instead.
 
 ## Status (2026-07-01)
 
