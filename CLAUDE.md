@@ -118,6 +118,10 @@ pnpm typecheck   # shortcut for pnpm -r --if-present typecheck
 # Test all packages
 pnpm -r test
 
+# Integration tests (boots a testcontainers Postgres, applies migrations, runs the vitest integration tier)
+pnpm test:integration
+# Feature tickets import shared seed/reset utilities from packages/server/src/__tests__/integration/helpers.ts
+
 # Drizzle migrations (run from repo root)
 pnpm db:generate   # generates migration from schema.ts changes
 pnpm db:migrate    # applies pending migrations
