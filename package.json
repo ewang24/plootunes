@@ -19,6 +19,7 @@
     "typecheck": "pnpm -r --if-present typecheck",
     "db:generate": "pnpm -F ./packages/server db:generate",
     "db:migrate": "pnpm -F ./packages/server db:migrate",
+    "test:integration": "pnpm -F ./packages/server test:integration",
     "lint": "eslint 'packages/*/src/**/*.{ts,tsx}'",
     "format": "prettier --write 'packages/*/src/**/*.{ts,tsx,scss}'",
     "app:up": "docker compose -f docker/docker-compose.e2e.yml up --build",

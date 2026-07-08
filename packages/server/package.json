@@ -10,7 +10,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:integration": "vitest run --config vitest.integration.config.ts"
   },
   "dependencies": {
     "cors": "2.8.6",
@@ -23,6 +24,7 @@
     "@types/express": "5.0.6",
     "@types/node": "22.19.17",
     "drizzle-kit": "0.30.6",
+    "testcontainers": "10.28.0",
     "tsx": "^4.19.0",
     "typescript": "~5.8.3",
     "vitest": "^3.0.0"
