@@ -170,3 +170,11 @@ A feature or change is not done until:
 - `pnpm exec prettier --check 'packages/*/src/**/*.{ts,tsx,scss}'` passes
 - No existing tests are broken (`npm test` for legacy, `pnpm -r test` for new packages)
 - Interactive e2e verification done for any non-trivial UI feature
+
+### Empirical verification (mandatory)
+
+**Every piece of work must be verified empirically whenever it is reasonably feasible to do so.** If you can actually run the thing, you must run it — do not substitute a clean typecheck, a passing lint, a faithful code port, or a green unit test for proof that the behavior actually works.
+
+- Unit and integration tests are still required — this is *in addition* to them, not a replacement.
+- If a ticket's acceptance criteria describe observable runtime behavior (e.g. "the server boots", "an unauthenticated request returns 401", "the endpoint returns X"), you must actually execute that behavior and observe the result before calling the work done — boot the server and hit the route, run the flow, curl the endpoint, drive the UI. Passing tests around the change do not count as having exercised the change itself.
+- Only skip empirical verification when it is genuinely not feasible (e.g. requires prod-only infrastructure that cannot run here), and when you skip it, say so explicitly rather than implying it was checked.
