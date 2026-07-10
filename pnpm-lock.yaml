@@ -93,6 +93,9 @@ importers:
 
   packages/server:
     dependencies:
+      '@ploot/plootunes-shared':
+        specifier: workspace:*
+        version: link:../shared
       cors:
         specifier: 2.8.6
         version: 2.8.6
@@ -141,6 +144,10 @@ importers:
         version: 3.2.6(@types/node@22.19.17)(sass@1.101.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
 
   packages/shared:
+    dependencies:
+      zod:
+        specifier: 3.24.1
+        version: 3.24.1
     devDependencies:
       tsx:
         specifier: ^4.19.0
@@ -5031,6 +5038,9 @@ packages:
   zip-stream@6.0.1:
     resolution: {integrity: sha512-zK7YHHz4ZXpW89AHXUPbQVGKI7uvkd3hzusTdotCg1UxyaVtg0zFJSTfW/Dq5f7OBBVnq6cZIaC8Ti4hb6dtCA==}
     engines: {node: '>= 14'}
+
+  zod@3.24.1:
+    resolution: {integrity: sha512-muH7gBL9sI1nciMZV67X5fTKKBLtwpZ5VBp1vsOQzj1MhrBZ4wlVCm3gedKZWLp0Oyel8sIGfeiz54Su+OVT+A==}
 
 snapshots:
 
@@ -10425,3 +10435,5 @@ snapshots:
       archiver-utils: 5.0.2
       compress-commons: 6.0.2
       readable-stream: 4.7.0
+
+  zod@3.24.1: {}

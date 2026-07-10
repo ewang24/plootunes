@@ -4,16 +4,32 @@ import { UsersDao } from './dao/usersDao.ts'
 import type { IUsersDao } from './dao/usersDao.ts'
 import { UserPreferencesDao } from './dao/userPreferencesDao.ts'
 import type { IUserPreferencesDao } from './dao/userPreferencesDao.ts'
+import { SongDao } from './dao/songDao.ts'
+import type { ISongDao } from './dao/songDao.ts'
+import { AlbumDao } from './dao/albumDao.ts'
+import type { IAlbumDao } from './dao/albumDao.ts'
+import { ArtistDao } from './dao/artistDao.ts'
+import type { IArtistDao } from './dao/artistDao.ts'
+import { GenreDao } from './dao/genreDao.ts'
+import type { IGenreDao } from './dao/genreDao.ts'
 
 export interface AppDaos {
   usersDao: IUsersDao
   userPreferencesDao: IUserPreferencesDao
+  songDao: ISongDao
+  albumDao: IAlbumDao
+  artistDao: IArtistDao
+  genreDao: IGenreDao
 }
 
 export function createDaosFromDb(database: Database): AppDaos {
   return {
     usersDao: new UsersDao(database),
     userPreferencesDao: new UserPreferencesDao(database),
+    songDao: new SongDao(database),
+    albumDao: new AlbumDao(database),
+    artistDao: new ArtistDao(database),
+    genreDao: new GenreDao(database),
   }
 }
 
