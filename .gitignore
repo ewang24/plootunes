@@ -27,3 +27,8 @@ properties.json
 .cxx
 local.properties
 src/electron/dist_electron_builder/
+
+# dotenv environment variable files
+.env
+.env.*
+!.env.example

@@ -17,11 +17,14 @@
     "cors": "2.8.6",
     "drizzle-orm": "0.39.3",
     "express": "5.2.1",
+    "express-session": "1.19.0",
+    "openid-client": "6.8.4",
     "postgres": "3.4.9"
   },
   "devDependencies": {
     "@types/cors": "2.8.19",
     "@types/express": "5.0.6",
+    "@types/express-session": "1.19.0",
     "@types/node": "22.19.17",
     "drizzle-kit": "0.30.6",
     "testcontainers": "10.28.0",
