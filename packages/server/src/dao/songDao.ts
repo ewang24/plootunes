@@ -29,6 +29,7 @@ export interface ISongDao {
   findByAlbumId(userId: string, albumId: string): Promise<SongCatalogRow[]>
   findByArtistId(userId: string, artistId: string): Promise<SongCatalogRow[]>
   findByGenreIds(userId: string, genreIds: string[]): Promise<SongCatalogRow[]>
+  findByIds(ids: string[]): Promise<SongCatalogRow[]>
 }
 
 export class SongDao implements ISongDao {
@@ -85,5 +86,10 @@ export class SongDao implements ISongDao {
         ),
       )
       .orderBy(asc(album.name), asc(song.discNumber), asc(song.trackNumber))
+  }
+
+  async findByIds(ids: string[]): Promise<SongCatalogRow[]> {
+    if (ids.length === 0) return []
+    return this.baseQuery().where(inArray(song.id, ids))
   }
 }

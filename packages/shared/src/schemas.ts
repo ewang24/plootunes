@@ -1,4 +1,6 @@
 import { z } from 'zod'
+import { REPEAT_MODES } from './enums.ts'
+import type { RepeatMode } from './enums.ts'
 
 // Response schemas (used for API output validation and DTO type derivation)
 
@@ -48,4 +50,29 @@ export const artistResponseSchema = z.object({
 
 export type ArtistDTO = z.infer<typeof artistResponseSchema>
 
+export const playbackStateResponseSchema = z.object({
+  cursor: z.number().int().nullable(),
+  positionMs: z.number().int().nullable(),
+  shuffled: z.boolean(),
+  repeat: z.enum(REPEAT_MODES as [RepeatMode, ...RepeatMode[]]),
+  updatedAt: z.string(),
+})
+
+export type PlaybackStateDTO = z.infer<typeof playbackStateResponseSchema>
+
+export const queuedSongsResponseSchema = z.object({
+  currentlyPlaying: songResponseSchema.nullable(),
+  songs: z.array(songResponseSchema),
+  total: z.number().int(),
+})
+
+export type QueuedSongsDTO = z.infer<typeof queuedSongsResponseSchema>
+
 // Input schemas
+
+export const playbackUpdateSchema = z.object({
+  cursor: z.number().int().nullable().optional(),
+  positionMs: z.number().int().nullable().optional(),
+  shuffled: z.boolean().optional(),
+  repeat: z.enum(REPEAT_MODES as [RepeatMode, ...RepeatMode[]]).optional(),
+})

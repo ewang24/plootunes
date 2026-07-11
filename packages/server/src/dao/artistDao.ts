@@ -17,6 +17,7 @@ export type ArtistCatalogRow = ArtistRow & {
 export interface IArtistDao {
   findById(id: string): Promise<ArtistRow | undefined>
   findAll(userId: string): Promise<ArtistCatalogRow[]>
+  findRandomIdInLibrary(userId: string): Promise<string | undefined>
 }
 
 export class ArtistDao implements IArtistDao {
@@ -58,5 +59,15 @@ export class ArtistDao implements IArtistDao {
       numSongs: Number(row.numSongs),
       numAlbums: Number(row.numAlbums),
     }))
+  }
+
+  async findRandomIdInLibrary(userId: string): Promise<string | undefined> {
+    const rows = await this.db
+      .select({ id: artist.id })
+      .from(artist)
+      .where(artistInLibrary(userId))
+      .orderBy(sql`random()`)
+      .limit(1)
+    return rows[0]?.id
   }
 }

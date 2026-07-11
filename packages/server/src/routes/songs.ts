@@ -3,7 +3,7 @@ import type { AppServices } from '../serviceFactory.ts'
 import type { SongCatalogRow } from '../dao/songDao.ts'
 import type { SongDTO } from '@ploot/plootunes-shared'
 
-function toSongDto(row: SongCatalogRow): SongDTO {
+export function toSongDto(row: SongCatalogRow): SongDTO {
   return {
     id: row.id,
     name: row.name,
