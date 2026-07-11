@@ -5,7 +5,11 @@ import * as oidcClient from 'openid-client'
 import { sql } from 'drizzle-orm'
 import { db } from './db/index.ts'
 import { createDaos } from './factory.ts'
+import { createServices } from './serviceFactory.ts'
 import { createAuthRouter } from './routes/auth.ts'
+import { createSongsRouter } from './routes/songs.ts'
+import { createAlbumsRouter } from './routes/albums.ts'
+import { createArtistsRouter } from './routes/artists.ts'
 
 const app = express()
 const port = process.env.PORT ?? 3000
@@ -30,6 +34,7 @@ if (authBypass) {
 }
 
 const daos = createDaos()
+const services = createServices(daos)
 
 // Discover OIDC configuration
 const oidcIssuer = process.env.OIDC_ISSUER
@@ -119,6 +124,10 @@ app.use((req, res, next) => {
   req.isAdmin = true
   next()
 })
+
+app.use('/api/songs', createSongsRouter(services))
+app.use('/api/albums', createAlbumsRouter(services))
+app.use('/api/artists', createArtistsRouter(services))
 
 app.listen(port, () => {
   console.log(`PlooTunes server listening on port ${port}`)

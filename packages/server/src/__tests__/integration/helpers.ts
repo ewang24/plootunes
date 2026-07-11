@@ -6,7 +6,17 @@ import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
 import { sql } from 'drizzle-orm'
 import * as schema from '../../db/schema.ts'
-import { users, artist, album, song, genre, userLibrarySource, queue } from '../../db/schema.ts'
+import {
+  users,
+  artist,
+  album,
+  song,
+  genre,
+  genreEdge,
+  songGenre,
+  userLibrarySource,
+  queue,
+} from '../../db/schema.ts'
 import type { Database } from '../../db/index.ts'
 
 export const SEED_USER_ID = '00000000-0000-0000-0000-000000000001'
@@ -100,6 +110,16 @@ export async function seedGenre(db: Database, overrides: Partial<typeof genre.$i
     .insert(genre)
     .values({ name: `Genre ${n}`, ...overrides })
     .returning()
+  return row
+}
+
+export async function seedGenreEdge(db: Database, parentId: string, childId: string) {
+  const [row] = await db.insert(genreEdge).values({ parentId, childId }).returning()
+  return row
+}
+
+export async function seedSongGenre(db: Database, songId: string, genreId: string) {
+  const [row] = await db.insert(songGenre).values({ songId, genreId }).returning()
   return row
 }
 
