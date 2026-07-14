@@ -21,52 +21,91 @@ During the migration:
 
 ## Architecture
 
-Controller → Service → DAO. No business logic in controllers or DAOs.
+Router → Adapter → Service → DAO. No business logic in routers or adapters — all business logic (including orchestration across services) lives in services. See [Adapters](#adapters) for the layer contract.
 
 ### New web-app layout
 
 ```
 packages/
   shared/   — types, Zod schemas, enums (no sqlite, no DB deps)
-  server/   — Express + Drizzle; dao/, services/, routes/; factory.ts + serviceFactory.ts; db/{index,schema,migrate}; dbUpdates/
+  server/   — Express + Drizzle; dao/, services/, adapters/, routes/; daoFactory.ts + serviceFactory.ts + adapterFactory.ts; db/{index,schema,migrate}; dbUpdates/
   client/   — Vite/React renderer; services/ → apiFetch; uses @ploot/pds
 ```
 
 ## Key Conventions
 
-### DAOs
+The server is a strict four-layer stack: `router → adapter → service → dao`. Each layer below is
+listed top-to-bottom in call order, with its **Responsibilities** and **Guardrails**.
+
+### Router
+
+**Responsibilities**
+- One file per domain in `packages/server/src/routes/`
+- Export a factory function `createXRouter(adapters: AppAdapters): Router` — never a singleton router
+- Authn/authz, request validation (Zod), and HTTP responses — including domain-error → status mapping (e.g. `SubscriptionOverlapError` → `409`)
+- Validate/coerce query params using the enum values arrays
+
+**Guardrails**
+- Takes `AppAdapters`, and `AppServices` as well **only** when it also serves primitive/boolean/void responses that skip the adapter (call the service directly for those)
+- No business logic
+- Never builds a DTO — DTO-bearing responses are always produced by delegating to the adapter (`adapters.xAdapter.method(...)`)
+
+### Adapter
+
+**Responsibilities**
+- One file per domain in `packages/server/src/adapters/`
+- Export `IXAdapter` interface and `XAdapter` class; `XAdapter` takes `AppServices` via constructor injection
+- Converts service domain types → DTOs (and, rarely, request values → service inputs)
+- The `toXDto` mapping function lives in the adapter file, module-private, unless shared (see below)
+- Wire every new adapter into `AppAdapters` and `createAdapters()` in `packages/server/src/adapterFactory.ts`
+
+**Guardrails**
+- Full member of the stack, in the call path — not a passthrough
+- **One service, then transform** — an adapter method calls exactly **one** service, then maps the result
+- **Dispatch rule** — an adapter may pick between that one service's methods **only** when the decision is made purely from data the router passed in (e.g. a present-or-absent `artistId`). It is **forbidden** from calling anything to obtain data to make that decision — if choosing the path requires a lookup, that's business logic and belongs in a service
+- **Never `try/catch`** — all errors pass straight through to the router, which is the only layer that maps domain errors → HTTP status
+- **Shared mappers** — a `toXDto` may be **exported** and imported by another adapter only when the DTO is produced identically. The moment a consumer needs even one field different, it owns a separate mapper in its own adapter — no branching/parameterized shared mappers
+- No HTTP concerns, no I/O beyond the single service call
+
+### Service
+
+**Responsibilities**
+- One file per domain in `packages/server/src/services/`
+- Export `IXService` interface and `XService` class; `XService` takes `AppDaos` via constructor injection
+- Import row types from DAO files (`../dao/xDao.ts`), not from drizzle-orm or schema
+- All business logic, including orchestration across DAOs (and, rarely, other services)
+- Wire every new service into `AppServices` and `createServices()` in `packages/server/src/serviceFactory.ts`
+
+**Guardrails**
+- Returns **server-internal domain types**, never DTOs. When a response needs data assembled from multiple sources, the owning service orchestrates it and returns an intermediate aggregate type (defined alongside the service, like `XRow` lives with the DAO) — never in `shared`
+- **Highly prefer composing DAOs directly.** A service may inject another service, but only when genuinely necessary — you need that service's *business logic* (not just its data) and want to stay DRY. (Example: `PlaybackService` injects `QueueService` for `setShuffled`'s logic.)
+- **Factory discipline** — every constructor parameter in `serviceFactory.ts` must be a service or DAO. Never inject raw callbacks, primitives, or ad-hoc values. If a concern needs injecting, give it a service. Build services in dependency order so an injected service instance is already constructed when it's needed.
+
+### DAO
+
+**Responsibilities**
 - One file per table in `packages/server/src/dao/`
-- Export `IXDao` interface and `XDao` class
-- `XDao` takes `db: Database` via constructor injection
-- Drizzle types (`InferSelectModel`, `InferInsertModel`) are only used inside DAO files — never import them in services or controllers
-- Type aliases (`XRow` for select, `NewX` for insert) are exported so services can import them from the DAO file
+- Export `IXDao` interface and `XDao` class; `XDao` takes `db: Database` via constructor injection
 - Standard starting methods: `findAll` or `findByParentId`, `findById`, `create`
-- Wire every new DAO into `AppDaos` and `createDaos()` in `packages/server/src/factory.ts`
+- Wire every new DAO into `AppDaos` and `createDaos()` in `packages/server/src/daoFactory.ts`
+
+**Guardrails**
+- Drizzle types (`InferSelectModel`, `InferInsertModel`) are only used inside DAO files — never import them in services, adapters, or routers
+- Type aliases (`XRow` for select, `NewX` for insert) are exported so services can import them from the DAO file
 
 ### DTOs & Schemas
 - All DTOs are derived via `z.infer<typeof xResponseSchema>` — never hand-written interfaces
 - Response schemas go in `packages/shared/src/schemas.ts` above the `// Input schemas` comment
 - Composed/joined DTOs use Zod `.extend()` — only create them when an actual endpoint needs it
-- Mapping from Drizzle types → DTOs happens at the controller boundary only
+- Mapping from service domain types → DTOs happens in the adapter only (never in routers or services)
 
 ### Enums
 - All enums live in `packages/shared/src/enums.ts`
 - Always add a `PLURAL_VALUES = Object.values(EnumName)` array alongside the enum
 - Use the array for Zod enums: `z.enum(VALUES as [string, ...string[]])`
 
-### Services
-- One file per domain in `packages/server/src/services/`
-- Export `IXService` interface and `XService` class
-- `XService` takes `AppDaos` via constructor injection
-- Import row types from DAO files (`../dao/xDao.ts`), not from drizzle-orm or schema
-- Wire every new service into `AppServices` and `createServices()` in `packages/server/src/serviceFactory.ts`
-- **Factory discipline** — every constructor parameter in `serviceFactory.ts` must be a service or DAO. Never inject raw callbacks, primitives, or ad-hoc values. If a concern needs injecting, give it a service.
-
-### Routes / Controllers
-- One file per domain in `packages/server/src/routes/`
-- Export a factory function `createXRouter(services: AppServices): Router` — never a singleton router
-- DTO mapping (`toXDto`) happens inline in the route file, at the controller boundary
-- Validate/coerce query params using the enum values arrays
+### Factories
+- Factory chain: `createAdapters(services) → createServices(daos) → createDaos()`, wired in `packages/server/src/adapterFactory.ts` / `serviceFactory.ts` / `daoFactory.ts` respectively, and assembled in `index.ts`
 
 ### Frontend Services
 - One file per domain in `packages/client/src/services/`

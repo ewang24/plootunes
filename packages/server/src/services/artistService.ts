@@ -1,4 +1,4 @@
-import type { AppDaos } from '../factory.ts'
+import type { AppDaos } from '../daoFactory.ts'
 import type { ArtistCatalogRow } from '../dao/artistDao.ts'
 
 export interface IArtistService {

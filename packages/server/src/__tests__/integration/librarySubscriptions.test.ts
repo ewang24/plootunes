@@ -14,8 +14,9 @@ import {
   SEED_USER_ID,
   type TestDb,
 } from './helpers.ts'
-import { createDaosFromDb } from '../../factory.ts'
+import { createDaosFromDb } from '../../daoFactory.ts'
 import { createServices } from '../../serviceFactory.ts'
+import { createAdapters } from '../../adapterFactory.ts'
 import { createLibraryRouter } from '../../routes/library.ts'
 
 const OTHER_USER_ID = '00000000-0000-0000-0000-000000000002'
@@ -27,6 +28,7 @@ beforeAll(async () => {
   const dbUrl = inject<string>('dbUrl')
   ctx = createTestDb(dbUrl)
   const services = createServices(createDaosFromDb(ctx.db))
+  const adapters = createAdapters(services)
   app = express()
   app.use(express.json())
   app.use((req, _res, next) => {
@@ -34,7 +36,7 @@ beforeAll(async () => {
     req.isAdmin = true
     next()
   })
-  app.use('/api/library', createLibraryRouter(services))
+  app.use('/api/library', createLibraryRouter(adapters, services))
 })
 
 afterAll(async () => {

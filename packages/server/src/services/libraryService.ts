@@ -1,4 +1,4 @@
-import type { AppDaos } from '../factory.ts'
+import type { AppDaos } from '../daoFactory.ts'
 import type { UserLibrarySourceRow } from '../dao/userLibrarySourceDao.ts'
 
 // Strip trailing slashes so '/lib/' and '/lib' are treated as the same subscription.

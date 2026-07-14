@@ -1,4 +1,4 @@
-import type { AppDaos } from '../factory.ts'
+import type { AppDaos } from '../daoFactory.ts'
 import type { GenreRow } from '../dao/genreDao.ts'
 
 export interface IGenreService {

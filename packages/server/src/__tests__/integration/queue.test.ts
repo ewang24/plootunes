@@ -11,10 +11,10 @@ import {
   SEED_USER_ID,
   type TestDb,
 } from './helpers.ts'
-import { createDaosFromDb } from '../../factory.ts'
+import { createDaosFromDb } from '../../daoFactory.ts'
 import { QueueService } from '../../services/queueService.ts'
 import { PlaybackService } from '../../services/playbackService.ts'
-import type { AppDaos } from '../../factory.ts'
+import type { AppDaos } from '../../daoFactory.ts'
 
 const OTHER_USER_ID = '00000000-0000-0000-0000-000000000002'
 
@@ -28,7 +28,7 @@ beforeAll(async () => {
   ctx = createTestDb(dbUrl)
   daos = createDaosFromDb(ctx.db)
   queueService = new QueueService(daos)
-  playbackService = new PlaybackService(daos)
+  playbackService = new PlaybackService(daos, queueService)
 })
 
 afterAll(async () => {

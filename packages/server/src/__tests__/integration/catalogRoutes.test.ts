@@ -22,8 +22,9 @@ import {
   SEED_USER_ID,
   type TestDb,
 } from './helpers.ts'
-import { createDaosFromDb } from '../../factory.ts'
+import { createDaosFromDb } from '../../daoFactory.ts'
 import { createServices } from '../../serviceFactory.ts'
+import { createAdapters } from '../../adapterFactory.ts'
 import { createSongsRouter } from '../../routes/songs.ts'
 import { createAlbumsRouter } from '../../routes/albums.ts'
 import { createArtistsRouter } from '../../routes/artists.ts'
@@ -37,6 +38,7 @@ beforeAll(async () => {
   const dbUrl = inject<string>('dbUrl')
   ctx = createTestDb(dbUrl)
   const services = createServices(createDaosFromDb(ctx.db))
+  const adapters = createAdapters(services)
   app = express()
   app.use(express.json())
   // Stand in for the production auth-gate middleware: inject req.userId from a test
@@ -46,9 +48,9 @@ beforeAll(async () => {
     req.isAdmin = true
     next()
   })
-  app.use('/api/songs', createSongsRouter(services))
-  app.use('/api/albums', createAlbumsRouter(services))
-  app.use('/api/artists', createArtistsRouter(services))
+  app.use('/api/songs', createSongsRouter(adapters))
+  app.use('/api/albums', createAlbumsRouter(adapters))
+  app.use('/api/artists', createArtistsRouter(adapters))
 })
 
 afterAll(async () => {

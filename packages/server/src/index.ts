@@ -4,8 +4,9 @@ import session from 'express-session'
 import * as oidcClient from 'openid-client'
 import { sql } from 'drizzle-orm'
 import { db } from './db/index.ts'
-import { createDaos } from './factory.ts'
+import { createDaos } from './daoFactory.ts'
 import { createServices } from './serviceFactory.ts'
+import { createAdapters } from './adapterFactory.ts'
 import { createAuthRouter } from './routes/auth.ts'
 import { createSongsRouter } from './routes/songs.ts'
 import { createAlbumsRouter } from './routes/albums.ts'
@@ -38,6 +39,7 @@ if (authBypass) {
 
 const daos = createDaos()
 const services = createServices(daos)
+const adapters = createAdapters(services)
 
 // Discover OIDC configuration
 const oidcIssuer = process.env.OIDC_ISSUER
@@ -128,12 +130,12 @@ app.use((req, res, next) => {
   next()
 })
 
-app.use('/api/songs', createSongsRouter(services))
-app.use('/api/albums', createAlbumsRouter(services))
-app.use('/api/artists', createArtistsRouter(services))
-app.use('/api/queue', createQueueRouter(services))
-app.use('/api/playback', createPlaybackRouter(services))
-app.use('/api/library', createLibraryRouter(services))
+app.use('/api/songs', createSongsRouter(adapters))
+app.use('/api/albums', createAlbumsRouter(adapters))
+app.use('/api/artists', createArtistsRouter(adapters))
+app.use('/api/queue', createQueueRouter(adapters, services))
+app.use('/api/playback', createPlaybackRouter(adapters))
+app.use('/api/library', createLibraryRouter(adapters, services))
 
 app.listen(port, () => {
   console.log(`PlooTunes server listening on port ${port}`)
