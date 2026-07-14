@@ -9,14 +9,15 @@ import type { RepeatMode } from '@ploot/plootunes-shared'
 export function shuffleWithPin(
   pinnedId: string | undefined,
   ids: string[],
+  // rng must return a float in [0, 1), like Math.random
   rng: () => number = Math.random,
 ): string[] {
   const pin = pinnedId !== undefined && ids.includes(pinnedId) ? pinnedId : undefined
   const rest = pin !== undefined ? ids.filter((id) => id !== pin) : ids.slice()
 
   for (let i = rest.length - 1; i > 0; i--) {
-    const j = Math.floor(rng() * (i + 1))
-    ;[rest[i], rest[j]] = [rest[j], rest[i]]
+    const j = Math.floor(rng() * (i + 1));
+    [rest[i], rest[j]] = [rest[j], rest[i]]
   }
 
   return pin !== undefined ? [pin, ...rest] : rest
