@@ -18,6 +18,7 @@ export interface IAlbumDao {
   findById(id: string): Promise<AlbumRow | undefined>
   findAll(userId: string): Promise<AlbumCatalogRow[]>
   findByArtistId(userId: string, artistId: string): Promise<AlbumCatalogRow[]>
+  findRandomIdInLibrary(userId: string): Promise<string | undefined>
 }
 
 export class AlbumDao implements IAlbumDao {
@@ -58,5 +59,15 @@ export class AlbumDao implements IAlbumDao {
       .where(and(albumInLibrary(userId), eq(album.albumArtistId, artistId)))
       .orderBy(asc(album.name))
     return rows.map((row) => ({ ...row, songCount: Number(row.songCount) }))
+  }
+
+  async findRandomIdInLibrary(userId: string): Promise<string | undefined> {
+    const rows = await this.db
+      .select({ id: album.id })
+      .from(album)
+      .where(albumInLibrary(userId))
+      .orderBy(sql`random()`)
+      .limit(1)
+    return rows[0]?.id
   }
 }

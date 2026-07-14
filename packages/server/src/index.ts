@@ -10,6 +10,8 @@ import { createAuthRouter } from './routes/auth.ts'
 import { createSongsRouter } from './routes/songs.ts'
 import { createAlbumsRouter } from './routes/albums.ts'
 import { createArtistsRouter } from './routes/artists.ts'
+import { createQueueRouter } from './routes/queue.ts'
+import { createPlaybackRouter } from './routes/playback.ts'
 
 const app = express()
 const port = process.env.PORT ?? 3000
@@ -128,6 +130,8 @@ app.use((req, res, next) => {
 app.use('/api/songs', createSongsRouter(services))
 app.use('/api/albums', createAlbumsRouter(services))
 app.use('/api/artists', createArtistsRouter(services))
+app.use('/api/queue', createQueueRouter(services))
+app.use('/api/playback', createPlaybackRouter(services))
 
 app.listen(port, () => {
   console.log(`PlooTunes server listening on port ${port}`)

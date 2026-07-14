@@ -12,6 +12,10 @@ import { ArtistDao } from './dao/artistDao.ts'
 import type { IArtistDao } from './dao/artistDao.ts'
 import { GenreDao } from './dao/genreDao.ts'
 import type { IGenreDao } from './dao/genreDao.ts'
+import { QueueDao } from './dao/queueDao.ts'
+import type { IQueueDao } from './dao/queueDao.ts'
+import { PlaybackStateDao } from './dao/playbackStateDao.ts'
+import type { IPlaybackStateDao } from './dao/playbackStateDao.ts'
 
 export interface AppDaos {
   usersDao: IUsersDao
@@ -20,6 +24,8 @@ export interface AppDaos {
   albumDao: IAlbumDao
   artistDao: IArtistDao
   genreDao: IGenreDao
+  queueDao: IQueueDao
+  playbackStateDao: IPlaybackStateDao
 }
 
 export function createDaosFromDb(database: Database): AppDaos {
@@ -30,6 +36,8 @@ export function createDaosFromDb(database: Database): AppDaos {
     albumDao: new AlbumDao(database),
     artistDao: new ArtistDao(database),
     genreDao: new GenreDao(database),
+    queueDao: new QueueDao(database),
+    playbackStateDao: new PlaybackStateDao(database),
   }
 }
 
