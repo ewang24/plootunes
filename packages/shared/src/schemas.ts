@@ -68,6 +68,13 @@ export const queuedSongsResponseSchema = z.object({
 
 export type QueuedSongsDTO = z.infer<typeof queuedSongsResponseSchema>
 
+export const librarySubscriptionResponseSchema = z.object({
+  id: z.string().uuid(),
+  folderPath: z.string(),
+})
+
+export type LibrarySubscriptionDTO = z.infer<typeof librarySubscriptionResponseSchema>
+
 // Input schemas
 
 export const playbackUpdateSchema = z.object({
@@ -75,4 +82,8 @@ export const playbackUpdateSchema = z.object({
   positionMs: z.number().int().nullable().optional(),
   shuffled: z.boolean().optional(),
   repeat: z.enum(REPEAT_MODES as [RepeatMode, ...RepeatMode[]]).optional(),
+})
+
+export const librarySubscriptionCreateSchema = z.object({
+  folderPath: z.string().min(1),
 })

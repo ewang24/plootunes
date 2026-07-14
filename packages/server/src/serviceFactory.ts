@@ -11,6 +11,8 @@ import { QueueService } from './services/queueService.ts'
 import type { IQueueService } from './services/queueService.ts'
 import { PlaybackService } from './services/playbackService.ts'
 import type { IPlaybackService } from './services/playbackService.ts'
+import { LibraryService } from './services/libraryService.ts'
+import type { ILibraryService } from './services/libraryService.ts'
 
 export interface AppServices {
   songService: ISongService
@@ -19,6 +21,7 @@ export interface AppServices {
   genreService: IGenreService
   queueService: IQueueService
   playbackService: IPlaybackService
+  libraryService: ILibraryService
 }
 
 export function createServices(daos: AppDaos): AppServices {
@@ -29,5 +32,6 @@ export function createServices(daos: AppDaos): AppServices {
     genreService: new GenreService(daos),
     queueService: new QueueService(daos),
     playbackService: new PlaybackService(daos),
+    libraryService: new LibraryService(daos),
   }
 }

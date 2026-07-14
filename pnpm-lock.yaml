@@ -114,6 +114,9 @@ importers:
       postgres:
         specifier: 3.4.9
         version: 3.4.9
+      zod:
+        specifier: 3.24.1
+        version: 3.24.1
     devDependencies:
       '@types/cors':
         specifier: 2.8.19

@@ -16,6 +16,8 @@ import { QueueDao } from './dao/queueDao.ts'
 import type { IQueueDao } from './dao/queueDao.ts'
 import { PlaybackStateDao } from './dao/playbackStateDao.ts'
 import type { IPlaybackStateDao } from './dao/playbackStateDao.ts'
+import { UserLibrarySourceDao } from './dao/userLibrarySourceDao.ts'
+import type { IUserLibrarySourceDao } from './dao/userLibrarySourceDao.ts'
 
 export interface AppDaos {
   usersDao: IUsersDao
@@ -26,6 +28,7 @@ export interface AppDaos {
   genreDao: IGenreDao
   queueDao: IQueueDao
   playbackStateDao: IPlaybackStateDao
+  userLibrarySourceDao: IUserLibrarySourceDao
 }
 
 export function createDaosFromDb(database: Database): AppDaos {
@@ -38,6 +41,7 @@ export function createDaosFromDb(database: Database): AppDaos {
     genreDao: new GenreDao(database),
     queueDao: new QueueDao(database),
     playbackStateDao: new PlaybackStateDao(database),
+    userLibrarySourceDao: new UserLibrarySourceDao(database),
   }
 }
 
