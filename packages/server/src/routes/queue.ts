@@ -1,45 +1,32 @@
 import { Router } from 'express'
 import type { Response } from 'express'
+import type { AppAdapters } from '../adapterFactory.ts'
 import type { AppServices } from '../serviceFactory.ts'
-import type { SongCatalogRow } from '../dao/songDao.ts'
-import type { QueuedSongsDTO } from '@ploot/plootunes-shared'
-import { toSongDto } from './songs.ts'
+import type { SongDTO } from '@ploot/plootunes-shared'
 
-function sendSong(res: Response, song: SongCatalogRow | null) {
+function sendSong(res: Response, song: SongDTO | null) {
   if (!song) {
     res.sendStatus(204)
     return
   }
-  res.json(toSongDto(song))
+  res.json(song)
 }
 
-export function createQueueRouter(services: AppServices): Router {
+export function createQueueRouter(adapters: AppAdapters, services: AppServices): Router {
   const router = Router()
 
   router.get('/', async (req, res) => {
     const offset = Number(req.query.offset ?? 0)
     const limit = Number(req.query.limit ?? 50)
-    const { currentlyPlaying, songs, total } = await services.queueService.getAllQueuedSongs(
-      req.userId,
-      offset,
-      limit,
-    )
-    const dto: QueuedSongsDTO = {
-      currentlyPlaying: currentlyPlaying ? toSongDto(currentlyPlaying) : null,
-      songs: songs.map(toSongDto),
-      total,
-    }
-    res.json(dto)
+    res.json(await adapters.queueAdapter.getQueuedSongs(req.userId, offset, limit))
   })
 
   router.get('/next', async (req, res) => {
-    const song = await services.queueService.getNextSongInQueue(req.userId)
-    sendSong(res, song)
+    sendSong(res, await adapters.queueAdapter.getNextSong(req.userId))
   })
 
   router.get('/previous', async (req, res) => {
-    const song = await services.queueService.getPreviousSongInQueue(req.userId)
-    sendSong(res, song)
+    sendSong(res, await adapters.queueAdapter.getPreviousSong(req.userId))
   })
 
   router.post('/play-song', async (req, res) => {
@@ -88,8 +75,7 @@ export function createQueueRouter(services: AppServices): Router {
   })
 
   router.post('/queue-all-and-play-first', async (req, res) => {
-    const song = await services.queueService.queueAllSongsAndPlayFirstSong(req.userId)
-    sendSong(res, song)
+    sendSong(res, await adapters.queueAdapter.queueAllSongsAndPlayFirstSong(req.userId))
   })
 
   router.post('/shuffle', async (req, res) => {
@@ -98,18 +84,15 @@ export function createQueueRouter(services: AppServices): Router {
   })
 
   router.post('/shuffle-all-and-play', async (req, res) => {
-    const song = await services.queueService.shuffleAllSongsAndPlay(req.userId)
-    sendSong(res, song)
+    sendSong(res, await adapters.queueAdapter.shuffleAllSongsAndPlay(req.userId))
   })
 
   router.post('/play-random-album', async (req, res) => {
-    const song = await services.queueService.playRandomAlbum(req.userId)
-    sendSong(res, song)
+    sendSong(res, await adapters.queueAdapter.playRandomAlbum(req.userId))
   })
 
   router.post('/play-random-artist', async (req, res) => {
-    const song = await services.queueService.playRandomArtist(req.userId)
-    sendSong(res, song)
+    sendSong(res, await adapters.queueAdapter.playRandomArtist(req.userId))
   })
 
   return router

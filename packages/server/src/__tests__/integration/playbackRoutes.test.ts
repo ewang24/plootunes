@@ -17,8 +17,9 @@ import {
   SEED_USER_ID,
   type TestDb,
 } from './helpers.ts'
-import { createDaosFromDb } from '../../factory.ts'
+import { createDaosFromDb } from '../../daoFactory.ts'
 import { createServices } from '../../serviceFactory.ts'
+import { createAdapters } from '../../adapterFactory.ts'
 import { createQueueRouter } from '../../routes/queue.ts'
 import { createPlaybackRouter } from '../../routes/playback.ts'
 
@@ -29,6 +30,7 @@ beforeAll(async () => {
   const dbUrl = inject<string>('dbUrl')
   ctx = createTestDb(dbUrl)
   const services = createServices(createDaosFromDb(ctx.db))
+  const adapters = createAdapters(services)
   app = express()
   app.use(express.json())
   app.use((req, _res, next) => {
@@ -36,8 +38,8 @@ beforeAll(async () => {
     req.isAdmin = true
     next()
   })
-  app.use('/api/queue', createQueueRouter(services))
-  app.use('/api/playback', createPlaybackRouter(services))
+  app.use('/api/queue', createQueueRouter(adapters, services))
+  app.use('/api/playback', createPlaybackRouter(adapters))
 })
 
 afterAll(async () => {

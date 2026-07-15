@@ -1,24 +1,15 @@
 import { Router } from 'express'
 import { z } from 'zod'
+import type { AppAdapters } from '../adapterFactory.ts'
 import type { AppServices } from '../serviceFactory.ts'
-import type { UserLibrarySourceRow } from '../dao/userLibrarySourceDao.ts'
-import type { LibrarySubscriptionDTO } from '@ploot/plootunes-shared'
 import { librarySubscriptionCreateSchema } from '@ploot/plootunes-shared'
 import { SubscriptionOverlapError } from '../services/libraryService.ts'
 
-function toLibrarySubscriptionDto(row: UserLibrarySourceRow): LibrarySubscriptionDTO {
-  return {
-    id: row.id,
-    folderPath: row.folderPath,
-  }
-}
-
-export function createLibraryRouter(services: AppServices): Router {
+export function createLibraryRouter(adapters: AppAdapters, services: AppServices): Router {
   const router = Router()
 
   router.get('/subscriptions', async (req, res) => {
-    const rows = await services.libraryService.listSubscriptions(req.userId)
-    res.json(rows.map(toLibrarySubscriptionDto))
+    res.json(await adapters.libraryAdapter.listSubscriptions(req.userId))
   })
 
   router.post('/subscriptions', async (req, res) => {
@@ -29,8 +20,8 @@ export function createLibraryRouter(services: AppServices): Router {
     }
 
     try {
-      const row = await services.libraryService.subscribe(req.userId, parsed.data.folderPath)
-      res.status(201).json(toLibrarySubscriptionDto(row))
+      const dto = await adapters.libraryAdapter.subscribe(req.userId, parsed.data.folderPath)
+      res.status(201).json(dto)
     } catch (e) {
       if (e instanceof SubscriptionOverlapError) {
         res.status(409).json({ error: e.message })

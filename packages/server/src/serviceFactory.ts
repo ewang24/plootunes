@@ -1,4 +1,4 @@
-import type { AppDaos } from './factory.ts'
+import type { AppDaos } from './daoFactory.ts'
 import { SongService } from './services/songService.ts'
 import type { ISongService } from './services/songService.ts'
 import { AlbumService } from './services/albumService.ts'
@@ -25,13 +25,14 @@ export interface AppServices {
 }
 
 export function createServices(daos: AppDaos): AppServices {
+  const queueService = new QueueService(daos)
   return {
     songService: new SongService(daos),
     albumService: new AlbumService(daos),
     artistService: new ArtistService(daos),
     genreService: new GenreService(daos),
-    queueService: new QueueService(daos),
-    playbackService: new PlaybackService(daos),
+    queueService,
+    playbackService: new PlaybackService(daos, queueService),
     libraryService: new LibraryService(daos),
   }
 }

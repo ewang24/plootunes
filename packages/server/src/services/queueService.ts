@@ -1,4 +1,4 @@
-import type { AppDaos } from '../factory.ts'
+import type { AppDaos } from '../daoFactory.ts'
 import type { SongCatalogRow } from '../dao/songDao.ts'
 import type { QueueRow } from '../dao/queueDao.ts'
 import type { PlaybackStateRow } from '../dao/playbackStateDao.ts'
