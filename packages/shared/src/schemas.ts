@@ -87,3 +87,9 @@ export const playbackUpdateSchema = z.object({
 export const librarySubscriptionCreateSchema = z.object({
   folderPath: z.string().min(1),
 })
+
+export const playEventCreateSchema = z.object({
+  songId: z.string().uuid(),
+  playedAt: z.string().datetime({ offset: true }),
+  msPlayed: z.number().int().nonnegative(),
+})
