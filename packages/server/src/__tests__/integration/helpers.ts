@@ -16,6 +16,8 @@ import {
   songGenre,
   userLibrarySource,
   queue,
+  widget,
+  userPreferences,
 } from '../../db/schema.ts'
 import type { Database } from '../../db/index.ts'
 
@@ -140,6 +142,30 @@ export async function seedQueue(
   const [row] = await db
     .insert(queue)
     .values({ userId, songIds, playOrder })
+    .returning()
+  return row
+}
+
+export async function seedWidget(
+  db: Database,
+  userId: string,
+  overrides: Partial<typeof widget.$inferInsert> = {},
+) {
+  const [row] = await db
+    .insert(widget)
+    .values({ userId, widgetType: 'now_playing', displayOrder: 0, ...overrides })
+    .returning()
+  return row
+}
+
+export async function seedUserPreferences(
+  db: Database,
+  userId: string,
+  overrides: Partial<typeof userPreferences.$inferInsert> = {},
+) {
+  const [row] = await db
+    .insert(userPreferences)
+    .values({ userId, ...overrides })
     .returning()
   return row
 }

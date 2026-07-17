@@ -1,6 +1,6 @@
 import { z } from 'zod'
-import { REPEAT_MODES } from './enums.ts'
-import type { RepeatMode } from './enums.ts'
+import { REPEAT_MODES, BACK_BEHAVIORS } from './enums.ts'
+import type { RepeatMode, BackBehavior } from './enums.ts'
 
 // Response schemas (used for API output validation and DTO type derivation)
 
@@ -75,6 +75,20 @@ export const librarySubscriptionResponseSchema = z.object({
 
 export type LibrarySubscriptionDTO = z.infer<typeof librarySubscriptionResponseSchema>
 
+export const widgetResponseSchema = z.object({
+  id: z.string().uuid(),
+  widgetType: z.string(),
+  displayOrder: z.number().int(),
+})
+
+export type WidgetDTO = z.infer<typeof widgetResponseSchema>
+
+export const userPreferencesResponseSchema = z.object({
+  backBehavior: z.enum(BACK_BEHAVIORS as [BackBehavior, ...BackBehavior[]]),
+})
+
+export type UserPreferencesDTO = z.infer<typeof userPreferencesResponseSchema>
+
 // Input schemas
 
 export const playbackUpdateSchema = z.object({
@@ -86,6 +100,14 @@ export const playbackUpdateSchema = z.object({
 
 export const librarySubscriptionCreateSchema = z.object({
   folderPath: z.string().min(1),
+})
+
+export const widgetCreateSchema = z.object({
+  widgetType: z.string().min(1),
+})
+
+export const preferencesUpdateSchema = z.object({
+  backBehavior: z.enum(BACK_BEHAVIORS as [BackBehavior, ...BackBehavior[]]).optional(),
 })
 
 export const playEventCreateSchema = z.object({

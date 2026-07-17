@@ -11,6 +11,10 @@ import { LibraryAdapter } from './adapters/libraryAdapter.ts'
 import type { ILibraryAdapter } from './adapters/libraryAdapter.ts'
 import { PlaybackAdapter } from './adapters/playbackAdapter.ts'
 import type { IPlaybackAdapter } from './adapters/playbackAdapter.ts'
+import { WidgetAdapter } from './adapters/widgetAdapter.ts'
+import type { IWidgetAdapter } from './adapters/widgetAdapter.ts'
+import { PreferencesAdapter } from './adapters/preferencesAdapter.ts'
+import type { IPreferencesAdapter } from './adapters/preferencesAdapter.ts'
 
 export interface AppAdapters {
   albumAdapter: IAlbumAdapter
@@ -19,6 +23,8 @@ export interface AppAdapters {
   queueAdapter: IQueueAdapter
   libraryAdapter: ILibraryAdapter
   playbackAdapter: IPlaybackAdapter
+  widgetAdapter: IWidgetAdapter
+  preferencesAdapter: IPreferencesAdapter
 }
 
 export function createAdapters(services: AppServices): AppAdapters {
@@ -29,5 +35,7 @@ export function createAdapters(services: AppServices): AppAdapters {
     queueAdapter: new QueueAdapter(services),
     libraryAdapter: new LibraryAdapter(services),
     playbackAdapter: new PlaybackAdapter(services),
+    widgetAdapter: new WidgetAdapter(services),
+    preferencesAdapter: new PreferencesAdapter(services),
   }
 }

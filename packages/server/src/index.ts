@@ -15,6 +15,8 @@ import { createQueueRouter } from './routes/queue.ts'
 import { createPlaybackRouter } from './routes/playback.ts'
 import { createLibraryRouter } from './routes/library.ts'
 import { createStatsRouter } from './routes/stats.ts'
+import { createWidgetRouter } from './routes/widgets.ts'
+import { createPreferencesRouter } from './routes/preferences.ts'
 
 const app = express()
 const port = process.env.PORT ?? 3000
@@ -138,6 +140,8 @@ app.use('/api/queue', createQueueRouter(adapters, services))
 app.use('/api/playback', createPlaybackRouter(adapters))
 app.use('/api/library', createLibraryRouter(adapters, services))
 app.use('/api/stats', createStatsRouter(services))
+app.use('/api/widgets', createWidgetRouter(adapters, services))
+app.use('/api/preferences', createPreferencesRouter(adapters))
 
 app.listen(port, () => {
   console.log(`PlooTunes server listening on port ${port}`)
