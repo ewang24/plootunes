@@ -8,6 +8,20 @@
       "when": 1783309855762,
       "tag": "20260706035055_gigantic_madame_masque",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1784347548470,
+      "tag": "20260718040548_gray_warbird",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1784410177241,
+      "tag": "20260718212937_wide_silk_fever",
+      "breakpoints": true
     }
   ]
 }

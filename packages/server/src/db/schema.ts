@@ -12,6 +12,7 @@ import {
   primaryKey,
   unique,
   index,
+  uniqueIndex,
 } from 'drizzle-orm/pg-core'
 import { sql } from 'drizzle-orm'
 
@@ -200,13 +201,26 @@ export const widget = pgTable('widget', {
 // Operational
 // ---------------------------------------------------------------------------
 
-export const scanRun = pgTable('scan_run', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  status: scanStatusEnum('status').notNull().default('pending'),
-  startedAt: timestamp('started_at', { withTimezone: true }),
-  finishedAt: timestamp('finished_at', { withTimezone: true }),
-  newCount: integer('new_count').notNull().default(0),
-  movedCount: integer('moved_count').notNull().default(0),
-  missingCount: integer('missing_count').notNull().default(0),
-  totalScanned: integer('total_scanned').notNull().default(0),
-})
+export const scanRun = pgTable(
+  'scan_run',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    status: scanStatusEnum('status').notNull().default('pending'),
+    startedAt: timestamp('started_at', { withTimezone: true }),
+    finishedAt: timestamp('finished_at', { withTimezone: true }),
+    newCount: integer('new_count').notNull().default(0),
+    movedCount: integer('moved_count').notNull().default(0),
+    missingCount: integer('missing_count').notNull().default(0),
+    totalScanned: integer('total_scanned').notNull().default(0),
+    // Per-file ingest errors (and, on a failed run, the run-level error) recorded
+    // for post-scan diagnostics — a completed run can still carry file-level messages.
+    messages: text('messages').array().notNull().default([]),
+  },
+  // At most one running scan at a time — the DB is the source of truth for this
+  // invariant so a concurrent scan trigger fails atomically instead of racing.
+  (t) => [
+    uniqueIndex('scan_run_single_running_idx')
+      .on(t.status)
+      .where(sql`status = 'running'`),
+  ],
+)
