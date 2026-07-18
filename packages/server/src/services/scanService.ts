@@ -12,6 +12,10 @@ import { EnvCoverStorageConfigProvider } from './coverStorageService.ts'
 const SUPPORTED_EXTENSIONS = new Set(['mp3', 'm4a', 'wav', 'flac'])
 // Bounds concurrent per-file work (hashing, tag parsing, cover writes) during a walk.
 const SCAN_CONCURRENCY = 16
+// Caps how many per-file error messages a run persists, so a library full of
+// unreadable files can't bloat the scan_run.messages array (row + memory). Beyond
+// this, errors are counted and summarized in a single trailing overflow message.
+const MAX_SCAN_MESSAGES = 100
 const THUMB_SIZE_PX = 256
 
 const PICTURE_MIME_TO_EXT: Record<string, string> = {
@@ -163,6 +167,11 @@ export class ScanService implements IScanService {
     let missingCount = 0
     let totalScanned = 0
     const messages: string[] = []
+    let suppressedCount = 0
+    const recordMessage = (msg: string) => {
+      if (messages.length < MAX_SCAN_MESSAGES) messages.push(msg)
+      else suppressedCount += 1
+    }
 
     try {
       const mediaRoot = process.env.MEDIA_ROOT
@@ -216,13 +225,16 @@ export class ScanService implements IScanService {
               if (classification === 'new') newCount += 1
               if (classification === 'moved') movedCount += 1
             } catch (err) {
-              messages.push(`${nfcPath}: ${errorMessage(err)}`)
+              recordMessage(`${nfcPath}: ${errorMessage(err)}`)
             }
           }),
         ),
       )
       for (const result of results) {
-        if (result.status === 'rejected') messages.push(errorMessage(result.reason))
+        if (result.status === 'rejected') recordMessage(errorMessage(result.reason))
+      }
+      if (suppressedCount > 0) {
+        messages.push(`...and ${suppressedCount} more file error(s) not recorded (cap ${MAX_SCAN_MESSAGES})`)
       }
       missingCount = missingIds.length - relinkedFromThisSweep
 

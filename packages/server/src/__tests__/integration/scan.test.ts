@@ -250,6 +250,56 @@ describe('resilient ingest', () => {
     expect(run.messages).toHaveLength(1)
     expect(run.messages[0]).toContain('broken.flac')
   })
+
+  it('drains and completes past an error even with files still queued behind it', async () => {
+    // More good files than SCAN_CONCURRENCY (16) guarantees some are still waiting in
+    // p-limit's queue when the bad file settles — the scenario closest to the original
+    // drain-race, where an error mid-walk must not abort the still-pending work.
+    const goodCount = 25
+    for (let i = 0; i < goodCount; i++) {
+      fs.copyFileSync(path.join(FIXTURES_DIR, 'basic1.mp3'), path.join(mediaRoot, `good-${i}.mp3`))
+    }
+    fs.writeFileSync(path.join(mediaRoot, 'broken.flac'), 'not a real flac file')
+
+    const run = await scanService.runScan()
+    expect(run.status).toBe('complete')
+
+    const rows = await ctx.db.select().from(song)
+    expect(rows).toHaveLength(goodCount)
+    expect(run.messages).toHaveLength(1)
+    expect(run.messages[0]).toContain('broken.flac')
+  })
+
+  it('completes and records every error when all queued files throw', async () => {
+    // Every file errors, and the count exceeds SCAN_CONCURRENCY (16) so tasks queue:
+    // proves the walk fully drains regardless of how many tasks throw, and the run
+    // still finalizes as complete with one message per failed file.
+    const brokenCount = 25
+    for (let i = 0; i < brokenCount; i++) {
+      fs.writeFileSync(path.join(mediaRoot, `broken-${i}.flac`), 'not a real flac file')
+    }
+
+    const run = await scanService.runScan()
+    expect(run.status).toBe('complete')
+
+    const rows = await ctx.db.select().from(song)
+    expect(rows).toHaveLength(0)
+    expect(run.messages).toHaveLength(brokenCount)
+  })
+
+  it('caps recorded messages and summarizes the overflow', async () => {
+    const brokenCount = 105
+    for (let i = 0; i < brokenCount; i++) {
+      fs.writeFileSync(path.join(mediaRoot, `broken-${i}.flac`), 'not a real flac file')
+    }
+
+    const run = await scanService.runScan()
+    expect(run.status).toBe('complete')
+
+    // 100 recorded file errors + 1 trailing overflow summary for the remaining 5.
+    expect(run.messages).toHaveLength(101)
+    expect(run.messages[100]).toContain('5 more')
+  })
 })
 
 describe('run-level failure', () => {
