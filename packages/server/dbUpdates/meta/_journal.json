@@ -22,6 +22,13 @@
       "when": 1784410177241,
       "tag": "20260718212937_wide_silk_fever",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1784412333309,
+      "tag": "20260718220533_lethal_electro",
+      "breakpoints": true
     }
   ]
 }

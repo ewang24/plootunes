@@ -16,7 +16,11 @@ export function pathInUserLibrary(pathCol: SQL | ReturnType<typeof sql>, userId:
 }
 
 export function songInLibrary(userId: string): SQL {
-  return and(eq(song.missing, false), pathInUserLibrary(sql`${song.path}`, userId))!
+  return and(
+    eq(song.missing, false),
+    eq(song.removed, false),
+    pathInUserLibrary(sql`${song.path}`, userId),
+  )!
 }
 
 export function albumInLibrary(userId: string): SQL {
@@ -24,6 +28,7 @@ export function albumInLibrary(userId: string): SQL {
     SELECT 1 FROM ${song} s
     WHERE s.album_id = ${album.id}
       AND s.missing = false
+      AND s.removed = false
       AND ${pathInUserLibrary(sql`s.path`, userId)}
   )`
 }
@@ -33,6 +38,7 @@ export function artistInLibrary(userId: string): SQL {
     SELECT 1 FROM ${song} s
     WHERE s.artist_id = ${artist.id}
       AND s.missing = false
+      AND s.removed = false
       AND ${pathInUserLibrary(sql`s.path`, userId)}
   )`
 }

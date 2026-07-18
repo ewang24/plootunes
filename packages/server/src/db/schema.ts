@@ -68,6 +68,7 @@ export const song = pgTable(
     mtime: bigint('mtime', { mode: 'number' }).notNull(),
     missing: boolean('missing').notNull().default(false),
     missingAt: timestamp('missing_at', { withTimezone: true }),
+    removed: boolean('removed').notNull().default(false),
     name: text('name'),
     trackNumber: integer('track_number'),
     discNumber: integer('disc_number'),

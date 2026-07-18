@@ -28,6 +28,7 @@ export class ArtistDao implements IArtistDao {
     const inLibrarySongPredicate = sql`
       s.artist_id = ${artist.id}
         AND s.missing = false
+        AND s.removed = false
         AND ${pathInUserLibrary(sql`s.path`, userId)}
     `
     const numSongs = sql<number>`(
