@@ -18,6 +18,10 @@ export function createAudioRouter(services: AppServices): Router {
       return
     }
 
+    // sendFile streams the file and transparently handles HTTP Range requests
+    // (sets Accept-Ranges and responds 206 Partial Content for a `Range:` header),
+    // which is what lets the browser <audio> element seek. Do not swap this for a
+    // raw fs stream without reimplementing range handling.
     res.sendFile(filePath, (err) => {
       if (err && !res.headersSent) res.sendStatus(404)
     })
