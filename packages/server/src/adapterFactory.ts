@@ -15,6 +15,8 @@ import { WidgetAdapter } from './adapters/widgetAdapter.ts'
 import type { IWidgetAdapter } from './adapters/widgetAdapter.ts'
 import { PreferencesAdapter } from './adapters/preferencesAdapter.ts'
 import type { IPreferencesAdapter } from './adapters/preferencesAdapter.ts'
+import { ScanAdapter } from './adapters/scanAdapter.ts'
+import type { IScanAdapter } from './adapters/scanAdapter.ts'
 
 export interface AppAdapters {
   albumAdapter: IAlbumAdapter
@@ -25,6 +27,7 @@ export interface AppAdapters {
   playbackAdapter: IPlaybackAdapter
   widgetAdapter: IWidgetAdapter
   preferencesAdapter: IPreferencesAdapter
+  scanAdapter: IScanAdapter
 }
 
 export function createAdapters(services: AppServices): AppAdapters {
@@ -37,5 +40,6 @@ export function createAdapters(services: AppServices): AppAdapters {
     playbackAdapter: new PlaybackAdapter(services),
     widgetAdapter: new WidgetAdapter(services),
     preferencesAdapter: new PreferencesAdapter(services),
+    scanAdapter: new ScanAdapter(services),
   }
 }

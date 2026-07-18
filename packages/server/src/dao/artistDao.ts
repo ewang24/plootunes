@@ -18,6 +18,7 @@ export interface IArtistDao {
   findById(id: string): Promise<ArtistRow | undefined>
   findAll(userId: string): Promise<ArtistCatalogRow[]>
   findRandomIdInLibrary(userId: string): Promise<string | undefined>
+  upsertByName(name: string): Promise<ArtistRow>
 }
 
 export class ArtistDao implements IArtistDao {
@@ -69,5 +70,15 @@ export class ArtistDao implements IArtistDao {
       .orderBy(sql`random()`)
       .limit(1)
     return rows[0]?.id
+  }
+
+  // DO UPDATE (not DO NOTHING) so RETURNING always yields the row, even on conflict.
+  async upsertByName(name: string): Promise<ArtistRow> {
+    const [row] = await this.db
+      .insert(artist)
+      .values({ name })
+      .onConflictDoUpdate({ target: artist.name, set: { name } })
+      .returning()
+    return row
   }
 }

@@ -22,6 +22,10 @@ import { PlayEventDao } from './dao/playEventDao.ts'
 import type { IPlayEventDao } from './dao/playEventDao.ts'
 import { WidgetDao } from './dao/widgetDao.ts'
 import type { IWidgetDao } from './dao/widgetDao.ts'
+import { ScanRunDao } from './dao/scanRunDao.ts'
+import type { IScanRunDao } from './dao/scanRunDao.ts'
+import { SongGenreDao } from './dao/songGenreDao.ts'
+import type { ISongGenreDao } from './dao/songGenreDao.ts'
 
 export interface AppDaos {
   usersDao: IUsersDao
@@ -35,6 +39,8 @@ export interface AppDaos {
   userLibrarySourceDao: IUserLibrarySourceDao
   playEventDao: IPlayEventDao
   widgetDao: IWidgetDao
+  scanRunDao: IScanRunDao
+  songGenreDao: ISongGenreDao
 }
 
 export function createDaosFromDb(database: Database): AppDaos {
@@ -50,6 +56,8 @@ export function createDaosFromDb(database: Database): AppDaos {
     userLibrarySourceDao: new UserLibrarySourceDao(database),
     playEventDao: new PlayEventDao(database),
     widgetDao: new WidgetDao(database),
+    scanRunDao: new ScanRunDao(database),
+    songGenreDao: new SongGenreDao(database),
   }
 }
 

@@ -14,11 +14,22 @@ export type AlbumCatalogRow = AlbumRow & {
   songCount: number
 }
 
+export interface AlbumUpsertFields {
+  isCompilation: boolean
+  year: number | null
+}
+
 export interface IAlbumDao {
   findById(id: string): Promise<AlbumRow | undefined>
   findAll(userId: string): Promise<AlbumCatalogRow[]>
   findByArtistId(userId: string, artistId: string): Promise<AlbumCatalogRow[]>
   findRandomIdInLibrary(userId: string): Promise<string | undefined>
+  upsertByNameAndArtist(
+    name: string,
+    albumArtistId: string | null,
+    fields: AlbumUpsertFields,
+  ): Promise<AlbumRow>
+  setCoverImage(id: string, filename: string): Promise<void>
 }
 
 export class AlbumDao implements IAlbumDao {
@@ -69,5 +80,28 @@ export class AlbumDao implements IAlbumDao {
       .orderBy(sql`random()`)
       .limit(1)
     return rows[0]?.id
+  }
+
+  // DO UPDATE (not DO NOTHING) so RETURNING always yields the row, even on conflict.
+  // Targets the (name, albumArtistId) unique constraint, which is NULLS NOT DISTINCT
+  // so compilations (albumArtistId null) with the same name also collide and dedup.
+  async upsertByNameAndArtist(
+    name: string,
+    albumArtistId: string | null,
+    fields: AlbumUpsertFields,
+  ): Promise<AlbumRow> {
+    const [row] = await this.db
+      .insert(album)
+      .values({ name, albumArtistId, ...fields })
+      .onConflictDoUpdate({
+        target: [album.name, album.albumArtistId],
+        set: fields,
+      })
+      .returning()
+    return row
+  }
+
+  async setCoverImage(id: string, filename: string): Promise<void> {
+    await this.db.update(album).set({ coverImage: filename }).where(eq(album.id, id))
   }
 }

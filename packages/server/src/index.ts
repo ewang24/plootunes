@@ -19,6 +19,7 @@ import { createWidgetRouter } from './routes/widgets.ts'
 import { createPreferencesRouter } from './routes/preferences.ts'
 import { createAudioRouter } from './routes/audio.ts'
 import { EnvCoverStorageConfigProvider } from './services/coverStorageService.ts'
+import { ScanAlreadyRunningError } from './services/scanService.ts'
 
 const app = express()
 const port = process.env.PORT ?? 3000
@@ -151,4 +152,11 @@ app.use('/api/audio', createAudioRouter(services))
 
 app.listen(port, () => {
   console.log(`PlooTunes server listening on port ${port}`)
+})
+
+// Safety-net scan: reconciles the catalog against MEDIA_ROOT on every boot without
+// blocking startup or /api/health. ScanAlreadyRunningError is expected whenever
+// another scan (e.g. a concurrent restart) already claimed the run.
+void services.scanService.triggerScan().catch((err) => {
+  if (!(err instanceof ScanAlreadyRunningError)) console.error('startup scan failed', err)
 })

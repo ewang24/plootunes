@@ -12,6 +12,7 @@ export interface IGenreDao {
   findAll(): Promise<GenreRow[]>
   findById(id: string): Promise<GenreRow | undefined>
   findSubtreeIds(genreId: string): Promise<string[]>
+  upsertByName(name: string): Promise<GenreRow>
 }
 
 export class GenreDao implements IGenreDao {
@@ -38,5 +39,14 @@ export class GenreDao implements IGenreDao {
       SELECT id FROM subtree
     `)
     return result.map((row) => row.id)
+  }
+
+  async upsertByName(name: string): Promise<GenreRow> {
+    const [row] = await this.db
+      .insert(genre)
+      .values({ name })
+      .onConflictDoUpdate({ target: genre.name, set: { name } })
+      .returning()
+    return row
   }
 }

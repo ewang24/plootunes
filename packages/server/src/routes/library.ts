@@ -4,6 +4,7 @@ import type { AppAdapters } from '../adapterFactory.ts'
 import type { AppServices } from '../serviceFactory.ts'
 import { librarySubscriptionCreateSchema } from '@ploot/plootunes-shared'
 import { SubscriptionOverlapError } from '../services/libraryService.ts'
+import { ScanAlreadyRunningError } from '../services/scanService.ts'
 
 export function createLibraryRouter(adapters: AppAdapters, services: AppServices): Router {
   const router = Router()
@@ -40,6 +41,24 @@ export function createLibraryRouter(adapters: AppAdapters, services: AppServices
 
     const ok = await services.libraryService.unsubscribe(req.userId, parsedId.data)
     res.sendStatus(ok ? 204 : 404)
+  })
+
+  router.post('/scan', async (req, res) => {
+    if (!req.isAdmin) {
+      res.sendStatus(403)
+      return
+    }
+
+    try {
+      const dto = await adapters.scanAdapter.triggerScan()
+      res.status(202).json(dto)
+    } catch (e) {
+      if (e instanceof ScanAlreadyRunningError) {
+        res.status(409).json({ error: e.message })
+        return
+      }
+      throw e
+    }
   })
 
   return router

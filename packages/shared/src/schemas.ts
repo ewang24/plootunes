@@ -1,6 +1,6 @@
 import { z } from 'zod'
-import { REPEAT_MODES, BACK_BEHAVIORS } from './enums.ts'
-import type { RepeatMode, BackBehavior } from './enums.ts'
+import { REPEAT_MODES, BACK_BEHAVIORS, SCAN_STATUSES } from './enums.ts'
+import type { RepeatMode, BackBehavior, ScanStatus } from './enums.ts'
 
 // Response schemas (used for API output validation and DTO type derivation)
 
@@ -88,6 +88,19 @@ export const userPreferencesResponseSchema = z.object({
 })
 
 export type UserPreferencesDTO = z.infer<typeof userPreferencesResponseSchema>
+
+export const scanRunResponseSchema = z.object({
+  id: z.string().uuid(),
+  status: z.enum(SCAN_STATUSES as [ScanStatus, ...ScanStatus[]]),
+  startedAt: z.string().nullable(),
+  finishedAt: z.string().nullable(),
+  newCount: z.number().int(),
+  movedCount: z.number().int(),
+  missingCount: z.number().int(),
+  totalScanned: z.number().int(),
+})
+
+export type ScanRunDTO = z.infer<typeof scanRunResponseSchema>
 
 // Input schemas
 

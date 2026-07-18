@@ -9,6 +9,13 @@ type NewSong = InferInsertModel<typeof song>
 
 export type { SongRow, NewSong }
 
+export interface SongReconcileRow {
+  id: string
+  path: string
+  mtime: number
+  missing: boolean
+}
+
 export type SongCatalogRow = SongRow & {
   albumName: string | null
   coverImage: string | null
@@ -23,6 +30,18 @@ const genresSubquery = sql<string[]>`COALESCE(ARRAY(
   ORDER BY ${genre.name}
 ), '{}')`
 
+export interface SongIngestFields {
+  name: string | null
+  trackNumber: number | null
+  discNumber: number | null
+  durationMs: number | null
+  artistId: string | null
+  albumId: string | null
+  contentHash: string
+  mtime: number
+  path: string
+}
+
 export interface ISongDao {
   findById(id: string): Promise<SongRow | undefined>
   findAll(userId: string): Promise<SongCatalogRow[]>
@@ -30,6 +49,12 @@ export interface ISongDao {
   findByArtistId(userId: string, artistId: string): Promise<SongCatalogRow[]>
   findByGenreIds(userId: string, genreIds: string[]): Promise<SongCatalogRow[]>
   findByIds(ids: string[]): Promise<SongCatalogRow[]>
+  findByPath(path: string): Promise<SongRow | undefined>
+  relinkByContentHash(contentHash: string, fields: SongIngestFields): Promise<SongRow | undefined>
+  findReconcileState(): Promise<SongReconcileRow[]>
+  create(row: NewSong): Promise<SongRow>
+  updateIngest(id: string, fields: SongIngestFields): Promise<SongRow>
+  markMissing(ids: string[]): Promise<void>
 }
 
 export class SongDao implements ISongDao {
@@ -91,5 +116,61 @@ export class SongDao implements ISongDao {
   async findByIds(ids: string[]): Promise<SongCatalogRow[]> {
     if (ids.length === 0) return []
     return this.baseQuery().where(inArray(song.id, ids))
+  }
+
+  async findByPath(path: string): Promise<SongRow | undefined> {
+    const rows = await this.db.select().from(song).where(eq(song.path, path))
+    return rows[0]
+  }
+
+  // Atomically claim one missing row with this content hash and re-point it at the
+  // ingested file (a move/rename). FOR UPDATE SKIP LOCKED means two byte-identical
+  // files racing in the same scan can't both relink the same row — the second skips
+  // the locked row, finds no other missing match, and gets undefined (→ new song).
+  async relinkByContentHash(
+    contentHash: string,
+    fields: SongIngestFields,
+  ): Promise<SongRow | undefined> {
+    const [relinked] = await this.db
+      .update(song)
+      .set({ ...fields, missing: false, missingAt: null, updatedAt: new Date() })
+      .where(
+        eq(
+          song.id,
+          sql`(SELECT id FROM ${song} WHERE ${song.contentHash} = ${contentHash} AND ${song.missing} = true LIMIT 1 FOR UPDATE SKIP LOCKED)`,
+        ),
+      )
+      .returning()
+    return relinked
+  }
+
+  // Lightweight preload for a scan walk: just enough per-song state (path, mtime,
+  // missing) to decide whether a file on disk can skip the hash+parse step.
+  async findReconcileState(): Promise<SongReconcileRow[]> {
+    return this.db
+      .select({ id: song.id, path: song.path, mtime: song.mtime, missing: song.missing })
+      .from(song)
+  }
+
+  async create(row: NewSong): Promise<SongRow> {
+    const [created] = await this.db.insert(song).values(row).returning()
+    return created
+  }
+
+  async updateIngest(id: string, fields: SongIngestFields): Promise<SongRow> {
+    const [updated] = await this.db
+      .update(song)
+      .set({ ...fields, missing: false, missingAt: null, updatedAt: new Date() })
+      .where(eq(song.id, id))
+      .returning()
+    return updated
+  }
+
+  async markMissing(ids: string[]): Promise<void> {
+    if (ids.length === 0) return
+    await this.db
+      .update(song)
+      .set({ missing: true, missingAt: new Date() })
+      .where(inArray(song.id, ids))
   }
 }

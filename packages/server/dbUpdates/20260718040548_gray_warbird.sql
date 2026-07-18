@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX "scan_run_single_running_idx" ON "scan_run" USING btree ("status") WHERE status = 'running';
