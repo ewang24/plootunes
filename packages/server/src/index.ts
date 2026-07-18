@@ -17,6 +17,8 @@ import { createLibraryRouter } from './routes/library.ts'
 import { createStatsRouter } from './routes/stats.ts'
 import { createWidgetRouter } from './routes/widgets.ts'
 import { createPreferencesRouter } from './routes/preferences.ts'
+import { createAudioRouter } from './routes/audio.ts'
+import { EnvCoverStorageConfigProvider } from './services/coverStorageService.ts'
 
 const app = express()
 const port = process.env.PORT ?? 3000
@@ -75,6 +77,9 @@ if (oidcIssuer && oidcClientId && oidcClientSecret) {
 
 app.use(cors())
 app.use(express.json())
+
+const coverConfig = new EnvCoverStorageConfigProvider().getConfig()
+app.use(coverConfig.publicBasePath, express.static(coverConfig.coversDir, { maxAge: '1y', immutable: true }))
 
 // saveUninitialized: false means the cookie is only sent once something is written to req.session
 // (so this block doesn't fire until the session is modified). The OIDC exchange route
@@ -142,6 +147,7 @@ app.use('/api/library', createLibraryRouter(adapters, services))
 app.use('/api/stats', createStatsRouter(services))
 app.use('/api/widgets', createWidgetRouter(adapters, services))
 app.use('/api/preferences', createPreferencesRouter(adapters))
+app.use('/api/audio', createAudioRouter(services))
 
 app.listen(port, () => {
   console.log(`PlooTunes server listening on port ${port}`)
