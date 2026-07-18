@@ -6,6 +6,7 @@ import sharp from 'sharp'
 import { parseFile } from 'music-metadata'
 import type { AppDaos } from '../daoFactory.ts'
 import type { ScanRunRow } from '../dao/scanRunDao.ts'
+import type { SongReconcileRow } from '../dao/songDao.ts'
 import { EnvCoverStorageConfigProvider } from './coverStorageService.ts'
 
 const SUPPORTED_EXTENSIONS = new Set(['mp3', 'm4a', 'wav', 'flac'])
@@ -36,8 +37,15 @@ export interface IngestResult {
   classification: IngestClassification
 }
 
+// Postgres SQLSTATE 23505 (unique_violation), surfaced on the pg error's `code`.
+// claimRun() uses this to detect the single-running-scan partial unique index
+// rejecting a concurrent scan, translating it into ScanAlreadyRunningError.
 function isUniqueViolation(err: unknown): boolean {
   return typeof err === 'object' && err !== null && (err as { code?: string }).code === '23505'
+}
+
+function errorMessage(err: unknown): string {
+  return err instanceof Error ? err.message : String(err)
 }
 
 export interface IScanService {
@@ -154,12 +162,13 @@ export class ScanService implements IScanService {
     let movedCount = 0
     let missingCount = 0
     let totalScanned = 0
+    const messages: string[] = []
 
     try {
       const mediaRoot = process.env.MEDIA_ROOT
       if (!mediaRoot) throw new Error('MEDIA_ROOT is not set')
 
-      const catalogByPath = new Map<string, { id: string; mtime: number; missing: boolean }>()
+      const catalogByPath = new Map<string, SongReconcileRow>()
       for (const row of await this.daos.songDao.findReconcileState()) {
         catalogByPath.set(row.path, row)
       }
@@ -181,27 +190,40 @@ export class ScanService implements IScanService {
       let relinkedFromThisSweep = 0
 
       const limit = pLimit(SCAN_CONCURRENCY)
-      await Promise.all(
+      // allSettled (not all) so every task drains before the run is finalized. A
+      // fail-fast Promise.all would let one rejection finish the run — releasing the
+      // single-running guard and stamping finishedAt — while queued tasks were still
+      // writing to the catalog. The per-file try/catch keeps one bad file from
+      // aborting the walk; the rejected-results sweep below is a backstop for any
+      // throw that escapes it, so an unforeseen error is still recorded, not lost.
+      const results = await Promise.allSettled(
         files.map((filePath) =>
           limit(async () => {
             const nfcPath = filePath.normalize('NFC')
-            const stat = await fs.promises.stat(nfcPath)
-            const mtime = Math.floor(stat.mtimeMs)
-            const catalogRow = catalogByPath.get(nfcPath)
+            try {
+              const stat = await fs.promises.stat(nfcPath)
+              const mtime = Math.floor(stat.mtimeMs)
+              const catalogRow = catalogByPath.get(nfcPath)
 
-            totalScanned += 1
+              totalScanned += 1
 
-            if (catalogRow && !catalogRow.missing && catalogRow.mtime === mtime) {
-              return
+              if (catalogRow && !catalogRow.missing && catalogRow.mtime === mtime) {
+                return
+              }
+
+              const { songId, classification } = await this.ingestFile(nfcPath)
+              if (classification === 'moved' && missingIdsThisSweep.has(songId)) relinkedFromThisSweep += 1
+              if (classification === 'new') newCount += 1
+              if (classification === 'moved') movedCount += 1
+            } catch (err) {
+              messages.push(`${nfcPath}: ${errorMessage(err)}`)
             }
-
-            const { songId, classification } = await this.ingestFile(nfcPath)
-            if (classification === 'moved' && missingIdsThisSweep.has(songId)) relinkedFromThisSweep += 1
-            if (classification === 'new') newCount += 1
-            if (classification === 'moved') movedCount += 1
           }),
         ),
       )
+      for (const result of results) {
+        if (result.status === 'rejected') messages.push(errorMessage(result.reason))
+      }
       missingCount = missingIds.length - relinkedFromThisSweep
 
       const finished = await this.daos.scanRunDao.finish(scanRunId, {
@@ -210,16 +232,19 @@ export class ScanService implements IScanService {
         movedCount,
         missingCount,
         totalScanned,
+        messages,
       })
       console.log(`Library scan ${scanRunId} completed in ${Date.now() - startedAtMs}ms`)
       return finished
     } catch (err) {
+      messages.push(errorMessage(err))
       const finished = await this.daos.scanRunDao.finish(scanRunId, {
         status: 'failed',
         newCount,
         movedCount,
         missingCount,
         totalScanned,
+        messages,
       })
       console.error(`Library scan ${scanRunId} failed`, err)
       return finished

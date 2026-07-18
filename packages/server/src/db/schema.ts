@@ -212,6 +212,9 @@ export const scanRun = pgTable(
     movedCount: integer('moved_count').notNull().default(0),
     missingCount: integer('missing_count').notNull().default(0),
     totalScanned: integer('total_scanned').notNull().default(0),
+    // Per-file ingest errors (and, on a failed run, the run-level error) recorded
+    // for post-scan diagnostics — a completed run can still carry file-level messages.
+    messages: text('messages').array().notNull().default([]),
   },
   // At most one running scan at a time — the DB is the source of truth for this
   // invariant so a concurrent scan trigger fails atomically instead of racing.

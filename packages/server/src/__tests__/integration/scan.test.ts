@@ -232,6 +232,36 @@ describe('deleted file', () => {
   })
 })
 
+describe('resilient ingest', () => {
+  it('records a per-file error and still completes, ingesting every other file', async () => {
+    seedMediaFiles(['basic1.mp3', 'multigenre.mp3'])
+    // A supported extension over garbage bytes: the walk picks it up, but the FLAC
+    // parse throws on the bad preamble — exercising the per-file catch without
+    // aborting the run.
+    fs.writeFileSync(path.join(mediaRoot, 'broken.flac'), 'not a real flac file')
+
+    const run = await scanService.runScan()
+    expect(run.status).toBe('complete')
+
+    const rows = await ctx.db.select().from(song)
+    expect(rows).toHaveLength(2)
+    expect(new Set(rows.map((r) => r.name))).toEqual(new Set(['Basic One', 'Multi Genre Track']))
+
+    expect(run.messages).toHaveLength(1)
+    expect(run.messages[0]).toContain('broken.flac')
+  })
+})
+
+describe('run-level failure', () => {
+  it('marks the run failed and records the caught error message', async () => {
+    delete process.env.MEDIA_ROOT
+
+    const run = await scanService.runScan()
+    expect(run.status).toBe('failed')
+    expect(run.messages.some((m) => m.includes('MEDIA_ROOT'))).toBe(true)
+  })
+})
+
 describe('concurrency guard', () => {
   it('rejects a second scan while one is already running', async () => {
     await ctx.db.insert(scanRun).values({ status: 'running', startedAt: new Date() })

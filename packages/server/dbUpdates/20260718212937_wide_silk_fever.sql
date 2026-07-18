@@ -1,0 +1,1 @@
+ALTER TABLE "scan_run" ADD COLUMN "messages" text[] DEFAULT '{}' NOT NULL;

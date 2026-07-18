@@ -15,6 +15,7 @@ export interface ScanRunFinishFields {
   movedCount: number
   missingCount: number
   totalScanned: number
+  messages: string[]
 }
 
 export interface IScanRunDao {
