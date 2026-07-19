@@ -24,7 +24,7 @@ Currently, I have the desktop app working with a functional audio player, and ha
 #  Technical Details
   
 Plootunes is a TypeScript project.  
-The desktop app is written an Electron app with a React render view.  
+The desktop app is a self-hosted web app (Postgres + Express + Drizzle + Vite/React), accessed through the browser.  
 The mobile app is a React Native app.  
 It is a monorepo project that shares core functionality between the two versions of the app. Mainly, both versions of the app reference a common database layer. Both versions of the app use an sqlite database to track library information and index audio files for quick  
 loading. I have setup shared schemas and queries between the two versions of the app, so that the core business logic will largely be identical (accounting for differences in UI of course).  
@@ -40,13 +40,11 @@ My plan for the library syncing, currently, is to only allow syncing over a loca
 
 # Documentation
 
-Desktop app prereqs:
-    Install node and npm. I recommend using nvm       for windows. In order to install the sqlite3 npm package, you need to be on a version of node that is not too new. 20 works currently, but any later than that and node may not be able to build sqlite3 correctly.
+Web app:  
+    See CLAUDE.md for the current pnpm-based run commands.  
 
-Desktop app:  
-    to run:  
-    npm run react  
-    npm run electron  
+Legacy `src/core` utility scripts prereq:
+    The surviving `src/core` ts-node scripts install the sqlite3 npm package, which needs a node version that is not too new. 20 works currently, but any later than that and node may not be able to build sqlite3 correctly.
 
 Mobile app:  
     Run android studio and start an emulator.  
