@@ -1,13 +1,14 @@
 import React from "react";
 import { Button, Card, useModal } from "@ploot/pds";
-import { Widget, WidgetType, WidgetTypes } from "../../../core/db/dbEntities/widget";
+import type { WidgetDTO } from "@ploot/plootunes-shared";
+import { WidgetType, WidgetTypes } from "./widgetTypes.ts";
 import QuickPlayWidget from "./widgets/quickPlayWidget";
 import PlayHistoryWidget from "./widgets/playHistoryWidget";
 import RecentlyAddedWidget from "./widgets/recentlyAddedWidget";
-import { WidgetService } from "./electronServices/widgetService";
+import { WidgetService } from "../../services/widgetService.ts";
 
 export interface WidgetTileProps {
-  widget: Widget;
+  widget: WidgetDTO;
   widgetReloadHandler: () => void;
 }
 
@@ -40,7 +41,7 @@ const WidgetTile = ({ widget, widgetReloadHandler }: WidgetTileProps) => {
     <EditWidgetModal />
     <Card className='widget-tile'>
       <div className='widget-tile-header'>
-        <span className='widget-tile-title'>{WidgetTypes[widget.widgetType]?.displayName || 'Unknown Widget'}</span>
+        <span className='widget-tile-title'>{WidgetTypes[widget.widgetType as WidgetType]?.displayName || 'Unknown Widget'}</span>
         <div className='p-row'>
           <Button icon='hamburger' variant='ghost' size='sm' onClick={openEditModal} title='Edit Widget' />
           <Button icon='x' variant='ghost' size='sm' onClick={removeWidget} title='Remove Widget' />

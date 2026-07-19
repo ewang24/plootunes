@@ -1,20 +1,20 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Button, Page } from '@ploot/pds';
-import { Song } from '../../../core/db/dbEntities/song';
-import { SongService } from './electronServices/songService';
+import type { SongDTO } from '@ploot/plootunes-shared';
+import { SongService } from '../../services/songService.ts';
 import SongsGrid from '../global/widgets/songsGrid';
-import { QueueService } from '../albums/electronServices/queueService';
+import { QueueService } from '../../services/queueService.ts';
 import { PlayerContext } from '../main';
 
 const SongsList = () => {
-  const { queueSong, setCurrentlyPlayingSong, currentlyPlayingSong, setShuffled } = useContext(PlayerContext);
-  const [songs, setSongs] = useState<Song[] | undefined>();
+  const { queueSong, setCurrentlyPlayingSong, currentlyPlayingSong, setShuffled } = useContext(PlayerContext)!;
+  const [songs, setSongs] = useState<SongDTO[] | undefined>();
 
   useEffect(() => {
-    SongService.getSongs(true).then((songs: Song[]) => setSongs(songs));
+    SongService.getSongs().then((songs: SongDTO[]) => setSongs(songs));
   }, []);
 
-  function onPlayCallback(song: Song) {
+  function onPlayCallback(song: SongDTO) {
     QueueService.queueAllSongsAndPlay(song.id).then(() => {
       setCurrentlyPlayingSong(song);
       setShuffled(false);
@@ -22,7 +22,8 @@ const SongsList = () => {
   }
 
   function shuffleAndPlayAllSongs() {
-    QueueService.shuffleAllSongsAndPlay().then((firstInQueue: Song) => {
+    QueueService.shuffleAllSongsAndPlay().then((firstInQueue: SongDTO | null) => {
+      if (!firstInQueue) return;
       setCurrentlyPlayingSong(firstInQueue);
       setShuffled(true);
     });

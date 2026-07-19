@@ -1,24 +1,25 @@
 import React, { useMemo } from "react";
 import { Button } from "@ploot/pds";
-import { Song, SongWithAlbum } from "../../../../core/db/dbEntities/song";
+import type { SongDTO } from "@ploot/plootunes-shared";
 import { AutoSizer, Column, ColumnProps, Table } from "react-virtualized";
+import { thumbUrl } from "../../../services/covers.ts";
 import '../../../styles/widgets/songsGrid.scss'
 
 export interface SongsGridProps {
-  songs?: SongWithAlbum[];
+  songs?: SongDTO[];
   displayAlbumInfo?: boolean;
-  onPlay: (song: Song) => void;
-  onQueue: (song: Song) => void;
+  onPlay: (song: SongDTO) => void;
+  onQueue: (song: SongDTO) => void;
 }
 
 function SongsGrid({ songs, onPlay, onQueue, displayAlbumInfo }: SongsGridProps) {
 
-  function getAlbumArt(albumCoverImageUrl: string | undefined, index: number) {
+  function getAlbumArt(albumCoverImageUrl: string | null | undefined, index: number) {
     return <div className='p-row'>
       <div key={index} className='p-tile p-tile-ultra-small'>
         <div className='p-tile-image'>
           {albumCoverImageUrl
-            ? <img draggable="false" src={`http://localhost:3030/${albumCoverImageUrl}`} />
+            ? <img draggable="false" src={thumbUrl(albumCoverImageUrl)} />
             : <img draggable="false" src={index % 2 === 0 ? '../../assets/img/test.jpg' : '../../assets/img/up.jpg'} />
           }
         </div>
@@ -26,7 +27,7 @@ function SongsGrid({ songs, onPlay, onQueue, displayAlbumInfo }: SongsGridProps)
     </div>;
   }
 
-  function renderRowActions(song: Song) {
+  function renderRowActions(song: SongDTO) {
     return <div className='p-row'>
       <Button icon='play' size='sm' onClick={() => onPlay(song)} title='Play' />
       <Button icon='plus' size='sm' variant='secondary' onClick={() => onQueue(song)} title='Queue' />
@@ -41,8 +42,10 @@ function SongsGrid({ songs, onPlay, onQueue, displayAlbumInfo }: SongsGridProps)
     return <div className='p-row'><strong>{columnName}</strong></div>;
   }
 
-  const columnDefs = useMemo<Partial<ColumnProps>[]>((): Partial<ColumnProps>[] => {
-    const cols: Partial<ColumnProps>[] = [
+  type ColumnDef = Partial<ColumnProps> & Pick<ColumnProps, 'dataKey'>;
+
+  const columnDefs = useMemo<ColumnDef[]>((): ColumnDef[] => {
+    const cols: ColumnDef[] = [
       {
         dataKey: "id",
         headerRenderer: () => renderColumnHeader("Actions"),
@@ -50,7 +53,7 @@ function SongsGrid({ songs, onPlay, onQueue, displayAlbumInfo }: SongsGridProps)
       },
       {
         headerRenderer: () => renderColumnHeader("Track #"),
-        dataKey: "songPosition",
+        dataKey: "trackNumber",
         cellRenderer: ({ cellData }) => wrapStringRowCell(cellData),
       },
     ];
@@ -58,7 +61,7 @@ function SongsGrid({ songs, onPlay, onQueue, displayAlbumInfo }: SongsGridProps)
     if (displayAlbumInfo) {
       cols.push({
         headerRenderer: () => renderColumnHeader("Album"),
-        dataKey: "albumCoverImage",
+        dataKey: "coverImage",
         cellRenderer: ({ cellData, rowIndex }) => getAlbumArt(cellData, rowIndex),
       });
     }
@@ -85,7 +88,7 @@ function SongsGrid({ songs, onPlay, onQueue, displayAlbumInfo }: SongsGridProps)
       },
       {
         headerRenderer: () => renderColumnHeader("Length"),
-        dataKey: "songLength",
+        dataKey: "durationMs",
         cellRenderer: ({ cellData }) => wrapStringRowCell(getLength(cellData)),
       },
     );
@@ -123,9 +126,10 @@ function SongsGrid({ songs, onPlay, onQueue, displayAlbumInfo }: SongsGridProps)
   </div>;
 }
 
-function getLength(songLength: number | undefined): string {
-  if (songLength === undefined) return '0:00';
-  return `${Math.floor(songLength / 60)}:${Math.floor(songLength % 60).toString().padStart(2, '0')}`;
+function getLength(durationMs: number | null | undefined): string {
+  if (durationMs === undefined || durationMs === null) return '0:00';
+  const totalSeconds = durationMs / 1000;
+  return `${Math.floor(totalSeconds / 60)}:${Math.floor(totalSeconds % 60).toString().padStart(2, '0')}`;
 }
 
 export default SongsGrid;

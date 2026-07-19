@@ -1,48 +1,48 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { Button, Page } from "@ploot/pds";
 import { PlayerContext } from "../main";
-import { Song, SongWithAlbum } from "../../../core/db/dbEntities/song";
-import { QueueService } from "../albums/electronServices/queueService";
+import type { QueuedSongsDTO, SongDTO } from "@ploot/plootunes-shared";
+import { QueueService } from "../../services/queueService.ts";
+import { thumbUrl } from "../../services/covers.ts";
 import '../../styles/queueViewer/queueViewer.scss'
-import { AutoSizer, List } from "react-virtualized";
-import { SongsWithCurrentlyPlaying } from "../../../core/db/dbEntities/songWithCurrentlyPlaying";
+import { AutoSizer, List, ListRowProps } from "react-virtualized";
 
 const QueueViewer = () => {
-  const { currentlyPlayingSong, setCurrentlyPlayingSong, shuffled } = useContext(PlayerContext);
-  const [queuedSongs, setQueuedSongs] = useState<SongWithAlbum[] | undefined>();
+  const { currentlyPlayingSong, setCurrentlyPlayingSong, shuffled } = useContext(PlayerContext)!;
+  const [queuedSongs, setQueuedSongs] = useState<SongDTO[] | undefined>();
   const [displayQueueViewer, setDisplayQueueViewer] = useState<boolean>(false);
 
   const currentlyPlayingSongIndex: number = useMemo((): number => {
-    if (!currentlyPlayingSong) return 0;
+    if (!currentlyPlayingSong || !queuedSongs) return 0;
     return queuedSongs.findIndex((song) => song.id === currentlyPlayingSong.id);
   }, [queuedSongs]);
 
   useEffect(() => {
     if (!displayQueueViewer) return;
-    QueueService.getAllQueuedSongs().then((data: SongsWithCurrentlyPlaying) => setQueuedSongs(data.songs));
+    QueueService.getAllQueuedSongs().then((data: QueuedSongsDTO) => setQueuedSongs(data.songs));
   }, [currentlyPlayingSong, displayQueueViewer, shuffled]);
 
   function toggleDisplayQueueViewer() {
     setDisplayQueueViewer(!displayQueueViewer);
   }
 
-  function getAlbumArt(albumCoverImageUrl: string | undefined, index: number) {
+  function getAlbumArt(albumCoverImageUrl: string | null | undefined, index: number) {
     return <div key={index} className='p-tile p-tile-ultra-small'>
       <div className='p-tile-image'>
         {albumCoverImageUrl
-          ? <img draggable="false" src={`http://localhost:3030/${albumCoverImageUrl}`} />
+          ? <img draggable="false" src={thumbUrl(albumCoverImageUrl)} />
           : <img draggable="false" src={index % 2 === 0 ? '../../assets/img/test.jpg' : '../../assets/img/up.jpg'} />
         }
       </div>
     </div>;
   }
 
-  function renderQueueRow({ index, style, key }) {
-    const song = queuedSongs[index];
+  function renderQueueRow({ index, style, key }: ListRowProps) {
+    const song = queuedSongs![index];
     const songInfo = `${song.name} - ${song.albumName || 'Unknown Album'} - ${song.artistName || 'Unknown Artist'}`;
     return <div className='p-row queue-viewer-row p-row-flex-start' key={key} style={style} title={songInfo}>
       {song.id === currentlyPlayingSong?.id && <div className='now-playing-queue-bar' />}
-      {getAlbumArt(song.albumCoverImage, index)}
+      {getAlbumArt(song.coverImage, index)}
       <span className={song.id === currentlyPlayingSong?.id ? 'currently-playing' : ''}>
         {songInfo}
       </span>

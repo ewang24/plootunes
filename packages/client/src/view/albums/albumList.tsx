@@ -1,29 +1,30 @@
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { Page } from '@ploot/pds';
+import type { AlbumDTO } from '@ploot/plootunes-shared';
 import '../../styles/albums/albumsList.scss'
 import '../../assets/img/test.jpg'
 import '../../assets/img/up.jpg'
 import SongsForAlbum from './songsForAlbum';
 import OverlayView from '../global/overlayView';
-import { Album } from '../../../core/db/dbEntities/album';
-import { AlbumService } from './electronServices/albumService';
+import { AlbumService } from '../../services/albumService.ts';
+import { thumbUrl } from '../../services/covers.ts';
 
 const AlbumList = () => {
-  const [albums, setAlbums] = useState<Album[] | undefined>();
-  const [selectedAlbum, setSelectedAlbum] = useState<Album | undefined>();
+  const [albums, setAlbums] = useState<AlbumDTO[] | undefined>();
+  const [selectedAlbum, setSelectedAlbum] = useState<AlbumDTO | undefined>();
 
   useEffect(() => {
-    AlbumService.getAlbums().then((albums: Album[]) => setAlbums(albums));
+    AlbumService.getAlbums().then((albums: AlbumDTO[]) => setAlbums(albums));
   }, []);
 
-  const handleAlbumSelection = useCallback((album: Album) => setSelectedAlbum(album), []);
+  const handleAlbumSelection = useCallback((album: AlbumDTO) => setSelectedAlbum(album), []);
 
   function renderAlbumTile(index: number) {
-    const album = albums[index];
+    const album = albums![index];
     return <div key={index} className='p-tile p-tile-small' onClick={() => handleAlbumSelection(album)}>
       <div className='p-tile-image'>
         {album.coverImage
-          ? <img draggable="false" src={`http://localhost:3030/${album.coverImage}`} />
+          ? <img draggable="false" src={thumbUrl(album.coverImage)} />
           : <img draggable="false" src={index % 2 === 0 ? '../../assets/img/test.jpg' : '../../assets/img/up.jpg'} />
         }
       </div>
@@ -34,7 +35,7 @@ const AlbumList = () => {
 
   function renderAlbumList(): ReactElement {
     return <div className='albums-wrap-container'>
-      {albums.map((_, index) => renderAlbumTile(index))}
+      {albums!.map((_, index) => renderAlbumTile(index))}
     </div>;
   }
 

@@ -2,6 +2,7 @@ import React, { ReactElement, useState } from 'react';
 import OverlayView from '../global/overlayView';
 import ArtistDetails from './artistDetails';
 import { ArtistWithAlbumCovers } from './artistsList';
+import { thumbUrl } from '../../services/covers.ts';
 
 export interface ArtistTileProps {
     artist: ArtistWithAlbumCovers;
@@ -40,7 +41,7 @@ function ArtistTile(props: ArtistTileProps) {
             {artist.covers.map((cover) => {
                 return <div className='p-tile-image' key = {cover}>
                     <img draggable="false"
-                        src= {`http://localhost:3030/${cover}`}
+                        src= {thumbUrl(cover)}
                     />
                 </div>
             })}

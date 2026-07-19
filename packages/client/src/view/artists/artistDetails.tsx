@@ -1,24 +1,22 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Button, Page, Tab } from "@ploot/pds";
-import { Artist } from "../../../core/db/dbEntities/artist";
-import { ElectronUtil } from "../util/electronUtil";
-import { Album } from "../../../core/db/dbEntities/album";
+import type { ArtistDTO, AlbumDTO } from "@ploot/plootunes-shared";
 import AlbumsForArtists from "./albumsForArtists";
-import { QueueService } from "../albums/electronServices/queueService";
+import { AlbumService } from "../../services/albumService.ts";
 import { PlayerContext } from "../main";
 import SongsForArtist from "./songsForArtist";
 
 export interface ArtistDetailsProps {
-  artist: Artist;
+  artist: ArtistDTO;
   closeArtistDetails: () => void;
 }
 
 function ArtistDetails({ artist, closeArtistDetails }: ArtistDetailsProps) {
-  const { setCurrentlyPlayingSong, currentlyPlayingSong } = useContext(PlayerContext);
-  const [albums, setAlbums] = useState<Album[] | undefined>();
+  const { setCurrentlyPlayingSong, currentlyPlayingSong } = useContext(PlayerContext)!;
+  const [albums, setAlbums] = useState<AlbumDTO[] | undefined>();
 
   useEffect(() => {
-    ElectronUtil.invoke('getAlbumsForArtist', artist.id).then((albums: Album[]) => setAlbums(albums));
+    AlbumService.getAlbumsByArtist(artist.id).then((albums: AlbumDTO[]) => setAlbums(albums));
   }, []);
 
   return <Page

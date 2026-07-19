@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, MemoryRouter, Route, Routes } from 'react-router-dom';
+import { Link, Route, Routes } from 'react-router-dom';
 import { PDS } from '@ploot/pds';
 import type { NavItem } from '@ploot/pds';
 import AlbumList from '../albums/albumList';
@@ -18,25 +18,23 @@ const navItems: NavItem<RouteLeaf>[] = [
 ];
 
 const AppRouter = () => (
-  <MemoryRouter>
-    <PDS
-      navItems={navItems}
-      renderNavItem={(data, name) => <Link to={data.path}>{name}</Link>}
-    >
-      <div className='p-row p-row-align-stretch router-content'>
-        <div className='router-routes'>
-          <Routes>
-            <Route path='/' element={<Landing />} />
-            <Route path='/home' element={<Landing />} />
-            <Route path='/albums' element={<AlbumList />} />
-            <Route path='/songs' element={<SongsList />} />
-            <Route path='/artists' element={<ArtistList />} />
-          </Routes>
-        </div>
-        <QueueViewer />
+  <PDS
+    navItems={navItems}
+    renderNavItem={(data, name) => <Link to={data.path}>{name}</Link>}
+  >
+    <div className='p-row p-row-align-stretch router-content'>
+      <div className='router-routes'>
+        <Routes>
+          <Route path='/' element={<Landing />} />
+          <Route path='/home' element={<Landing />} />
+          <Route path='/albums' element={<AlbumList />} />
+          <Route path='/songs' element={<SongsList />} />
+          <Route path='/artists' element={<ArtistList />} />
+        </Routes>
       </div>
-    </PDS>
-  </MemoryRouter>
+      <QueueViewer />
+    </div>
+  </PDS>
 );
 
 export default AppRouter;

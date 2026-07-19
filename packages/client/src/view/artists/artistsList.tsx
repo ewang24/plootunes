@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Page } from '@ploot/pds';
-import { ArtistService } from './electronServices/artistService';
-import { Artist } from '../../../core/db/dbEntities/artist';
+import { ArtistService } from '../../services/artistService.ts';
+import type { ArtistDTO, AlbumDTO } from '@ploot/plootunes-shared';
 import '../../styles/artists/artistsList.scss'
-import { AlbumService } from '../albums/electronServices/albumService';
-import { Album } from '../../../core/db/dbEntities/album';
+import { AlbumService } from '../../services/albumService.ts';
 import ArtistTile from './artistTile';
 
-export interface ArtistWithAlbumCovers extends Artist {
+export interface ArtistWithAlbumCovers extends ArtistDTO {
   covers: string[];
 }
 
@@ -17,15 +16,16 @@ const ArtistList = () => {
   useEffect(() => { fetchArtistData(); }, []);
 
   async function fetchArtistData(): Promise<void> {
-    const [artists, albums]: [Artist[], Album[]] = await Promise.all([ArtistService.getArtists(), AlbumService.getAlbums()]);
+    const [artists, albums]: [ArtistDTO[], AlbumDTO[]] = await Promise.all([ArtistService.getArtists(), AlbumService.getAlbums()]);
 
     const artistToCoversMap = albums.reduce((acc, album) => {
-      acc[album.artistId] = acc[album.artistId] || [];
-      if (album.coverImage) acc[album.artistId].push(album.coverImage);
+      if (!album.albumArtistId) return acc;
+      acc[album.albumArtistId] = acc[album.albumArtistId] || [];
+      if (album.coverImage) acc[album.albumArtistId].push(album.coverImage);
       return acc;
     }, {} as { [key: string]: string[] });
 
-    setArtists(artists.map((artist) => ({ ...artist, covers: artistToCoversMap[artist.id] })));
+    setArtists(artists.map((artist) => ({ ...artist, covers: artistToCoversMap[artist.id] ?? [] })));
   }
 
   return <Page title='All Artists'>

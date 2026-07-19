@@ -1,29 +1,34 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Button, Page } from '@ploot/pds';
-import { Song } from '../../../core/db/dbEntities/song';
+import type { AlbumDTO, SongDTO } from '@ploot/plootunes-shared';
 import { PlayerContext } from '../main';
-import { QueueService } from './electronServices/queueService';
-import { SongService } from '../songs/electronServices/songService';
+import { QueueService } from '../../services/queueService.ts';
+import { SongService } from '../../services/songService.ts';
 import SongsGrid from '../global/widgets/songsGrid';
 
-function SongsForAlbum({ album, closeSongsForAlbumView }) {
-  const { playSongNow, setShuffled, queueSong, setCurrentlyPlayingSong, currentlyPlayingSong } = useContext(PlayerContext);
-  const [songs, setSongs] = useState<Song[]>(undefined);
+export interface SongsForAlbumProps {
+  album: AlbumDTO;
+  closeSongsForAlbumView: () => void;
+}
+
+function SongsForAlbum({ album, closeSongsForAlbumView }: SongsForAlbumProps) {
+  const { playSongNow, setShuffled, queueSong, setCurrentlyPlayingSong, currentlyPlayingSong } = useContext(PlayerContext)!;
+  const [songs, setSongs] = useState<SongDTO[] | undefined>(undefined);
 
   useEffect(() => {
-    SongService.getSongsByAlbum(album.id).then((songs: Song[]) => setSongs(songs));
+    SongService.getSongsByAlbum(album.id).then((songs: SongDTO[]) => setSongs(songs));
   }, []);
 
   function playAlbumCallback() {
     QueueService.playAlbum(album.id).then(() => {
-      setCurrentlyPlayingSong(songs[0]);
+      setCurrentlyPlayingSong(songs?.[0]);
       setShuffled(false);
     });
   }
 
   function queueAlbumCallback() {
     QueueService.queueAlbum(album.id).then(() => {
-      if (currentlyPlayingSong) setCurrentlyPlayingSong(songs[0]);
+      if (currentlyPlayingSong) setCurrentlyPlayingSong(songs?.[0]);
     });
   }
 

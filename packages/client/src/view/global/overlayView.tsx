@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 
-const OverlayView = ({ children }) => (
+const OverlayView = ({ children }: { children: ReactNode }) => (
     <div className='p-overlay-view'>{children}</div>
 );
 

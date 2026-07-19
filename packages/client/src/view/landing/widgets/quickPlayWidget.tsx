@@ -1,35 +1,39 @@
 import React, { useContext } from "react"
 import { Button } from "@ploot/pds";
 import { PlayerContext } from "../../main";
-import { QueueService } from "../../albums/electronServices/queueService";
-import { SongWithAlbum } from "../../../../core/db/dbEntities/song";
+import { QueueService } from "../../../services/queueService.ts";
+import type { SongDTO } from "@ploot/plootunes-shared";
 
 const QuickPlayWidget = () => {
-    const { setShuffled, setCurrentlyPlayingSong } = useContext(PlayerContext);
+    const { setShuffled, setCurrentlyPlayingSong } = useContext(PlayerContext)!;
 
     function playAllHandler() {
-        QueueService.queueAllSongsAndPlayFirstSong().then((firstInQueue: SongWithAlbum) => {
+        QueueService.queueAllSongsAndPlayFirstSong().then((firstInQueue: SongDTO | null) => {
+            if (!firstInQueue) return;
             setCurrentlyPlayingSong(firstInQueue);
             setShuffled(false);
         });
     }
 
     function shuffleAllHandler() {
-        QueueService.shuffleAllSongsAndPlay().then((firstInQueue: SongWithAlbum) => {
+        QueueService.shuffleAllSongsAndPlay().then((firstInQueue: SongDTO | null) => {
+            if (!firstInQueue) return;
             setCurrentlyPlayingSong(firstInQueue);
             setShuffled(true);
         });
     }
 
     function playRandomArtistHandler() {
-        QueueService.playRandomArtist().then((firstInQueue: SongWithAlbum) => {
+        QueueService.playRandomArtist().then((firstInQueue: SongDTO | null) => {
+            if (!firstInQueue) return;
             setCurrentlyPlayingSong(firstInQueue);
             setShuffled(false);
         });
     }
 
     function playRandomAlbumHandler() {
-        QueueService.playRandomAlbum().then((firstInQueue: SongWithAlbum) => {
+        QueueService.playRandomAlbum().then((firstInQueue: SongDTO | null) => {
+            if (!firstInQueue) return;
             setCurrentlyPlayingSong(firstInQueue);
             setShuffled(false);
         });

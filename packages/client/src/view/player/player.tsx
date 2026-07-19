@@ -1,17 +1,17 @@
 import React, { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Button } from '@ploot/pds';
-import { ElectronUtil } from '../util/electronUtil';
 import { PlayerContext } from '../main';
 import { AudioService } from '../albums/electronServices/audioService';
-import { QueueService } from '../albums/electronServices/queueService';
-import { Song } from '../../../core/db/dbEntities/song';
+import { QueueService } from '../../services/queueService.ts';
+import type { SongDTO } from '@ploot/plootunes-shared';
 import { SystemService } from '../global/electronServices/systemService';
-import { StatService } from './electronServices/statService';
+import { StatService } from '../../services/statService.ts';
+import { coverUrl } from '../../services/covers.ts';
 
 function Player() {
-  const { shuffled, setShuffled, repeat, setRepeat, currentlyPlayingSong, setCurrentlyPlayingSong } = useContext(PlayerContext);
+  const { shuffled, setShuffled, repeat, setRepeat, currentlyPlayingSong, setCurrentlyPlayingSong } = useContext(PlayerContext)!;
   const [audioSrc, setAudioSrc] = useState<string | undefined>(undefined);
-  const audioPlayer = useRef(null);
+  const audioPlayer = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     SystemService.isShuffled().then((shuffled: boolean) => setShuffled(shuffled));
@@ -45,21 +45,26 @@ function Player() {
 
   function processAudioSrc() {
     if (!audioSrc) return;
-    if (!audioPlayer.current) window.alert("Fatal error! Audio player not available. Please restart the application.");
+    if (!audioPlayer.current) {
+      window.alert("Fatal error! Audio player not available. Please restart the application.");
+      return;
+    }
     audioPlayer.current.play();
   }
 
   function processCurrentlyPlayingSong() {
     if (!currentlyPlayingSong) return;
-    AudioService.getSongBuffer(currentlyPlayingSong.id).then((data: Buffer) => {
+    // AudioService is still on the dormant Electron IPC path (see electronUtil.ts), which
+    // predates the string-UUID song ids used everywhere else in the browser build.
+    AudioService.getSongBuffer(currentlyPlayingSong.id as unknown as number).then((data: Buffer) => {
       processAudioBuffer(data);
       if ('mediaSession' in navigator) {
         const artwork = [];
-        if (currentlyPlayingSong.albumCoverImage) {
-          artwork.push({ src: `http://localhost:3030/${currentlyPlayingSong.albumCoverImage}`, sizes: '128x128', type: 'image/jpeg' });
+        if (currentlyPlayingSong.coverImage) {
+          artwork.push({ src: coverUrl(currentlyPlayingSong.coverImage), sizes: '128x128', type: 'image/jpeg' });
         }
         navigator.mediaSession.metadata = new MediaMetadata({
-          title: currentlyPlayingSong.name,
+          title: currentlyPlayingSong.name ?? undefined,
           artist: currentlyPlayingSong.artistName || 'Unknown Artist',
           album: currentlyPlayingSong.albumName || 'Unknown Album',
           artwork,
@@ -78,7 +83,7 @@ function Player() {
   }
 
   async function playPreviousSong() {
-    const previousSongInQueue: Song = await QueueService.getPreviousSongInQueue();
+    const previousSongInQueue: SongDTO | null = await QueueService.getPreviousSongInQueue();
     if (!previousSongInQueue) return;
     QueueService.transitionCurrentSong(previousSongInQueue.id)
       .then(() => setCurrentlyPlayingSong(previousSongInQueue))
@@ -86,7 +91,8 @@ function Player() {
   }
 
   async function playNextSong() {
-    const [nextSongInQueue]: [Song, void] = await Promise.all([QueueService.getNextSongInQueue(), StatService.addSongPlay(currentlyPlayingSong.id)]);
+    if (!currentlyPlayingSong) return;
+    const [nextSongInQueue]: [SongDTO | null, void] = await Promise.all([QueueService.getNextSongInQueue(), StatService.addSongPlay(currentlyPlayingSong.id)]);
     if (!nextSongInQueue) return;
     QueueService.transitionCurrentSong(nextSongInQueue.id)
       .then(() => setCurrentlyPlayingSong(nextSongInQueue))
@@ -120,7 +126,7 @@ function Player() {
           }}
           title='Shuffle'
         />
-        <strong>{currentlyPlayingSong.name}</strong>
+        <strong>{currentlyPlayingSong?.name}</strong>
         <audio ref={audioPlayer} key={audioSrc} controls>
           <source src={audioSrc} type="audio/mpeg" />
           Your browser does not support the audio element.

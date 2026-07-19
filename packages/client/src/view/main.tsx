@@ -3,15 +3,15 @@ import '../styles/global.scss'
 import '../styles/main.scss'
 import AppRouter from './navigation/router';
 import PlayerMain from './player/playerMain';
-import { Song, SongWithAlbum } from '../../core/db/dbEntities/song';
+import type { SongDTO } from '@ploot/plootunes-shared';
 import { SystemService } from './global/electronServices/systemService';
-import { QueueService } from './albums/electronServices/queueService';
+import { QueueService } from '../services/queueService.ts';
 
 export interface PlayerContext {
-  playSongNow(song: Song): void;
-  queueSong(songId): void;
-  currentlyPlayingSong: SongWithAlbum | undefined;
-  setCurrentlyPlayingSong: React.Dispatch<React.SetStateAction<SongWithAlbum>>;
+  playSongNow(song: SongDTO): void;
+  queueSong(song: SongDTO): void;
+  currentlyPlayingSong: SongDTO | undefined;
+  setCurrentlyPlayingSong: React.Dispatch<React.SetStateAction<SongDTO | undefined>>;
   shuffled: boolean;
   setShuffled: (shuffled: boolean) => void;
   repeat: boolean;
@@ -23,16 +23,16 @@ export const PlayerContext = createContext<PlayerContext | undefined>(undefined)
 const Main = () => {
   const [shuffled, setShuffled] = useState<boolean>(false);
   const [repeat, setRepeat] = useState<boolean>(false);
-  const [currentlyPlayingSong, setCurrentlyPlayingSong] = useState<Song | undefined>(undefined);
+  const [currentlyPlayingSong, setCurrentlyPlayingSong] = useState<SongDTO | undefined>(undefined);
 
-  function playSongNow(song: Song) {
+  function playSongNow(song: SongDTO) {
     setCurrentlyPlayingSong(song);
     QueueService.playSong(song.id).catch((err) => {
       window.alert(`Error: ${JSON.stringify(err)}`);
     });
   }
 
-  function queueSong(song: Song) {
+  function queueSong(song: SongDTO) {
     QueueService.queueSong(song.id).then(() => {
       if (currentlyPlayingSong) return;
       setCurrentlyPlayingSong(song);

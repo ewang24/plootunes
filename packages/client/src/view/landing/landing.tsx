@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Widget, WidgetType, WidgetTypes } from '../../../core/db/dbEntities/widget';
-import { WidgetService } from './electronServices/widgetService';
+import type { WidgetDTO } from '@ploot/plootunes-shared';
+import { WidgetType, WidgetTypes } from './widgetTypes.ts';
+import { WidgetService } from '../../services/widgetService.ts';
 import { Button, Dropdown, useModal } from '@ploot/pds';
 import '../../styles/landing/landing.scss'
 import WidgetTile from './widgetTile';
 
 const Landing = () => {
 
-  const [widgets, setWidgets] = useState<Widget[] | undefined>();
+  const [widgets, setWidgets] = useState<WidgetDTO[] | undefined>();
   const [selectedWidgetType, setSelectedWidgetType] = useState<WidgetType>('RECENTLY_ADDED');
 
   useEffect(() => {
@@ -15,14 +16,14 @@ const Landing = () => {
   }, [])
 
   function fetchWidgets() {
-    WidgetService.getWidgets().then((widgets: Widget[]) => {
+    WidgetService.getWidgets().then((widgets: WidgetDTO[]) => {
       setWidgets(widgets);
     });
   }
 
   function createWidget() {
-    WidgetService.addWidget(selectedWidgetType).then(() => {
-      fetchWidgets();
+    WidgetService.addWidget(selectedWidgetType).then((widget: WidgetDTO) => {
+      setWidgets((prev) => [...(prev ?? []), widget]);
       closeAddWidget();
     });
   }
@@ -35,7 +36,7 @@ const Landing = () => {
           label="Widget Type"
           value={selectedWidgetType}
           onChange={(e) => setSelectedWidgetType(e.target.value as WidgetType)}
-          options={Object.keys(WidgetTypes).map((key) => ({ value: key, label: WidgetTypes[key].displayName }))}
+          options={Object.keys(WidgetTypes).map((key) => ({ value: key, label: WidgetTypes[key as WidgetType].displayName }))}
         />
         <Button onClick={() => { createWidget(); }} variant="primary">Submit</Button>
         <Button onClick={close} variant="secondary">Close</Button>

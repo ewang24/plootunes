@@ -1,18 +1,18 @@
 import React, { useState } from "react";
-import { Album } from "../../../core/db/dbEntities/album";
-import { Artist } from "../../../core/db/dbEntities/artist";
+import type { AlbumDTO, ArtistDTO } from "@ploot/plootunes-shared";
 import OverlayView from "../global/overlayView";
 import SongsForAlbum from "../albums/songsForAlbum";
+import { thumbUrl } from "../../services/covers.ts";
 import '../../styles/artists/albumsForArtist.scss'
 
 export interface AlbumsForArtistsProps {
-    artist: Artist;
-    albums: Album[]
+    artist: ArtistDTO;
+    albums: AlbumDTO[]
 }
 
 function AlbumsForArtists(props: AlbumsForArtistsProps) {
     const { artist, albums } = props;
-    const [selectedAlbum, setSelectedAlbum] = useState<Album | undefined>();
+    const [selectedAlbum, setSelectedAlbum] = useState<AlbumDTO | undefined>();
 
     function closeSongsForAlbumView() {
         setSelectedAlbum(undefined);
@@ -20,12 +20,12 @@ function AlbumsForArtists(props: AlbumsForArtistsProps) {
 
     return <>
         <div className="p-row p-row-flex-start albums-for-artist-container">
-            {albums.map((album: Album, index: number) => {
+            {albums.map((album: AlbumDTO, index: number) => {
                 return <div key = {album.id} className='p-tile p-tile-medium' onClick={() => setSelectedAlbum(album)}>
                     <div className='p-tile-image'>
                         {album.coverImage &&
                             <img draggable="false"
-                                src={`http://localhost:3030/${album.coverImage}`}
+                                src={thumbUrl(album.coverImage)}
                             />
                         }
                         {!album.coverImage &&
