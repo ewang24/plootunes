@@ -28,6 +28,9 @@ properties.json
 local.properties
 src/electron/dist_electron_builder/
 
+# TypeScript incremental build cache
+*.tsbuildinfo
+
 # dotenv environment variable files
 .env
 .env.*
