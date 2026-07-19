@@ -9,7 +9,7 @@ Project: **PlooTunes** (ID: 6). Use the `plootocol` MCP tools to read and write 
 PlooTunes is migrating from an Electron/SQLite desktop app to a self-hosted web app (Postgres + Express + Drizzle + Vite/React), mirroring the sibling **primal** repo.
 
 During the migration:
-- `src/{core,electron,react,mobile}` still exist and the old Electron app still works
+- The Electron shell and `src/react` have been retired — `src/{core,mobile}` remain as the last unported legacy slice
 - The new `packages/{shared,server,client}` stack is **not bootable** until later tickets
 - Each part of `src/` will be removed as its port ticket completes
 - The **museum/** directory preserves retired Electron-era machinery (see [Museum](#museum) below)
@@ -17,7 +17,6 @@ During the migration:
 ## Node Version
 
 - **New packages** (`packages/`) target **Node 22** (consistent with primal)
-- The **legacy Electron build** (`src/electron`) still needs **Node 20** for the `sqlite3` native build
 
 ## Architecture
 
@@ -174,11 +173,8 @@ pnpm test:e2e      # run Playwright suite (stack must be running) — NOT bootab
 pnpm lint
 pnpm format
 
-# Legacy Electron commands (still work during transition)
-npm run react        # Vite dev server on port 3000
-npm run electron     # Electron process (expects React on :3000)
+# Legacy commands (src/core + src/mobile)
 npm test             # Jest suite for legacy src/
-npm run install:all  # installs root + src/electron + src/react
 npx jest path/to/test.spec.ts   # single test file
 ```
 
