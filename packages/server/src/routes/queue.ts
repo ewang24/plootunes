@@ -21,6 +21,10 @@ export function createQueueRouter(adapters: AppAdapters, services: AppServices):
     res.json(await adapters.queueAdapter.getQueuedSongs(req.userId, offset, limit))
   })
 
+  router.get('/current', async (req, res) => {
+    sendSong(res, await adapters.queueAdapter.getCurrentSong(req.userId))
+  })
+
   router.get('/next', async (req, res) => {
     sendSong(res, await adapters.queueAdapter.getNextSong(req.userId))
   })

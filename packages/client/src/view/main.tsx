@@ -1,11 +1,11 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import '../styles/global.scss'
 import '../styles/main.scss'
 import AppRouter from './navigation/router';
 import PlayerMain from './player/playerMain';
-import type { SongDTO } from '@ploot/plootunes-shared';
-import { SystemService } from './global/electronServices/systemService';
+import type { RepeatMode, SongDTO } from '@ploot/plootunes-shared';
 import { QueueService } from '../services/queueService.ts';
+import { PlaybackService } from '../services/playbackService.ts';
 
 export interface PlayerContext {
   playSongNow(song: SongDTO): void;
@@ -14,16 +14,28 @@ export interface PlayerContext {
   setCurrentlyPlayingSong: React.Dispatch<React.SetStateAction<SongDTO | undefined>>;
   shuffled: boolean;
   setShuffled: (shuffled: boolean) => void;
-  repeat: boolean;
-  setRepeat: (repeat: boolean) => void;
+  repeat: RepeatMode;
+  setRepeat: (repeat: RepeatMode) => void;
+  resumePositionMs: number | null;
+  consumeResume(): void;
 }
 
 export const PlayerContext = createContext<PlayerContext | undefined>(undefined);
 
 const Main = () => {
   const [shuffled, setShuffled] = useState<boolean>(false);
-  const [repeat, setRepeat] = useState<boolean>(false);
+  const [repeat, setRepeat] = useState<RepeatMode>('off');
   const [currentlyPlayingSong, setCurrentlyPlayingSong] = useState<SongDTO | undefined>(undefined);
+  const [resumePositionMs, setResumePositionMs] = useState<number | null>(null);
+
+  useEffect(() => {
+    Promise.all([PlaybackService.getPlaybackState(), QueueService.getCurrentSong()]).then(([state, currentSong]) => {
+      setCurrentlyPlayingSong(currentSong ?? undefined);
+      setShuffled(state.shuffled);
+      setRepeat(state.repeat);
+      setResumePositionMs(state.positionMs);
+    });
+  }, []);
 
   function playSongNow(song: SongDTO) {
     setCurrentlyPlayingSong(song);
@@ -40,16 +52,20 @@ const Main = () => {
   }
 
   function handleShuffledChange(shuffled: boolean) {
-    SystemService.setShuffled(shuffled).then(() => setShuffled(shuffled));
+    PlaybackService.updatePlaybackState({ shuffled }).then(() => setShuffled(shuffled));
   }
 
-  function handleRepeatChange(repeat: boolean) {
-    SystemService.setRepeat(repeat).then(() => setRepeat(repeat));
+  function handleRepeatChange(repeat: RepeatMode) {
+    PlaybackService.updatePlaybackState({ repeat }).then(() => setRepeat(repeat));
+  }
+
+  function consumeResume() {
+    setResumePositionMs(null);
   }
 
   return (
     <div className='main-container'>
-      <PlayerContext.Provider value={{ playSongNow, queueSong, currentlyPlayingSong, setCurrentlyPlayingSong, shuffled, setShuffled: handleShuffledChange, repeat, setRepeat: handleRepeatChange }}>
+      <PlayerContext.Provider value={{ playSongNow, queueSong, currentlyPlayingSong, setCurrentlyPlayingSong, shuffled, setShuffled: handleShuffledChange, repeat, setRepeat: handleRepeatChange, resumePositionMs, consumeResume }}>
         <AppRouter />
         <PlayerMain />
       </PlayerContext.Provider>
