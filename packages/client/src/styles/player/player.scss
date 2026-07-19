@@ -15,3 +15,25 @@ div.player-main {
         }
     }
 }
+
+.repeat-mode {
+    position: relative;
+    display: inline-flex;
+
+    &__badge {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        font-size: var(--pds-font-size-xs);
+        line-height: 1;
+        color: var(--pds-color-text-on-primary);
+        background: var(--pds-color-primary);
+        border-radius: var(--pds-radius-full);
+        min-width: var(--pds-space-md);
+        height: var(--pds-space-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+    }
+}

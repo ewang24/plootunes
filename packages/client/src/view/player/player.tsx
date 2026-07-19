@@ -1,21 +1,34 @@
-import React, { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useLayoutEffect, useRef } from 'react';
 import { Button } from '@ploot/pds';
 import { PlayerContext } from '../main';
-import { AudioService } from '../albums/electronServices/audioService';
+import { AudioService } from '../../services/audioService.ts';
 import { QueueService } from '../../services/queueService.ts';
-import type { SongDTO } from '@ploot/plootunes-shared';
-import { SystemService } from '../global/electronServices/systemService';
+import { PlaybackService } from '../../services/playbackService.ts';
+import type { RepeatMode, SongDTO } from '@ploot/plootunes-shared';
 import { StatService } from '../../services/statService.ts';
 import { coverUrl } from '../../services/covers.ts';
 
-function Player() {
-  const { shuffled, setShuffled, repeat, setRepeat, currentlyPlayingSong, setCurrentlyPlayingSong } = useContext(PlayerContext)!;
-  const [audioSrc, setAudioSrc] = useState<string | undefined>(undefined);
-  const audioPlayer = useRef<HTMLAudioElement>(null);
+const VOLUME_STORAGE_KEY = 'plootunes.volume';
+const POSITION_HEARTBEAT_MS = 10_000;
 
-  useEffect(() => {
-    SystemService.isShuffled().then((shuffled: boolean) => setShuffled(shuffled));
-  }, []);
+function nextRepeatMode(current: RepeatMode): RepeatMode {
+  if (current === 'off') return 'all';
+  if (current === 'all') return 'one';
+  return 'off';
+}
+
+function repeatTitle(mode: RepeatMode): string {
+  if (mode === 'all') return 'Repeat All';
+  if (mode === 'one') return 'Repeat One';
+  return 'Repeat Off';
+}
+
+function Player() {
+  const { shuffled, setShuffled, repeat, setRepeat, currentlyPlayingSong, setCurrentlyPlayingSong, resumePositionMs, consumeResume } = useContext(PlayerContext)!;
+  const audioPlayer = useRef<HTMLAudioElement>(null);
+  const pendingSeekRef = useRef<number | null>(null);
+
+  const audioSrc = currentlyPlayingSong ? AudioService.streamUrl(currentlyPlayingSong.id) : undefined;
 
   useLayoutEffect(() => setUpAudioPlayerListeners(), [audioSrc]);
 
@@ -35,18 +48,53 @@ function Player() {
   }, [currentlyPlayingSong]);
 
   function setUpAudioPlayerListeners() {
-    if (!audioPlayer.current) return;
-    audioPlayer.current.addEventListener("ended", playNextSong);
+    const audio = audioPlayer.current;
+    if (!audio) return;
+
+    const storedVolume = localStorage.getItem(VOLUME_STORAGE_KEY);
+    if (storedVolume !== null) audio.volume = Number(storedVolume);
+
+    function handleLoadedMetadata() {
+      if (!audio || pendingSeekRef.current == null) return;
+      audio.currentTime = pendingSeekRef.current / 1000;
+      pendingSeekRef.current = null;
+    }
+
+    function reportPosition() {
+      if (!audio) return;
+      PlaybackService.updatePlaybackState({ positionMs: Math.floor(audio.currentTime * 1000) });
+    }
+
+    function handleVolumeChange() {
+      if (!audio) return;
+      localStorage.setItem(VOLUME_STORAGE_KEY, String(audio.volume));
+    }
+
+    const heartbeat = setInterval(() => {
+      if (!audio.paused) reportPosition();
+    }, POSITION_HEARTBEAT_MS);
+
+    audio.addEventListener('ended', playNextSong);
+    audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+    audio.addEventListener('pause', reportPosition);
+    audio.addEventListener('seeked', reportPosition);
+    audio.addEventListener('volumechange', handleVolumeChange);
+
     return () => {
-      if (!audioPlayer?.current) return;
-      audioPlayer.current.removeEventListener("ended", playNextSong);
+      clearInterval(heartbeat);
+      audio.removeEventListener('ended', playNextSong);
+      audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      audio.removeEventListener('pause', reportPosition);
+      audio.removeEventListener('seeked', reportPosition);
+      audio.removeEventListener('volumechange', handleVolumeChange);
     };
   }
 
   function processAudioSrc() {
-    if (!audioSrc) return;
-    if (!audioPlayer.current) {
-      window.alert("Fatal error! Audio player not available. Please restart the application.");
+    if (!audioSrc || !audioPlayer.current) return;
+    if (resumePositionMs != null) {
+      pendingSeekRef.current = resumePositionMs;
+      consumeResume();
       return;
     }
     audioPlayer.current.play();
@@ -54,32 +102,22 @@ function Player() {
 
   function processCurrentlyPlayingSong() {
     if (!currentlyPlayingSong) return;
-    // AudioService is still on the dormant Electron IPC path (see electronUtil.ts), which
-    // predates the string-UUID song ids used everywhere else in the browser build.
-    AudioService.getSongBuffer(currentlyPlayingSong.id as unknown as number).then((data: Buffer) => {
-      processAudioBuffer(data);
-      if ('mediaSession' in navigator) {
-        const artwork = [];
-        if (currentlyPlayingSong.coverImage) {
-          artwork.push({ src: coverUrl(currentlyPlayingSong.coverImage), sizes: '128x128', type: 'image/jpeg' });
-        }
-        navigator.mediaSession.metadata = new MediaMetadata({
-          title: currentlyPlayingSong.name ?? undefined,
-          artist: currentlyPlayingSong.artistName || 'Unknown Artist',
-          album: currentlyPlayingSong.albumName || 'Unknown Album',
-          artwork,
-        });
-        navigator.mediaSession.setActionHandler('play', () => {});
-        navigator.mediaSession.setActionHandler('pause', () => {});
-        navigator.mediaSession.setActionHandler('previoustrack', () => {});
-        navigator.mediaSession.setActionHandler('nexttrack', () => {});
+    if ('mediaSession' in navigator) {
+      const artwork = [];
+      if (currentlyPlayingSong.coverImage) {
+        artwork.push({ src: coverUrl(currentlyPlayingSong.coverImage), sizes: '128x128', type: 'image/jpeg' });
       }
-    });
-  }
-
-  function processAudioBuffer(data: Buffer) {
-    const blob = new Blob([data], { type: 'audio/mpeg' });
-    setAudioSrc(URL.createObjectURL(blob));
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: currentlyPlayingSong.name ?? undefined,
+        artist: currentlyPlayingSong.artistName || 'Unknown Artist',
+        album: currentlyPlayingSong.albumName || 'Unknown Album',
+        artwork,
+      });
+      navigator.mediaSession.setActionHandler('play', () => {});
+      navigator.mediaSession.setActionHandler('pause', () => {});
+      navigator.mediaSession.setActionHandler('previoustrack', () => {});
+      navigator.mediaSession.setActionHandler('nexttrack', () => {});
+    }
   }
 
   async function playPreviousSong() {
@@ -109,21 +147,21 @@ function Player() {
           onClick={playPreviousSong}
           title='Previous Song'
         />
-        <Button
-          icon='repeatCircle'
-          variant={repeat ? 'primary' : 'ghost'}
-          size='md'
-          onClick={() => setRepeat(!repeat)}
-          title='Repeat'
-        />
+        <div className='repeat-mode'>
+          <Button
+            icon='repeatCircle'
+            variant={repeat !== 'off' ? 'primary' : 'ghost'}
+            size='md'
+            onClick={() => setRepeat(nextRepeatMode(repeat))}
+            title={repeatTitle(repeat)}
+          />
+          {repeat === 'one' && <span className='repeat-mode__badge'>1</span>}
+        </div>
         <Button
           icon='shuffle'
           variant={shuffled ? 'primary' : 'ghost'}
           size='md'
-          onClick={() => {
-            if (!shuffled) QueueService.shuffleCurrentQueue();
-            setShuffled(!shuffled);
-          }}
+          onClick={() => setShuffled(!shuffled)}
           title='Shuffle'
         />
         <strong>{currentlyPlayingSong?.name}</strong>
