@@ -41,6 +41,7 @@ export interface AppServices {
 
 export function createServices(daos: AppDaos): AppServices {
   const queueService = new QueueService(daos)
+  const scanService = new ScanService(daos)
   return {
     songService: new SongService(daos),
     albumService: new AlbumService(daos),
@@ -48,11 +49,11 @@ export function createServices(daos: AppDaos): AppServices {
     genreService: new GenreService(daos),
     queueService,
     playbackService: new PlaybackService(daos, queueService),
-    libraryService: new LibraryService(daos),
+    libraryService: new LibraryService(daos, scanService),
     statsService: new StatsService(daos),
     widgetService: new WidgetService(daos),
     preferencesService: new PreferencesService(daos),
     audioService: new AudioService(daos),
-    scanService: new ScanService(daos),
+    scanService,
   }
 }

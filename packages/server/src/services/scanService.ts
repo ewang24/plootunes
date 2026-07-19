@@ -6,10 +6,10 @@ import sharp from 'sharp'
 import { parseFile } from 'music-metadata'
 import type { AppDaos } from '../daoFactory.ts'
 import type { ScanRunRow } from '../dao/scanRunDao.ts'
-import type { SongReconcileRow } from '../dao/songDao.ts'
+import type { SongReconcileRow, SongIngestFields } from '../dao/songDao.ts'
 import { EnvCoverStorageConfigProvider } from './coverStorageService.ts'
 
-const SUPPORTED_EXTENSIONS = new Set(['mp3', 'm4a', 'wav', 'flac'])
+export const SUPPORTED_AUDIO_EXTENSIONS = new Set(['mp3', 'm4a', 'wav', 'flac'])
 // Bounds concurrent per-file work (hashing, tag parsing, cover writes) during a walk.
 const SCAN_CONCURRENCY = 16
 // Caps how many per-file error messages a run persists, so a library full of
@@ -54,6 +54,7 @@ function errorMessage(err: unknown): string {
 
 export interface IScanService {
   ingestFile(absPath: string): Promise<IngestResult>
+  relinkSong(songId: string, absPath: string): Promise<void>
   triggerScan(): Promise<ScanRunRow>
   runScan(): Promise<ScanRunRow>
 }
@@ -65,10 +66,13 @@ export class ScanService implements IScanService {
 
   constructor(private readonly daos: AppDaos) {}
 
-  // Reusable ingest core for a single file already known to exist on disk — the
-  // library walk and the upload path (T8) both funnel through this.
-  async ingestFile(absPath: string): Promise<IngestResult> {
-    const nfcPath = absPath.normalize('NFC')
+  // Heavy-lifting shared by every ingest entry point (library walk, upload,
+  // manual relink): parse tags, upsert artist/album (+ cover), and build the
+  // fields row for the song's content/metadata. Deciding which song row to
+  // attach those fields to is caller-specific and lives outside this helper.
+  private async prepareIngest(
+    nfcPath: string,
+  ): Promise<{ fields: SongIngestFields; genreIds: string[] }> {
     const [contentHash, stat, metadata] = await Promise.all([
       hashFile(nfcPath),
       fs.promises.stat(nfcPath),
@@ -96,7 +100,7 @@ export class ScanService implements IScanService {
       }
     }
 
-    const fields = {
+    const fields: SongIngestFields = {
       name: common.title ?? null,
       trackNumber: common.track?.no ?? null,
       discNumber: common.disk?.no ?? null,
@@ -108,6 +112,19 @@ export class ScanService implements IScanService {
       path: nfcPath,
     }
 
+    const genreIds = (
+      await Promise.all((common.genre ?? []).map((name) => this.daos.genreDao.upsertByName(name)))
+    ).map((g) => g.id)
+
+    return { fields, genreIds }
+  }
+
+  // Reusable ingest core for a single file already known to exist on disk — the
+  // library walk and the upload path both funnel through this.
+  async ingestFile(absPath: string): Promise<IngestResult> {
+    const nfcPath = absPath.normalize('NFC')
+    const { fields, genreIds } = await this.prepareIngest(nfcPath)
+
     let songId: string
     let classification: IngestClassification
     const existing = await this.daos.songDao.findByPath(nfcPath)
@@ -116,7 +133,7 @@ export class ScanService implements IScanService {
       songId = existing.id
       classification = 'updated'
     } else {
-      const relinked = await this.daos.songDao.relinkByContentHash(contentHash, fields)
+      const relinked = await this.daos.songDao.relinkByContentHash(fields.contentHash, fields)
       if (relinked) {
         songId = relinked.id
         classification = 'moved'
@@ -127,13 +144,19 @@ export class ScanService implements IScanService {
       }
     }
 
-    const genreIds = await Promise.all((common.genre ?? []).map((name) => this.daos.genreDao.upsertByName(name)))
-    await this.daos.songGenreDao.setForSong(
-      songId,
-      genreIds.map((g) => g.id),
-    )
+    await this.daos.songGenreDao.setForSong(songId, genreIds)
 
     return { songId, classification }
+  }
+
+  // Re-points a specific KNOWN song row at a new absolute path, re-parsing tags
+  // from the file found there. Used for admin manual relink, where the file's
+  // content changed (so the auto content-hash relink in ingestFile can't match it).
+  async relinkSong(songId: string, absPath: string): Promise<void> {
+    const nfcPath = absPath.normalize('NFC')
+    const { fields, genreIds } = await this.prepareIngest(nfcPath)
+    await this.daos.songDao.updateIngest(songId, fields)
+    await this.daos.songGenreDao.setForSong(songId, genreIds)
   }
 
   // One cover per album, written the first time we see an album row without one.
@@ -300,7 +323,7 @@ async function walkSupportedFiles(dir: string): Promise<string[]> {
       files.push(...(await walkSupportedFiles(entryPath)))
     } else {
       const ext = path.extname(entry.name).slice(1).toLowerCase()
-      if (SUPPORTED_EXTENSIONS.has(ext)) files.push(entryPath)
+      if (SUPPORTED_AUDIO_EXTENSIONS.has(ext)) files.push(entryPath)
     }
   }
   return files

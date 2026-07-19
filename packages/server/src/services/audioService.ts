@@ -9,7 +9,7 @@ export class AudioService implements IAudioService {
 
   async getStreamablePath(songId: string): Promise<string | null> {
     const row = await this.daos.songDao.findById(songId)
-    if (!row || row.missing) return null
+    if (!row || row.missing || row.removed) return null
     return row.path
   }
 }

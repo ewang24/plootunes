@@ -30,6 +30,15 @@ const genresSubquery = sql<string[]>`COALESCE(ARRAY(
   ORDER BY ${genre.name}
 ), '{}')`
 
+export interface MissingSongRow {
+  id: string
+  path: string
+  name: string | null
+  artistName: string | null
+  albumName: string | null
+  missingAt: Date | null
+}
+
 export interface SongIngestFields {
   name: string | null
   trackNumber: number | null
@@ -52,9 +61,12 @@ export interface ISongDao {
   findByPath(path: string): Promise<SongRow | undefined>
   relinkByContentHash(contentHash: string, fields: SongIngestFields): Promise<SongRow | undefined>
   findReconcileState(): Promise<SongReconcileRow[]>
+  findMissing(): Promise<MissingSongRow[]>
   create(row: NewSong): Promise<SongRow>
   updateIngest(id: string, fields: SongIngestFields): Promise<SongRow>
   markMissing(ids: string[]): Promise<void>
+  markRemoved(id: string): Promise<void>
+  deleteById(id: string): Promise<void>
 }
 
 export class SongDao implements ISongDao {
@@ -137,7 +149,7 @@ export class SongDao implements ISongDao {
       .where(
         eq(
           song.id,
-          sql`(SELECT id FROM ${song} WHERE ${song.contentHash} = ${contentHash} AND ${song.missing} = true LIMIT 1 FOR UPDATE SKIP LOCKED)`,
+          sql`(SELECT id FROM ${song} WHERE ${song.contentHash} = ${contentHash} AND ${song.missing} = true AND ${song.removed} = false LIMIT 1 FOR UPDATE SKIP LOCKED)`,
         ),
       )
       .returning()
@@ -152,6 +164,25 @@ export class SongDao implements ISongDao {
       .from(song)
   }
 
+  // Rows the scanner couldn't reconcile on its own — surfaced for admin
+  // relink/hard-remove. removed rows are tombstones and never resurface here.
+  async findMissing(): Promise<MissingSongRow[]> {
+    return this.db
+      .select({
+        id: song.id,
+        path: song.path,
+        name: song.name,
+        artistName: artist.name,
+        albumName: album.name,
+        missingAt: song.missingAt,
+      })
+      .from(song)
+      .leftJoin(artist, eq(song.artistId, artist.id))
+      .leftJoin(album, eq(song.albumId, album.id))
+      .where(and(eq(song.missing, true), eq(song.removed, false)))
+      .orderBy(asc(song.missingAt))
+  }
+
   async create(row: NewSong): Promise<SongRow> {
     const [created] = await this.db.insert(song).values(row).returning()
     return created
@@ -160,7 +191,16 @@ export class SongDao implements ISongDao {
   async updateIngest(id: string, fields: SongIngestFields): Promise<SongRow> {
     const [updated] = await this.db
       .update(song)
-      .set({ ...fields, missing: false, missingAt: null, updatedAt: new Date() })
+      .set({
+        ...fields,
+        missing: false,
+        missingAt: null,
+        // A file present at this exact path has returned — even if this row was
+        // tombstoned (removed=true), lift the tombstone so it's visible again.
+        // No-op for an ordinary row, since those are already removed=false.
+        removed: false,
+        updatedAt: new Date(),
+      })
       .where(eq(song.id, id))
       .returning()
     return updated
@@ -172,5 +212,13 @@ export class SongDao implements ISongDao {
       .update(song)
       .set({ missing: true, missingAt: new Date() })
       .where(inArray(song.id, ids))
+  }
+
+  async markRemoved(id: string): Promise<void> {
+    await this.db.update(song).set({ removed: true, updatedAt: new Date() }).where(eq(song.id, id))
+  }
+
+  async deleteById(id: string): Promise<void> {
+    await this.db.delete(song).where(eq(song.id, id))
   }
 }

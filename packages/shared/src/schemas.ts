@@ -1,6 +1,6 @@
 import { z } from 'zod'
-import { REPEAT_MODES, BACK_BEHAVIORS, SCAN_STATUSES } from './enums.ts'
-import type { RepeatMode, BackBehavior, ScanStatus } from './enums.ts'
+import { REPEAT_MODES, BACK_BEHAVIORS, SCAN_STATUSES, HARD_REMOVE_OUTCOMES } from './enums.ts'
+import type { RepeatMode, BackBehavior, ScanStatus, HardRemoveOutcome } from './enums.ts'
 
 // Response schemas (used for API output validation and DTO type derivation)
 
@@ -102,6 +102,24 @@ export const scanRunResponseSchema = z.object({
 
 export type ScanRunDTO = z.infer<typeof scanRunResponseSchema>
 
+export const missingSongResponseSchema = z.object({
+  id: z.string().uuid(),
+  path: z.string(),
+  name: z.string().nullable(),
+  artistName: z.string().nullable(),
+  albumName: z.string().nullable(),
+  missingAt: z.string().nullable(),
+})
+
+export type MissingSongDTO = z.infer<typeof missingSongResponseSchema>
+
+export const hardRemoveResponseSchema = z.object({
+  songId: z.string().uuid(),
+  outcome: z.enum(HARD_REMOVE_OUTCOMES as [HardRemoveOutcome, ...HardRemoveOutcome[]]),
+})
+
+export type HardRemoveDTO = z.infer<typeof hardRemoveResponseSchema>
+
 // Input schemas
 
 export const playbackUpdateSchema = z.object({
@@ -113,6 +131,10 @@ export const playbackUpdateSchema = z.object({
 
 export const librarySubscriptionCreateSchema = z.object({
   folderPath: z.string().min(1),
+})
+
+export const libraryRelinkSchema = z.object({
+  path: z.string().min(1),
 })
 
 export const widgetCreateSchema = z.object({

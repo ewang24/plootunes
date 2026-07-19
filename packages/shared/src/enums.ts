@@ -29,3 +29,12 @@ export const ScanStatus = {
 export type ScanStatus = (typeof ScanStatus)[keyof typeof ScanStatus]
 
 export const SCAN_STATUSES = Object.values(ScanStatus)
+
+export const HardRemoveOutcome = {
+  DELETED: 'deleted',
+  TOMBSTONED: 'tombstoned',
+} as const
+
+export type HardRemoveOutcome = (typeof HardRemoveOutcome)[keyof typeof HardRemoveOutcome]
+
+export const HARD_REMOVE_OUTCOMES = Object.values(HardRemoveOutcome)

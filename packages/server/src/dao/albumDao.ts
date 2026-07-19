@@ -40,6 +40,7 @@ export class AlbumDao implements IAlbumDao {
       SELECT COUNT(*) FROM ${song} s
       WHERE s.album_id = ${album.id}
         AND s.missing = false
+        AND s.removed = false
         AND ${pathInUserLibrary(sql`s.path`, userId)}
     )`
 
