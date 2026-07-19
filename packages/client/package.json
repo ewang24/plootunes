@@ -1,15 +1,38 @@
 {
-  "name": "@ploot/plootunes-client",
-  "version": "0.1.0",
-  "private": true,
-  "type": "module",
+  "name": "react",
+  "version": "0.0.0",
+  "packageManager": "pnpm@11.5.1",
   "scripts": {
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run --passWithNoTests"
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "directories": {
+    "buildResources": "dist",
+    "app": "dist"
+  },
+  "private": true,
+  "dependencies": {
+    "@ploot/pds": "file:../../../PDS",
+    "@types/react-virtualized": "^9.21.30",
+    "path-browserify": "^1.0.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^6.22.3",
+    "react-virtualized": "^9.22.5",
+    "react-virtualized-auto-sizer": "1.0.24",
+    "react-window": "1.8.10",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0",
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
-    "tsx": "^4.19.0",
-    "typescript": "~5.8.3",
-    "vitest": "^3.0.0"
+    "@types/electron": "^1.6.10",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "sass": "^1.77.0",
+    "typescript": "^5.4.5",
+    "vite": "^5.3.1",
+    "vite-plugin-svgr": "^4.2.0"
   }
 }
