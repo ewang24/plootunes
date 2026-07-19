@@ -196,6 +196,34 @@ describe('getAllQueuedSongs windowing', () => {
   })
 })
 
+describe('getCurrentSong', () => {
+  it('hydrates the song at the active-array cursor', async () => {
+    const { songs } = await seedLibraryOfSongs(5)
+    await queueService.queueAllSongs(SEED_USER_ID)
+    await queueService.transitionCurrentSong(SEED_USER_ID, songs[3].id)
+
+    const current = await queueService.getCurrentSong(SEED_USER_ID)
+    expect(current?.id).toBe(songs[3].id)
+  })
+
+  it('follows playOrder when shuffled', async () => {
+    const { songs } = await seedLibraryOfSongs(5)
+    await queueService.queueAllSongs(SEED_USER_ID)
+    await queueService.transitionCurrentSong(SEED_USER_ID, songs[2].id)
+    await queueService.setShuffled(SEED_USER_ID, true)
+
+    // setShuffled pins the current song at playOrder[0] and cursor 0
+    const current = await queueService.getCurrentSong(SEED_USER_ID)
+    expect(current?.id).toBe(songs[2].id)
+  })
+
+  it('returns null when there is no cursor (nothing playing)', async () => {
+    await seedLibraryOfSongs(3)
+    const current = await queueService.getCurrentSong(SEED_USER_ID)
+    expect(current).toBeNull()
+  })
+})
+
 describe('playRandomAlbum / playRandomArtist', () => {
   it('replaces the queue with a random in-library album, unshuffled, cursor 0', async () => {
     const { songs } = await seedLibraryOfSongs(3)

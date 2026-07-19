@@ -31,6 +31,10 @@ async function getSongOrNull(url: string): Promise<SongDTO | null> {
 }
 
 export class QueueService {
+  static async getCurrentSong(): Promise<SongDTO | null> {
+    return getSongOrNull('/api/queue/current')
+  }
+
   static async getNextSongInQueue(): Promise<SongDTO | null> {
     return getSongOrNull('/api/queue/next')
   }

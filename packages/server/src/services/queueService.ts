@@ -77,6 +77,7 @@ export interface IQueueService {
   shuffleAllSongsAndPlay(userId: string): Promise<SongCatalogRow | null>
   setShuffled(userId: string, shuffled: boolean): Promise<void>
   transitionCurrentSong(userId: string, songId: string): Promise<void>
+  getCurrentSong(userId: string): Promise<SongCatalogRow | null>
   getNextSongInQueue(userId: string): Promise<SongCatalogRow | null>
   getPreviousSongInQueue(userId: string): Promise<SongCatalogRow | null>
   getAllQueuedSongs(
@@ -234,6 +235,13 @@ export class QueueService implements IQueueService {
       cursor: cursor === -1 ? null : cursor,
       positionMs: 0,
     })
+  }
+
+  async getCurrentSong(userId: string): Promise<SongCatalogRow | null> {
+    const queueRow = await this.loadQueue(userId)
+    const playbackRow = await this.loadPlayback(userId)
+    if (playbackRow.cursor === null) return null
+    return this.hydrateOne(this.activeArray(queueRow)[playbackRow.cursor])
   }
 
   async getNextSongInQueue(userId: string): Promise<SongCatalogRow | null> {

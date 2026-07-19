@@ -62,7 +62,11 @@ function Player() {
 
     function reportPosition() {
       if (!audio) return;
-      PlaybackService.updatePlaybackState({ positionMs: Math.floor(audio.currentTime * 1000) });
+      // Position sync is best-effort: last-write-wins and the next heartbeat retries,
+      // so a failed persist is logged, never surfaced to the listener.
+      PlaybackService.updatePlaybackState({ positionMs: Math.floor(audio.currentTime * 1000) }).catch(
+        (err) => console.error('Failed to persist playback position', err),
+      );
     }
 
     function handleVolumeChange() {

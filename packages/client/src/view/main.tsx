@@ -29,8 +29,8 @@ const Main = () => {
   const [resumePositionMs, setResumePositionMs] = useState<number | null>(null);
 
   useEffect(() => {
-    Promise.all([PlaybackService.getPlaybackState(), QueueService.getAllQueuedSongs()]).then(([state, queue]) => {
-      setCurrentlyPlayingSong(queue.currentlyPlaying ?? undefined);
+    Promise.all([PlaybackService.getPlaybackState(), QueueService.getCurrentSong()]).then(([state, currentSong]) => {
+      setCurrentlyPlayingSong(currentSong ?? undefined);
       setShuffled(state.shuffled);
       setRepeat(state.repeat);
       setResumePositionMs(state.positionMs);

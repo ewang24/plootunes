@@ -17,6 +17,7 @@ function toQueuedSongsDto(result: {
 
 export interface IQueueAdapter {
   getQueuedSongs(userId: string, offset: number, limit: number): Promise<QueuedSongsDTO>
+  getCurrentSong(userId: string): Promise<SongDTO | null>
   getNextSong(userId: string): Promise<SongDTO | null>
   getPreviousSong(userId: string): Promise<SongDTO | null>
   queueAllSongsAndPlayFirstSong(userId: string): Promise<SongDTO | null>
@@ -31,6 +32,11 @@ export class QueueAdapter implements IQueueAdapter {
   async getQueuedSongs(userId: string, offset: number, limit: number): Promise<QueuedSongsDTO> {
     const result = await this.services.queueService.getAllQueuedSongs(userId, offset, limit)
     return toQueuedSongsDto(result)
+  }
+
+  async getCurrentSong(userId: string): Promise<SongDTO | null> {
+    const song = await this.services.queueService.getCurrentSong(userId)
+    return song ? toSongDto(song) : null
   }
 
   async getNextSong(userId: string): Promise<SongDTO | null> {
