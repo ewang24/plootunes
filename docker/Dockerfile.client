@@ -1,0 +1,21 @@
+# Stage 1 — builder
+FROM node:22.16.0-alpine AS builder
+RUN npm install -g pnpm@11.5.1
+RUN apk add --no-cache git
+WORKDIR /build
+# Initialize a bare git repo so prepare scripts ("git config core.hooksPath") don't fail
+RUN git init
+# Copy PDS so file:../../../PDS resolves from packages/client/
+COPY PDS ./PDS/
+COPY plootunes/ ./plootunes/
+WORKDIR /build/PDS
+# Drop any host-copied node_modules (pnpm store symlinks break npm's dedupe → "Cannot read properties of null (reading 'matches')")
+RUN rm -rf node_modules && npm install && npm run build:lib
+WORKDIR /build/plootunes
+RUN pnpm install --frozen-lockfile
+RUN pnpm -F ./packages/client build
+
+# Stage 2 — runtime
+FROM nginx:alpine
+COPY --from=builder /build/plootunes/packages/client/dist /usr/share/nginx/html
+COPY plootunes/docker/nginx.conf /etc/nginx/conf.d/default.conf
