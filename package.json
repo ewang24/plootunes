@@ -19,13 +19,14 @@
     "format": "prettier --write 'packages/*/src/**/*.{ts,tsx,scss}'",
     "app:up": "docker compose -f docker/docker-compose.e2e.yml up --build",
     "app:down": "docker compose -f docker/docker-compose.e2e.yml down -v",
-    "test:e2e": "echo 'E2E suite is activated in T13 — the harness is not bootable yet. See e2e/README.md.' && exit 1"
+    "test:e2e": "playwright test --config e2e/playwright.config.ts"
   },
   "private": true,
   "dependencies": {
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
+    "@playwright/test": "1.61.0",
     "@svgr/cli": "^8.1.0",
     "@types/jest": "^29.5.13",
     "@types/node": "^22.5.3",
