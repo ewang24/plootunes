@@ -1,0 +1,71 @@
+services:
+  postgres:
+    container_name: plootunes-postgres
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-plootunes}
+      POSTGRES_USER: ${POSTGRES_USER:-plootunes}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-plootunes}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-plootunes} -d ${POSTGRES_DB:-plootunes}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  server:
+    container_name: plootunes-server
+    build:
+      context: ../..
+      dockerfile: plootunes/docker/Dockerfile.server
+      args:
+        PLOOTUNES_UID: ${PLOOTUNES_UID:-1001}
+        PLOOTUNES_GID: ${PLOOTUNES_GID:-1001}
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgres://plootunes:plootunes@postgres:5432/plootunes}
+      PORT: ${PORT:-3000}
+      MEDIA_ROOT: /library
+      COVERS_DIR: /app/covers
+      COVERS_PUBLIC_PATH: ${COVERS_PUBLIC_PATH:-/covers}
+      SESSION_SECRET: ${SESSION_SECRET:-changeme}
+      NODE_ENV: ${NODE_ENV:-production}
+      OIDC_ISSUER: ${OIDC_ISSUER:-}
+      OIDC_CLIENT_ID: ${OIDC_CLIENT_ID:-}
+      OIDC_CLIENT_SECRET: ${OIDC_CLIENT_SECRET:-}
+      OIDC_DISCOVERY_URL: ${OIDC_DISCOVERY_URL:-}
+      OIDC_REDIRECT_URI: ${OIDC_REDIRECT_URI:-}
+    volumes:
+      - covers:/app/covers
+      # Defaults to the in-repo stub library so `docker compose up` gives a real
+      # boot+scan smoke test with no dev-machine audio dependency. In prod, point
+      # MEDIA_HOST_DIR at a real library — mount RW and chown it to
+      # ${PLOOTUNES_UID:-1001}:${PLOOTUNES_GID:-1001} (group/other read-only) so the
+      # app is the sole writer; the OS ownership itself is what enforces this, not
+      # the container.
+      - ${MEDIA_HOST_DIR:-../src/core/db/test/assets/testLibrary}:/library:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:3000/api/health || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  client:
+    container_name: plootunes-client
+    build:
+      context: ../..
+      dockerfile: plootunes/docker/Dockerfile.client
+    ports:
+      - "${PLOOTUNES_PORT:-8080}:80"
+    depends_on:
+      - server
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  covers:
