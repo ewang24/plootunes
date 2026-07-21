@@ -167,7 +167,7 @@ pnpm db:migrate    # applies pending migrations
 # E2E stack
 pnpm app:up        # boot baseline e2e instance (docker compose up --build)
 pnpm app:down      # tear down and discard ephemeral DB (docker compose down -v)
-pnpm test:e2e      # run Playwright suite (stack must be running) — NOT bootable until T13
+pnpm test:e2e      # run Playwright suite (stack must be running)
 
 # Lint / format (new packages/ only)
 pnpm lint
@@ -179,8 +179,6 @@ npx jest path/to/test.spec.ts   # single test file
 ```
 
 ## E2E Testing
-
-> **Skeleton — not bootable yet.** The e2e harness (compose, seeds, `pnpm app:up`/`test:e2e`) is documented here and scaffolded under `e2e/`, but it is activated in ticket **T13**. `pnpm test:e2e` currently prints a reminder and exits non-zero.
 
 See `e2e/README.md` for the full workflow.
 

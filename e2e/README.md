@@ -1,8 +1,6 @@
 # PlooTunes E2E Testing
 
-> **SKELETON — not yet bootable; the harness is activated in a later ticket (T13).**
-
-Self-contained end-to-end test framework. Boots a fully-seeded PlooTunes instance in Docker using a shared canonical music catalog (songs, albums, artists, genres) plus real cover art and audio under `MEDIA_ROOT`, then runs Playwright specs against it.
+Self-contained end-to-end test framework. Boots a fully-seeded PlooTunes instance in Docker using a shared canonical music catalog (songs, albums, artists) plus real cover art and audio under `MEDIA_ROOT`, then runs Playwright specs against it.
 
 ## Quick start
 
@@ -15,7 +13,7 @@ pnpm app:up
 # Boot with a scenario layered on top of the baseline
 SCENARIO=shuffled-queue pnpm app:up
 
-# Stop and discard the ephemeral database
+# Stop and discard the ephemeral database (and covers)
 pnpm app:down
 ```
 
@@ -28,6 +26,7 @@ The client is served at **http://localhost:3100** (no login — auth is bypassed
 pnpm app:up
 
 # 2. In a separate terminal, run the specs
+# @playwright/test is a root devDependency — install once with `pnpm install`.
 pnpm test:e2e
 
 # 3. Tear down when done
@@ -53,6 +52,14 @@ The loop:
 
 This is complementary to, not a replacement for, the spec suite: the suite guards against regressions over time; the MCP pass verifies the feature works right now.
 
+## Known: placeholder cover images 404
+
+When an album has no cover, the client falls back to raw relative paths (`'../../assets/img/test.jpg'` / `up.jpg` in `albumList.tsx`, `songsGrid.tsx`, `queueViewer.tsx`, `artistTile.tsx`, `albumsForArtists.tsx`). Those strings are not bundled by Vite, so the browser resolves them against the current URL and they 404.
+
+The **baseline is unaffected** — every one of its albums has pre-generated cover art. It shows up under `SCENARIO=big-library`, whose stubs carry no embedded art.
+
+This is a pre-existing client bug, not a harness one. Until it is fixed, scope network and image assertions to real derived assets — `img[src^="/covers/"]` — as `e2e/tests/album-detail.spec.ts` does, rather than asserting that no image on the page 404s.
+
 ## Auth bypass
 
 The e2e compose sets `PLOOTUNES_AUTH_BYPASS=true`. This makes the server skip session checking and inject `PLOOTUNES_E2E_USER_ID` as the authenticated user on every request — no login screen needed.
@@ -68,14 +75,15 @@ A scenario is a named directory under `e2e/scenarios/` that extends the baseline
 SCENARIO=shuffled-queue docker compose -f docker/docker-compose.e2e.yml up --build
 ```
 
+Four scenarios are available: `shuffled-queue`, `big-library`, `multi-user`, `missing-and-moved`. See each scenario's `README.md` for what it seeds.
+
 ### Scenario layout
 
 ```
 e2e/scenarios/<name>/
   01-patch.sql          # Applied after baseline seed (numbered for ordering)
   assets/
-    covers/             # Extra cover art to copy into MEDIA_ROOT/covers
-    audio/              # Extra audio files to copy into MEDIA_ROOT/audio
+    media/               # Extra media merged into MEDIA_ROOT
   README.md             # What the scenario does and how to use it
 ```
 
@@ -83,7 +91,7 @@ SQL patches are applied in filename order. Asset directories are merged on top o
 
 ## Baseline
 
-The baseline is seeded from `e2e/baseline/seed.sql`. It contains the shared canonical catalog — songs, albums, artists, and genres with no `userId` dependency — plus pre-seeded users. See `e2e/baseline/README.md` for the scrape-to-seed approach and regeneration instructions.
+The baseline is seeded from `e2e/baseline/seed.sql`. It contains the shared canonical catalog — artists, albums, and songs with no `userId` dependency — plus pre-seeded users and their `user_library_source` subscriptions. See `e2e/baseline/README.md` for the generated-catalog approach and regeneration instructions.
 
 ## DB state verification
 
