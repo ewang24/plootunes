@@ -36,6 +36,7 @@ const ArtistList = () => {
         ))}
       </div>
     }
+    {(!artists || artists.length === 0) && <strong>No artists found</strong>}
   </Page>;
 };
 

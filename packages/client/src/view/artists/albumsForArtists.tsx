@@ -20,6 +20,8 @@ function AlbumsForArtists(props: AlbumsForArtistsProps) {
         setSelectedAlbum(undefined);
     }
 
+    if (!albums.length) return <strong>No albums found</strong>;
+
     return <>
         <div className="p-row p-row-flex-start albums-for-artist-container">
             {albums.map((album: AlbumDTO, index: number) => {

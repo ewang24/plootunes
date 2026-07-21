@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Card, useModal } from "@ploot/pds";
+import { Button, Card, useConfirmModal, useModal } from "@ploot/pds";
 import type { WidgetDTO } from "@ploot/plootunes-shared";
 import { WidgetType, WidgetTypes } from "./widgetTypes.ts";
 import QuickPlayWidget from "./widgets/quickPlayWidget";
@@ -26,6 +26,11 @@ const WidgetTile = ({ widget, widgetReloadHandler }: WidgetTileProps) => {
     WidgetService.removeWidget(widget.id).then(widgetReloadHandler);
   }
 
+  const { open: openRemoveConfirm, Modal: RemoveWidgetModal } = useConfirmModal({
+    title: `Delete ${WidgetTypes[widget.widgetType as WidgetType]?.displayName || 'widget'}?`,
+    confirmCallback: removeWidget,
+  });
+
   const { open: openEditModal, Modal: EditWidgetModal } = useModal({
     title: 'Edit Widget Settings',
     renderContent: (close) => (
@@ -39,12 +44,13 @@ const WidgetTile = ({ widget, widgetReloadHandler }: WidgetTileProps) => {
 
   return <>
     <EditWidgetModal />
+    <RemoveWidgetModal />
     <Card className='widget-tile'>
       <div className='widget-tile-header'>
         <span className='widget-tile-title'>{WidgetTypes[widget.widgetType as WidgetType]?.displayName || 'Unknown Widget'}</span>
         <div className='p-row'>
           <Button icon='hamburger' variant='ghost' size='sm' onClick={openEditModal} title='Edit Widget' />
-          <Button icon='x' variant='ghost' size='sm' onClick={removeWidget} title='Remove Widget' />
+          <Button icon='x' variant='ghost' size='sm' onClick={openRemoveConfirm} title='Remove Widget' />
         </div>
       </div>
       <div className='widget-content'>

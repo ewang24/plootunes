@@ -42,6 +42,7 @@ const AlbumList = () => {
   return <>
     <Page title='Your Albums'>
       {albums && albums.length > 0 && renderAlbumList()}
+      {(!albums || albums.length === 0) && <strong>No albums found</strong>}
     </Page>
     {selectedAlbum &&
       <OverlayView>

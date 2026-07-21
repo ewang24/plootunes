@@ -30,7 +30,7 @@ function ArtistDetails({ artist, closeArtistDetails }: ArtistDetailsProps) {
           id: 'albums',
           name: 'Albums',
           content: <div className='p-col p-row-flex-start p-row-align-stretch'>
-            {albums && albums.length > 0 && <AlbumsForArtists artist={artist} albums={albums} />}
+            {albums && <AlbumsForArtists artist={artist} albums={albums} />}
           </div>
         },
         {

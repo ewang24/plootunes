@@ -24,7 +24,7 @@ function repeatTitle(mode: RepeatMode): string {
 }
 
 function Player() {
-  const { shuffled, setShuffled, repeat, setRepeat, currentlyPlayingSong, setCurrentlyPlayingSong, resumePositionMs, consumeResume } = useContext(PlayerContext)!;
+  const { shuffled, setShuffled, repeat, setRepeat, currentlyPlayingSong, setCurrentlyPlayingSong, resumePositionMs, consumeResume, showErrorToast } = useContext(PlayerContext)!;
   const audioPlayer = useRef<HTMLAudioElement>(null);
   const pendingSeekRef = useRef<number | null>(null);
 
@@ -129,7 +129,10 @@ function Player() {
     if (!previousSongInQueue) return;
     QueueService.transitionCurrentSong(previousSongInQueue.id)
       .then(() => setCurrentlyPlayingSong(previousSongInQueue))
-      .catch((err) => window.alert(`Fatal error: ${JSON.stringify(err, null, 2)}`));
+      .catch((err) => {
+        console.error('Failed to play previous song', err);
+        showErrorToast('Playback failed. Please try again.');
+      });
   }
 
   async function playNextSong() {
@@ -138,7 +141,10 @@ function Player() {
     if (!nextSongInQueue) return;
     QueueService.transitionCurrentSong(nextSongInQueue.id)
       .then(() => setCurrentlyPlayingSong(nextSongInQueue))
-      .catch((err) => window.alert(`Fatal error: ${JSON.stringify(err, null, 2)}`));
+      .catch((err) => {
+        console.error('Failed to play next song', err);
+        showErrorToast('Playback failed. Please try again.');
+      });
   }
 
   return <div className='player-controls'>

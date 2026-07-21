@@ -1,4 +1,5 @@
 import React, { createContext, useEffect, useState } from 'react';
+import { useToast } from '@ploot/pds';
 import 'react-virtualized/styles.css'
 import '../styles/global.scss'
 import '../styles/main.scss'
@@ -19,11 +20,13 @@ export interface PlayerContext {
   setRepeat: (repeat: RepeatMode) => void;
   resumePositionMs: number | null;
   consumeResume(): void;
+  showErrorToast(message: string): void;
 }
 
 export const PlayerContext = createContext<PlayerContext | undefined>(undefined);
 
 const Main = () => {
+  const { show, Toast } = useToast();
   const [shuffled, setShuffled] = useState<boolean>(false);
   const [repeat, setRepeat] = useState<RepeatMode>('off');
   const [currentlyPlayingSong, setCurrentlyPlayingSong] = useState<SongDTO | undefined>(undefined);
@@ -38,10 +41,15 @@ const Main = () => {
     });
   }, []);
 
+  function showErrorToast(message: string) {
+    show(message, { variant: 'error' });
+  }
+
   function playSongNow(song: SongDTO) {
     setCurrentlyPlayingSong(song);
     QueueService.playSong(song.id).catch((err) => {
-      window.alert(`Error: ${JSON.stringify(err)}`);
+      console.error('Failed to play song', err);
+      showErrorToast('Playback failed. Please try again.');
     });
   }
 
@@ -66,10 +74,11 @@ const Main = () => {
 
   return (
     <div className='main-container'>
-      <PlayerContext.Provider value={{ playSongNow, queueSong, currentlyPlayingSong, setCurrentlyPlayingSong, shuffled, setShuffled: handleShuffledChange, repeat, setRepeat: handleRepeatChange, resumePositionMs, consumeResume }}>
+      <PlayerContext.Provider value={{ playSongNow, queueSong, currentlyPlayingSong, setCurrentlyPlayingSong, shuffled, setShuffled: handleShuffledChange, repeat, setRepeat: handleRepeatChange, resumePositionMs, consumeResume, showErrorToast }}>
         <AppRouter />
         <PlayerMain />
       </PlayerContext.Provider>
+      <Toast />
     </div>
   );
 };
