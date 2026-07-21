@@ -52,19 +52,30 @@ The loop:
 
 This is complementary to, not a replacement for, the spec suite: the suite guards against regressions over time; the MCP pass verifies the feature works right now.
 
-## Known: placeholder cover images 404
+## Placeholder cover images
 
-When an album has no cover, the client falls back to raw relative paths (`'../../assets/img/test.jpg'` / `up.jpg` in `albumList.tsx`, `songsGrid.tsx`, `queueViewer.tsx`, `artistTile.tsx`, `albumsForArtists.tsx`). Those strings are not bundled by Vite, so the browser resolves them against the current URL and they 404.
+When an album has no cover, the client falls back to a bundled placeholder asset. The fallbacks are bound Vite imports, so they resolve to hashed `/assets/` URLs and return 200.
 
-The **baseline is unaffected** — every one of its albums has pre-generated cover art. It shows up under `SCENARIO=big-library`, whose stubs carry no embedded art.
-
-This is a pre-existing client bug, not a harness one. Until it is fixed, scope network and image assertions to real derived assets — `img[src^="/covers/"]` — as `e2e/tests/album-detail.spec.ts` does, rather than asserting that no image on the page 404s.
+`SCENARIO=big-library` is where this is worth asserting — 342 of its 373 albums have no cover, against 0 in the baseline. Because every fallback tile points at the same two URLs, hundreds of placeholder tiles collapse into two network requests.
 
 ## Auth bypass
 
 The e2e compose sets `PLOOTUNES_AUTH_BYPASS=true`. This makes the server skip session checking and inject `PLOOTUNES_E2E_USER_ID` as the authenticated user on every request — no login screen needed.
 
 **The bypass only works when `NODE_ENV` is not `production`.** If `NODE_ENV=production` and `PLOOTUNES_AUTH_BYPASS=true`, the server throws on startup. This is intentional and by design — the bypass must never reach prod.
+
+### Acting as a different user
+
+The bypass identity is process-level, so switching users means recreating the server container:
+
+```sh
+PLOOTUNES_E2E_USER_ID=00000000-0000-0000-0000-000000000002 E2E_SKIP_SEED=true \
+  docker compose -f docker/docker-compose.e2e.yml up -d --force-recreate --no-deps server
+```
+
+`E2E_SKIP_SEED=true` is required. Recreating re-runs the entrypoint, which re-applies `baseline/seed.sql`; the seed is not idempotent and the server dies on a duplicate `artist_pkey`. Omit `PLOOTUNES_E2E_USER_ID` to return to user 1.
+
+Use `--no-deps` so postgres is left alone — `down -v` would discard the seeded scenario.
 
 ## Scenarios
 

@@ -4,6 +4,8 @@ import { PlayerContext } from "../main";
 import type { QueuedSongsDTO, SongDTO } from "@ploot/plootunes-shared";
 import { QueueService } from "../../services/queueService.ts";
 import { thumbUrl } from "../../services/covers.ts";
+import testImg from '../../assets/img/test.jpg'
+import upImg from '../../assets/img/up.jpg'
 import '../../styles/queueViewer/queueViewer.scss'
 import { AutoSizer, List, ListRowProps } from "react-virtualized";
 
@@ -31,7 +33,7 @@ const QueueViewer = () => {
       <div className='p-tile-image'>
         {albumCoverImageUrl
           ? <img draggable="false" src={thumbUrl(albumCoverImageUrl)} />
-          : <img draggable="false" src={index % 2 === 0 ? '../../assets/img/test.jpg' : '../../assets/img/up.jpg'} />
+          : <img draggable="false" src={index % 2 === 0 ? testImg : upImg} />
         }
       </div>
     </div>;

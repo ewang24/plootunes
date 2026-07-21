@@ -12,12 +12,12 @@ SCENARIO=multi-user pnpm app:up
 
 ## Resulting state
 
-- User 1: queue of Sabaton tracks, cursor 1, one `play_event`, one `recently_played` widget
-- User 2: queue of Aephanemer tracks, cursor 0, one `play_event`, one `top_artists` widget
+- User 1: queue of Sabaton tracks, cursor 1, one `play_event`, two widgets (`QUICK_PLAY`, `PLAY_HISTORY`)
+- User 2: queue of Aephanemer tracks, cursor 0, one `play_event`, one `RECENTLY_ADDED` widget
 
 Under `PLOOTUNES_AUTH_BYPASS`, every request is authenticated as user 1 — user 2's rows exist purely as isolation-boundary data verified at the DB level or via a future admin surface, not something the running app itself renders for the bypass identity.
 
 ## Notes for testers
 
 - `docker exec docker-postgres-1 psql -U plootunes -d plootunes -c "SELECT user_id, cursor FROM playback_state;"` shows both users' divergent playback state.
-- `SELECT user_id, widget_type FROM widget;` shows one widget per user.
+- `SELECT user_id, widget_type FROM widget;` shows three widgets total: two for user 1, one for user 2.

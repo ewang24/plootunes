@@ -2,8 +2,8 @@ import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { Page } from '@ploot/pds';
 import type { AlbumDTO } from '@ploot/plootunes-shared';
 import '../../styles/albums/albumsList.scss'
-import '../../assets/img/test.jpg'
-import '../../assets/img/up.jpg'
+import testImg from '../../assets/img/test.jpg'
+import upImg from '../../assets/img/up.jpg'
 import SongsForAlbum from './songsForAlbum';
 import OverlayView from '../global/overlayView';
 import { AlbumService } from '../../services/albumService.ts';
@@ -25,7 +25,7 @@ const AlbumList = () => {
       <div className='p-tile-image'>
         {album.coverImage
           ? <img draggable="false" src={thumbUrl(album.coverImage)} />
-          : <img draggable="false" src={index % 2 === 0 ? '../../assets/img/test.jpg' : '../../assets/img/up.jpg'} />
+          : <img draggable="false" src={index % 2 === 0 ? testImg : upImg} />
         }
       </div>
       <span className='album-name'>{album.name}</span>

@@ -3,6 +3,8 @@ import OverlayView from '../global/overlayView';
 import ArtistDetails from './artistDetails';
 import { ArtistWithAlbumCovers } from './artistsList';
 import { thumbUrl } from '../../services/covers.ts';
+import testImg from '../../assets/img/test.jpg'
+import upImg from '../../assets/img/up.jpg'
 
 export interface ArtistTileProps {
     artist: ArtistWithAlbumCovers;
@@ -26,12 +28,12 @@ function ArtistTile(props: ArtistTileProps) {
             return <div className='p-tile-image'>
                 {index % 2 === 0 &&
                     <img draggable="false"
-                        src='../../assets/img/up.jpg'
+                        src={upImg}
                     />
                 }
                 {index % 2 !== 0 &&
                     <img draggable="false"
-                        src='../../assets/img/test.jpg'
+                        src={testImg}
                     />
                 }
             </div>

@@ -1,4 +1,5 @@
 import React, { createContext, useEffect, useState } from 'react';
+import 'react-virtualized/styles.css'
 import '../styles/global.scss'
 import '../styles/main.scss'
 import AppRouter from './navigation/router';

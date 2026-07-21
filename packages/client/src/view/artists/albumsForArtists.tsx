@@ -3,6 +3,8 @@ import type { AlbumDTO, ArtistDTO } from "@ploot/plootunes-shared";
 import OverlayView from "../global/overlayView";
 import SongsForAlbum from "../albums/songsForAlbum";
 import { thumbUrl } from "../../services/covers.ts";
+import testImg from '../../assets/img/test.jpg'
+import upImg from '../../assets/img/up.jpg'
 import '../../styles/artists/albumsForArtist.scss'
 
 export interface AlbumsForArtistsProps {
@@ -32,12 +34,12 @@ function AlbumsForArtists(props: AlbumsForArtistsProps) {
                             <>
                                 {index % 2 === 0 &&
                                     <img draggable="false"
-                                        src='../../assets/img/test.jpg'
+                                        src={testImg}
                                     />
                                 }
                                 {index % 2 !== 0 &&
                                     <img draggable="false"
-                                        src='../../assets/img/up.jpg'
+                                        src={upImg}
                                     />
                                 }
                             </>

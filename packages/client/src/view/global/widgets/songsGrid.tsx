@@ -3,6 +3,8 @@ import { Button } from "@ploot/pds";
 import type { SongDTO } from "@ploot/plootunes-shared";
 import { AutoSizer, Column, ColumnProps, Table } from "react-virtualized";
 import { thumbUrl } from "../../../services/covers.ts";
+import testImg from '../../../assets/img/test.jpg'
+import upImg from '../../../assets/img/up.jpg'
 import '../../../styles/widgets/songsGrid.scss'
 
 export interface SongsGridProps {
@@ -20,7 +22,7 @@ function SongsGrid({ songs, onPlay, onQueue, displayAlbumInfo }: SongsGridProps)
         <div className='p-tile-image'>
           {albumCoverImageUrl
             ? <img draggable="false" src={thumbUrl(albumCoverImageUrl)} />
-            : <img draggable="false" src={index % 2 === 0 ? '../../assets/img/test.jpg' : '../../assets/img/up.jpg'} />
+            : <img draggable="false" src={index % 2 === 0 ? testImg : upImg} />
           }
         </div>
       </div>
@@ -94,7 +96,7 @@ function SongsGrid({ songs, onPlay, onQueue, displayAlbumInfo }: SongsGridProps)
     );
 
     return cols;
-  }, []);
+  }, [displayAlbumInfo]);
 
   if (!songs || !songs.length) return <strong>No songs found</strong>;
 
